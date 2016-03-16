@@ -1,0 +1,77 @@
+<?php echo $this->doctype(); ?>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <?php echo $this->headTitle('ИПС '. $this->translate('ИНФОРМАЦИОННО-ПОИСКОВАЯ СИСТЕМА'))->setSeparator(' - ')->setAutoEscape(false) ?>
+
+        <?php echo $this->headMeta()
+            ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+            ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+        ?>
+
+        <!-- Le styles -->
+        <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
+                        ->prependStylesheet($this->basePath('css/style.css'))
+                        ->prependStylesheet($this->basePath('css/bootstrap-theme.min.css'))
+                        ->prependStylesheet($this->basePath('css/bootstrap.min.css')) ?>
+
+        <!-- Scripts -->
+        <?php echo $this->headScript()
+            ->prependFile($this->basePath('js/bootstrap.min.js'))
+            ->prependFile($this->basePath('js/jquery.min.js'))
+            ->prependFile($this->basePath('js/respond.min.js'), 'text/javascript', array('conditional' => 'lt IE 9',))
+            ->prependFile($this->basePath('js/html5shiv.min.js'),   'text/javascript', array('conditional' => 'lt IE 9',))
+        ; ?>
+
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse" role="navigation">
+            <div class="container">
+                <div class="collapse navbar-collapse">
+                	<?php echo $this->navigation('navigation')->menu()->renderMenu(null, array('ulClass' => 'nav navbar-nav')); ?>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+        <div class="container" id="main">
+            <div class="row">
+                <div class="col-md-3">
+                	<?php $this->contents = $this->getHelperPluginManager()->getServiceLocator()->get('ContentsMenu'); ?>
+                	<?php $this->leftside = "Left side from layout"; ?>
+                	<?php echo $this->render('contents/contents/left'); ?>
+                </div>
+                <div class="col-md-9">
+                    <?php echo $this->content; ?>
+                </div>
+            </div>
+            <hr>
+            <footer>
+                 <p>&copy; 2015 - <?php echo date('Y') ?> <a href="http://lexrus.ru">LEXRUS.</a> <?php echo $this->translate('All rights reserved.') ?></p>
+            </footer>
+        </div> <!-- /container -->
+		<span id="backtop" title="Вверх"><i class="glyphicon glyphicon-chevron-up"></i></span>
+        <?php echo $this->inlineScript() ?>
+    </body>
+</html>
+
+<script type="text/javascript">
+
+	$(document).ready(function() {
+		$('#backtop').click(function() {
+	        $('body,html').animate({
+		        scrollTop: 0
+		    }, 500);
+		        return false;
+	    });
+	
+	    $('#backtop').hide();
+		    $(window).scroll(function() {
+		        if ($(window).scrollTop() !== 0) {
+		            $('#backtop').css("display", "block");
+		        } else {
+		            $('#backtop').css("display", "none");
+		    }
+	    });
+	});
+
+</script>

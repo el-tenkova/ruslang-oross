@@ -1,0 +1,76 @@
+
+<?php
+	$wordform = $this->wordform;
+	$wordform->setAttribute('action', $this->url('search', array('action' => 'word')));
+	$wordform->prepare();
+?>
+	<?php echo $this->form()->openTag($wordform); ?>
+		<div class="row">
+			<?php echo $this->formRow($wordform->get('word')); ?>
+			<?php echo $this->formSubmit($wordform->get('submit')); ?>
+		</div>
+		<div class="row">
+			<div class="col-md-4">
+				<div class="row">
+				<?php echo $this->formRow($wordform->get('title_check'), 'append'); ?>
+		    	</div>
+		    	<div class="row">
+				<?php echo $this->formRow($wordform->get('text_check'), 'append'); ?>
+				</div>
+		    	<div class="row">
+				<?php echo $this->formRow($wordform->get('tut_check'), 'append'); ?>
+				</div>
+			</div>				
+			<div class="col-md-8">
+				<div><span>Использование специальных символов в запросе: ? - один любой символ, кроме пробела; * - любая последовательность символов, кроме пробела.</span></div>
+			</div>
+		</div>
+	<?php echo $this->form()->closeTag(); ?>
+
+<?php
+/*	$histform = $this->histform;
+	$histform->setAttribute('action', $this->url('search', array('action' => 'historic')));
+	$histform->prepare(); */
+?>
+<!--    <div class="row"> -->
+
+	<?php //echo $this->form()->openTag($histform); ?>
+	<?php //echo $this->formSelect($histform->get('historic')); ?>
+	<?php //echo $this->formSubmit($histform->get('submithist')); ?>
+	<?php //echo $this->form()->closeTag(); ?>
+<!--    </div> -->
+<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+  <li <?php if ($this->tab == 'dic') echo "class=\"active\""; ?> ><a data-toggle="tab" href="#dic">В словаре</a></li>
+  <li <?php if ($this->tab == 'tutorial') echo "class=\"active\""; ?> ><a data-toggle="tab" href="#tutorial">В справочнике</a></li>
+</ul>
+<div id="my-tab-content" class="tab-content">
+	<div class="tab-pane<?php if ($this->tab == 'dic') echo ' active'; ?>" id="dic">
+<?php
+		if (isset($this->articles)) {
+			echo $this->articles;
+		}
+?>
+	</div>
+	<div class="tab-pane<?php if ($this->tab == 'tutorial') echo ' active' ?>"" id="tutorial">
+<?php
+		if (isset($this->rules)) {
+			echo $this->rules;
+		}
+?>
+	</div>
+</div>        
+	
+	
+<!-- Modal -->
+ <div class="modal" id="tutorialModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" id="modal-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <div class="hidden" id="modalStart" > </div>
+            </div>
+        </div>
+    </div>
+</div>

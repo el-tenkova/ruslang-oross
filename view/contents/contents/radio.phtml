@@ -1,0 +1,7 @@
+<!-- radio btn multiline -->
+
+<?php foreach ($element->getValueOptions() as $key => $value): ?>
+	<?php error_log($value['label']); ?>
+    <input type="radio" name="<?php echo $element->getName() ?>" value="<?php echo      $value['value']; ?>" <?php if ($value['selected'] == true): ?> checked="checked" <?php endif;?> >
+    <span><?php echo $value['label']; ?></span><br/>
+<?php endforeach; ?>

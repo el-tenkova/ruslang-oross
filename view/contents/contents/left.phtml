@@ -1,0 +1,53 @@
+        <?php error_log(sprintf("left container %s", $this->leftside)); ?> 
+        <div class="panel panel-default" >
+            <div class="panel-heading">
+                <h3 class="panel-title"><?php echo $this->translate('Содержание справочника') ?></h3>
+            </div>
+            <div class="panel-body">
+                <table class="table">
+                    <div class="accordion" id="accordion2">
+                        <?php foreach ($this->contents as $partname => $part) : ?>
+                            <tr>
+                                <td>
+                                    <div class="accordion-group">
+                                        <div class="accordion-heading h5" style="margin-left:0px">
+                                            <span><?php echo $this->escapeHtml($partname);?> </span>
+                                        </div>
+                                    </div>
+				    	            <div id=<?php echo ("part".strval($part['id'])); ?> class="accordion-body">
+                                        <div class="accordion-inner">
+                                            <table class="table">
+                                                <?php foreach ($part['tiles'] as $tilename => $item) : ?>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="accordion-group">
+                                                                <div class="accordion-heading h3" style="margin-left:0px">
+                                                                    <a class="<?php echo "accordion-toggle h5"; if ($item['active'] == "0") echo " collapsed"; ?>" style="text-transform:none" data-toggle="collapse" data-parent="#accordion2" href=<?php echo ("#tile".$item['id']); ?> >
+                                                                    <?php echo $this->escapeHtml($tilename);?>
+                                                                    </a>    
+                                                                </div>
+                                                                <div id=<?php echo ("tile".$item['id']); ?> class="<?php echo "accordion-body"; if ($item['active'] == "0") echo " collapse"; else echo " in"; ?>" >
+                                                                    <div class="accordion-inner" style="margin-left:0px">
+                                                                        <table class="table">
+                                                                            <?php foreach ($item['paras'] as $para) : ?>
+                                                                                <tr><td>
+                                                                                    <a href=<?php echo $this->url('paragraph', array('action' => 'view', 'id' => $para['id'])); ?> id="<?php echo $para['id']; ?>" ><?php echo $para['name'];?></a><?php echo $para['examples'] ?>
+                                                                                </td></tr>
+                                                                            <?php endforeach; ?>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <div>
+                </table>        
+            </div>
+        </div>

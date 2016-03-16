@@ -1,0 +1,143 @@
+
+    <?php //error_log($this->title); ?>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">
+				<div class="row">
+					<div class="col-lg-12" >
+						<?php echo $this->title; ?>
+					</div>
+				</div>
+			</h3>
+		</div>
+		<div class="panel-body">
+<?php   
+	if ($this->pageCount > 1) {
+		//error_log(sprintf("this->title_check = %d", $this->title_check));
+		echo $this->paginationControl(
+			// the paginator object
+			$this->paginator, //articles,
+			// the scrolling style
+			'sliding',
+			// the partial to use to render the control
+			$this->pag_part,
+			// the route to link to when a user clicks a control link
+			array('route' => $this->route, 'action' => $this->action, 'id' => $this->id, 'query' => $this->query.'&title_check='.$this->title_check.'&text_check='.$this->text_check.'&tut_check='.$this->tut_check, 'tab' => 'tutorial')
+		);
+	}
+?>
+			<?php foreach ($this->rules as $para) : ?>
+				<div class="row">
+					<div class="col-lg-12" >
+						<a href=<?php echo $this->url('paragraph', array('action' => 'view', 'id' => $para['para'])); ?> ><?php echo "§ ".strval($para['para'])."."; ?></a><span><?php echo $para['title']; ?></span>
+					</div>
+				</div>
+				<?php foreach ($para['rules'] as $rule) : ?>
+				<?php //print_r($rule); ?>
+					<div class="row">
+						<div class="col-lg-12" >
+							<div class="accordion" id="accordionParas" style="margin-left:15px">
+								<div class="accordion-group" id="accordion-group_<?php echo $rule['id']; ?>" >
+									<div class="accordion-heading" id="accordion-heading_<?php echo $rule['id']; ?>" >
+										<a class="accordion-toggle search_rule" rule_id="<?php echo $rule['id']; ?>" style="text-transform:none" data-toggle="collapse" data-parent="#accordionParas" href="#rules_<?php echo $rule['id']; ?>" ><?php echo $rule['name']; ?></a >
+									</div>
+								</div>
+								<div id="rules_<?php echo $rule['id']; ?>" class="accordion-body collapse">
+									<div class="accordion-inner" id="act_rule-inner_<?php echo $rule['id']; ?>" style="margin-left:15px">
+													<!-- filled by click -->
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				<?php endforeach; ?>
+				<hr />			
+			<?php endforeach; ?>
+		</div>
+<?php   
+	if ($this->pageCount > 1) {
+		echo $this->paginationControl(
+			// the paginator object
+			$this->paginator, //articles,
+			// the scrolling style
+			'sliding',
+			// the partial to use to render the control
+			$this->pag_part,
+			// the route to link to when a user clicks a control link
+			array('route' => $this->route, 'action' => $this->action, 'id' => $this->id, 'query' => $this->query.'&title_check='.$this->title_check.'&text_check='.$this->text_check.'&tut_check='.$this->tut_check, 'tab' => 'tutorial')
+		);
+	}
+?>
+    </div>
+        
+<script type="text/javascript">
+
+	$(document).ready(function() {
+		
+		$('.search_rule').unbind('click').click(function(e) {
+			e.preventDefault();
+			var str = '#act_rule-inner' + '_' + $(this).attr('rule_id');
+			if ($(str).has('div').length == 0) {
+				var url = '<?php echo $this->url('paragraph', array('action' => 'markedrule')); ?>';
+				$.ajax({
+	            	url: url,
+	            	async: false,
+	            	type: 'POST',
+	            	dataType: "json",
+	            	rule_id : $(this).attr('rule_id'),
+	            	query: '<?php echo $this->query; ?>',
+	            	//art_id : $(this).attr('art_id'),
+	            	data: {
+	                	id : $(this).attr('rule_id'),
+		            	query: '<?php echo $this->query; ?>',
+	                	//art : $(this).attr('art_id') 
+	            	}, 
+		            success: function(j)
+	    	        {
+		                addRule(this, str, j.rule, 0xff);
+	    	        },
+		            error: function(XMLHttpRequest, textStatus, errorThrown)
+		            {
+//		            	alert(textStatus);
+		            }
+		        });
+			}
+		});
+			
+	});
+
+	function addRule(obj, str, rule, i) {
+		if (i == 0xff && rule.parent != null) {
+			$(str).append('<div>' + rule.parent + '</div>');
+		}
+		$(str).append('<div><p>' + rule.text + '</div></p>');
+		if (rule.info != null)
+			$(str).append('<div><p>' + rule.info + '</div></p>');
+		if (rule.orthos.length > 0) {
+			$(str).append('<p><b>Формулы:</b></p>');
+			$(str).append('<div class="panel panel-default" id="pdef' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id') + '_' + i + '" >');
+			$('#pdef' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id')	+ '_' + i).append('<div class="panel-body" id="pbody' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id')+ '_' + i + '" >');
+			for (var o = 0; o < rule.orthos.length; o++) {
+				var ortho = rule.orthos[o].ortho + ': ';
+				if (rule.orthos[o].formula != null) {
+					var formula = '<?php echo $this->url('orthogr', array('action' => 'formula')); ?>' + '?id=' + rule.orthos[o].id_form;
+					ortho = ortho + '<a href="' + formula + '" >' + rule.orthos[o].formula + '</a >';
+				}
+				if (rule.orthos[o].example != null) {
+					ortho = ortho + ' ' + rule.orthos[o].example;
+				}
+				$('#pbody' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id')+ '_' + i).append('<div><p>' + ortho + '</p></div>');
+			}
+		}
+		if (rule.footnotes.length > 0) {
+			for (var f = 0; f < rule.footnotes.length; f++) {
+				$(str).append('<p>' + rule.footnotes[f].footnote);
+			}
+		}
+		
+	};
+
+</script>
+        
+
+    

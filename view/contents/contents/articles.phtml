@@ -1,0 +1,339 @@
+
+    <?php //error_log($this->title); ?>
+    <?php //error_log($this->route); ?>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">
+				<div class="row">
+					<div class="col-lg-10" >
+						<?php echo $this->title; ?>
+					</div>
+					<div class="col-lg-2" >
+						<?php
+						?>
+						<?php if ($this->pageCount > 0): ?>
+							<a href="#" onclick="doRTF()">Скачать</a>
+						<?php endif; ?>
+					</div>
+				</div>
+			</h3>
+		</div>
+		<div class="panel-body">
+<?php   
+	if ($this->pageCount > 1) {
+		//error_log(sprintf("this->title_check = %d", $this->title_check));
+		echo $this->paginationControl(
+			// the paginator object
+			$this->paginator, //articles,
+			// the scrolling style
+			'sliding',
+			// the partial to use to render the control
+			$this->pag_part,
+			// the route to link to when a user clicks a control link
+			array('route' => $this->route, 'action' => $this->action, 'id' => $this->id, 'query' => $this->query.'&title_check='.$this->title_check.'&text_check='.$this->text_check.'&tut_check='.$this->tut_check, 'tab' => 'dic')
+		);
+	}
+?>
+			<?php foreach ($this->articles as $article) : ?>
+				<div class="row">
+					<?php if (count($article['orthos']) > 0 || count($article['paras']) > 0 || count($article['comments']) > 0) : ?>
+						<div class="col-lg-4" >
+							<?php //error_log($article['article']); ?>
+							<p><span><?php echo $article['article']; ?></span></p>
+						</div>
+						<div class="col-lg-8" >
+							<?php if (count($article['comments']) != 0): ?>
+								<div class="accordion" id="accordionComment" >
+									<?php foreach ($article['comments'] as $comment_id => $comment) : ?>
+										<div class="accordion-group" id="accordion-group-comment_<?php echo $article['id']; ?>_<?php echo $comment_id; ?>" >
+											<div class="accordion-heading" id="accordion-heading-comment_<?php echo $article['id']; ?>" >
+												<a class="accordion-toggle comment" comment_id="<?php echo $comment_id; ?>" art_id="<?php echo $article['id']; ?>"style="text-transform:none" data-toggle="collapse" data-parent="#accordionComment" href="#comment<?php echo $article['id']; ?>_<?php echo $comment_id; ?>" ><?php echo $comment['title']; ?></a >
+											</div>
+										</div>
+										<div id="comment<?php echo $article['id']; ?>_<?php echo $comment_id; ?>" class="accordion-body collapse">
+											<div class="accordion-inner" id="comment-inner_<?php echo $article['id']; ?>_<?php echo $comment_id; ?>"" style="margin-left:15px">
+											<!-- filled by click -->
+											</div>
+										</div>
+									<?php endforeach; ?>
+								</div>
+								<?php if (count($article['orthos']) != 0 || count($article['paras']) != 0 ) echo "<hr />"; ?>
+							<?php endif; ?>
+							<div class="accordion" id="accordionOrthos" >
+								<?php foreach ($article['orthos'] as $ortho_id => $ortho) : ?>
+									<div class="accordion-group" id="accordion-group<?php echo $article['id']; ?>_<?php echo $ortho_id; ?>" >
+										<div class="accordion-heading" id="accordion-heading<?php echo $article['id']; ?>_<?php echo $ortho_id; ?>" >
+											<a class="accordion-toggle orthogramm" ortho_id="<?php echo $ortho_id; ?>" art_id="<?php echo $article['id']; ?>"style="text-transform:none" data-toggle="collapse" data-parent="#accordionOrthos" href="#formulas<?php echo $article['id']; ?>_<?php echo $ortho_id; ?>" ><?php echo $ortho['name'] ?></a >
+										</div>
+									</div>
+									<div id="formulas<?php echo $article['id']; ?>_<?php echo $ortho_id; ?>" class="accordion-body collapse">
+										<div class="accordion-inner" id="formulas-inner<?php echo $article['id']; ?>_<?php echo $ortho_id; ?>" style="margin-left:15px">
+										<!-- filled by click -->
+										</div>
+									</div>
+								<?php endforeach; ?>
+							</div>
+							<?php if (count($article['orthos']) > 0) echo "<hr />"; ?>
+							<div class="accordion" id="accordionParas" >
+								<?php foreach ($article['paras'] as $para_id => $para) : ?>
+									<div class="accordion-group" id="accordion-group<?php echo $article['id']; ?>_<?php echo $para_id; ?>" >
+										<div class="accordion-heading" id="accordion-heading<?php echo $article['id']; ?>_<?php echo $para_id; ?>" >
+											<a class="accordion-toggle paragraph" para_id="<?php echo $para_id; ?>" art_id="<?php echo $article['id']; ?>" style="text-transform:none" data-toggle="collapse" data-parent="#accordionParas" href="#paras<?php echo $article['id']; ?>_<?php echo $para_id; ?>" >§ <?php echo $para_id ?></a >
+										</div>
+									</div>
+									<div id="paras<?php echo $article['id']; ?>_<?php echo $para_id; ?>" class="accordion-body collapse">
+										<div class="accordion-inner" id="paras-inner<?php echo $article['id']; ?>_<?php echo $para_id; ?>" style="margin-left:15px">
+											<!-- filled by click -->
+										</div>
+									</div> 
+									<?php foreach ($para['act_rules'] as $rule_id => $act_rule) : ?>
+										<div class="accordion-group" id="accordion-group<?php echo $article['id']; ?>_<?php echo $rule_id; ?>" >
+											<div class="accordion-heading" id="accordion-heading<?php echo $article['id']; ?>_<?php echo $rule_id; ?>" >
+												<a class="accordion-toggle act_rule" rule_id="<?php echo $rule_id; ?>" art_id="<?php echo $article['id']; ?>"style="text-transform:none" data-toggle="collapse" data-parent="#accordionParas" href="#rules<?php echo $article['id']; ?>_<?php echo $rule_id; ?>" ><?php echo "§ ".$para_id." п. ".$act_rule; ?></a >
+											</div>
+										</div>
+										<div id="rules<?php echo $article['id']; ?>_<?php echo $rule_id; ?>" class="accordion-body collapse">
+											<div class="accordion-inner" id="act_rule-inner<?php echo $article['id']; ?>_<?php echo $rule_id; ?>" style="margin-left:15px">
+												<!-- filled by click -->
+											</div>
+										</div>
+									<?php endforeach; ?>
+								<?php endforeach; ?>
+							</div>
+						</div>
+					<?php else: ?>
+						<div class="col-lg-12" >
+							<?php //error_log($article['article']); ?>
+							<p><span><?php echo $article['article']; ?></span></p>
+						</div>
+					<?php endif; ?>
+				</div>
+				<hr />
+			<?php endforeach; ?>				
+    	</div>
+<?php   
+	if ($this->pageCount > 1) {
+		echo $this->paginationControl(
+			// the paginator object
+			$this->paginator, //articles,
+			// the scrolling style
+			'sliding',
+			// the partial to use to render the control
+			$this->pag_part,
+			// the route to link to when a user clicks a control link
+			array('route' => $this->route, 'action' => $this->action, 'id' => $this->id, 'query' => $this->query.'&title_check='.$this->title_check.'&text_check='.$this->text_check.'&tut_check='.$this->tut_check, 'tab' => 'dic')
+		);
+	}
+?>
+    </div>
+        
+<script type="text/javascript">
+
+	$(document).ready(function() {
+
+		$('.paragraph').unbind('click').click(function(e) {
+			e.preventDefault();
+			var str = '#paras-inner' + $(this).attr('art_id') + '_' + $(this).attr('para_id');
+			if ($(str).has('div').length == 0) {
+				var url = '<?php echo $this->url('paragraph', array('action' => 'para')); ?>';
+				$.ajax({
+	            	url: url,
+	            	async: false,
+	            	type: 'POST',
+	            	dataType: "json",
+	            	para_id : $(this).attr('para_id'),
+	            	art_id : $(this).attr('art_id'),
+	            	data: {
+	                	id : $(this).attr('para_id'),
+	                	art : $(this).attr('art_id') 
+	            	}, 
+		            success: function(j)
+	    	        {
+	                	$(str).append((j.title));
+		                for (var i = 0; i < j.rules.length; i++) {
+		                	artAddRule(this, str, j.rules[i], i);
+		                }
+		                for (var i = 0; i < j.rules.length; i++) {
+							if (j.rules[i].footnotes.length > 0) {
+								for (var f = 0; f < j.rules[i].footnotes.length; f++) {
+									$(str).append('<p>' + j.rules[i].footnotes[f].footnote);
+								}
+							}
+						}
+		                
+	    	        },
+		            error: function(XMLHttpRequest, textStatus, errorThrown)
+		            {
+//		            	alert(textStatus);
+		            }
+		        });
+			}
+		});
+
+		$('.act_rule').unbind('click').click(function(e) {
+			e.preventDefault();
+			var str = '#act_rule-inner' + $(this).attr('art_id') + '_' + $(this).attr('rule_id');
+			if ($(str).has('div').length == 0) {
+				var url = '<?php echo $this->url('paragraph', array('action' => 'rule')); ?>';
+				$.ajax({
+	            	url: url,
+	            	async: false,
+	            	type: 'POST',
+	            	dataType: "json",
+	            	rule_id : $(this).attr('rule_id'),
+	            	art_id : $(this).attr('art_id'),
+	            	data: {
+	                	id : $(this).attr('rule_id'),
+	                	art : $(this).attr('art_id') 
+	            	}, 
+		            success: function(j)
+	    	        {
+		                artAddRule(this, str, j.rule, 0xff);
+						if (j.rule.footnotes.length > 0) {
+							for (var f = 0; f < j.rule.footnotes.length; f++) {
+								$(str).append('<p>' + j.rule.footnotes[f].footnote);
+							}
+						}
+		                
+	    	        },
+		            error: function(XMLHttpRequest, textStatus, errorThrown)
+		            {
+//		            	alert(textStatus);
+		            }
+		        });
+			}
+		});
+		
+		$('.orthogramm').unbind('click').click(function(e) {
+			e.preventDefault();
+			var str = '#formulas-inner' + $(this).attr('art_id') + '_' + $(this).attr('ortho_id');
+			if ($(str).has('div').length == 0) {
+				var url = '<?php echo $this->url('orthogr', array('action' => 'view')); ?>';
+				$.ajax({
+	            	url: url,
+	            	async: false,
+	            	type: 'POST',
+	            	dataType: "json",
+	            	ortho_id : $(this).attr('ortho_id'),
+	            	art_id : $(this).attr('art_id'),
+	            	data: {
+	                	id : $(this).attr('ortho_id'),
+	                	art : $(this).attr('art_id') 
+	            	}, 
+		            success: function(j)
+	    	        {
+		                for (var i = 0; i < j.formulas.length; i++) {
+							var link = '<?php echo $this->url('orthogr', array('action' => 'formula')); ?>' + '?id=' + j.formulas[i].id;
+							var formula = '<div class="row"><div class="col-lg-1" >';
+							if (j.formulas[i].act == '1') {
+								formula = formula + '<i class="glyphicon glyphicon-ok glyphicon-green"></i></div>';
+							}
+							else
+								formula = formula + '<i class="glyphicon glyphicon-none"></i></div>';
+							formula = formula + '<div class="col-lg-11" ><p><a href="' + link + '" >' + j.formulas[i].name + '</a>';
+							if (j.formulas[i].example != null)
+								formula = formula + ' ' + j.formulas[i].example;
+							if (j.formulas[i].rest != null)
+								formula = formula + ' ' + j.formulas[i].rest;
+							formula = formula + '</p></div></div>'
+							$(str).append(formula);		                	
+//							$(str).append('<div><p>' + formula + '</p></div>');		                	
+		                }
+	    	        },
+		            error: function(XMLHttpRequest, textStatus, errorThrown)
+		            {
+		            	alert(textStatus);
+		            }
+		        });
+			}
+		});
+		
+		$('.comment').unbind('click').click(function(e) {
+			e.preventDefault();
+			var str = '#comment-inner' + '_' + $(this).attr('art_id') + '_' + $(this).attr('comment_id');
+			if ($(str).has('div').length == 0) {
+				var url = '<?php echo $this->url('article', array('action' => 'src')); ?>';
+				$.ajax({
+	            	url: url,
+	            	async: false,
+	            	type: 'POST',
+	            	dataType: "json",
+	            	comm_id : $(this).attr('comment_id'),
+	            	art_id : $(this).attr('art_id'),
+	            	data: {
+	                	id : $(this).attr('comment_id'),
+	                	art : $(this).attr('art_id') 
+	            	}, 
+		            success: function(j)
+	    	        {
+						$(str).append('<div><p>' + j.src + '</p></div>');		                	
+	    	        },
+		            error: function(XMLHttpRequest, textStatus, errorThrown)
+		            {
+		            	alert(textStatus);
+		            }
+		        });
+			}
+		});
+			
+	});
+
+	function artAddRule(obj, str, rule, i) {
+		if (i == 0xff && rule.parent != null) {
+			$(str).append('<div>' + rule.parent + '</div>');
+		}
+		$(str).append('<div><p>' + rule.text + '</div></p>');
+		if (rule.info != null)
+			$(str).append('<div><p>' + rule.info + '</div></p>');
+		if (rule.orthos.length > 0) {
+			$(str).append('<p><b>Формулы:</b></p>');
+			$(str).append('<div class="panel panel-default" id="pdef' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id') + '_' + i + '" >');
+			$('#pdef' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id')	+ '_' + i).append('<div class="panel-body" id="pbody' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id')+ '_' + i + '" >');
+			for (var o = 0; o < rule.orthos.length; o++) {
+				var ortho = rule.orthos[o].ortho + ': ';
+				if (rule.orthos[o].formula != null) {
+					var formula = '<?php echo $this->url('orthogr', array('action' => 'formula')); ?>' + '?id=' + rule.orthos[o].id_form;
+					ortho = ortho + '<a href="' + formula + '" >' + rule.orthos[o].formula + '</a >';
+				}
+				if (rule.orthos[o].example != null) {
+					ortho = ortho + ' ' + rule.orthos[o].example;
+				}
+				$('#pbody' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id')+ '_' + i).append('<div><p>' + ortho + '</p></div>');
+			}
+		}
+		
+	};
+
+	function doRTF() {
+		var url = '<?php echo $this->url('download', array('action' => 'do')); ?>';
+		$.ajax({
+			url: url,
+			async: false,
+			type: 'POST',
+			dataType: "json",
+			data: {
+				hist : '<?php if ($this->action == "historic") echo "1"; else echo "0"; ?>',
+				word : '<?php if ($this->action == "word") echo "1"; else echo "0"; ?>',
+				formula : '<?php if ($this->action == "formula") echo "1"; else echo "0"; ?>',
+				id_hist : '<?php if ($this->action == "historic") echo $this->id; else echo "0"; ?>',
+				id_formula: '<?php if ($this->action == "formula") echo $this->id; else echo "0"; ?>',
+				query: '<?php if ($this->action == "word") echo $this->query; else echo ""; ?>',
+			    title_check: '<?php if ($this->action == "word") echo $this->title_check; else echo ""; ?>',
+			    text_check: '<?php if ($this->action == "word") echo $this->text_check; else echo ""; ?>',
+			    search_part: '<?php if ($this->action == "word") echo $this->search_part; else echo ""; ?>'
+			}, 
+			success: function(j)
+			{
+				self.location.href = '/downloads/' + j.filename;
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown)
+			{
+//		            	alert(textStatus);
+			}
+		});
+	}
+
+</script>
+        
+
+    
