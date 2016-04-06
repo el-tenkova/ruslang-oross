@@ -202,7 +202,26 @@ namespace Contents\Model;
 			}
 		}
         return $result;
-	}     
+	}
+
+	public static function getParaContents($sm, $id_para)
+	{
+        $table = $sm->get('Contents\Model\RuleTables');
+		$rules = $table->tableGateway->select(function(Select $select) use ($id_para)
+		{
+			$select->where('r.id_para='.$id_para.' AND r.title != \'\'');
+			$select->order('r.id');					
+		});
+		$titles = array();
+		if (count($rules) > 0) {
+			foreach ($rules as $rule) {
+				$titles[] = array($rule->num, $rule->title);
+			}
+		}
+		return $titles;
+		//print_r($titles);	
+	}
+	     
 } 
  
 ?>

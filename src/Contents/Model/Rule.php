@@ -17,6 +17,7 @@ namespace Contents\Model;
      public $id_foot;
      public $num;
      public $text;
+     public $title;
      public $info; 
      public $footnote;
 
@@ -30,6 +31,7 @@ namespace Contents\Model;
         $this->id_foot  	= (!empty($data['id_foot'])) ? $data['id_foot'] : null;
         $this->num     	 	= (!empty($data['num'])) ? $data['num'] : null;
         $this->text     	= (!empty($data['text'])) ? $data['text'] : null;
+        $this->title     	= (!empty($data['title'])) ? $data['title'] : null;
         $this->info     	= (!empty($data['info'])) ? $data['info'] : null;
         $this->footnote    	= (!empty($data['footnote'])) ? $data['footnote'] : null;
      }
