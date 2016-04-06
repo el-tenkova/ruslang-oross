@@ -31,7 +31,7 @@
                                                                         <table class="table">
                                                                             <?php foreach ($item['paras'] as $para) : ?>
                                                                                 <tr><td>
-                                                                                    <a href=<?php echo $this->url('paragraph', array('action' => 'view', 'id' => $para['id'])); ?> id="<?php echo $para['id']; ?>" ><?php echo $para['name'];?></a><?php echo $para['examples'] ?>
+                                                                                    <a href=<?php echo $this->url('paragraph', array('action' => 'view', 'id' => $para['id'])); ?> id="<?php echo $para['id']; ?>" ><?php echo $para['name'].' ';?></a><?php echo $para['examples'] ?>
                                                                                 </td></tr>
                                                                             <?php endforeach; ?>
                                                                         </table>
