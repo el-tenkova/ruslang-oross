@@ -1,0 +1,395 @@
+<!-- <div class="jumbotron">
+    <h1><?php echo sprintf($this->translate('Welcome to %sZend Framework 2%s'), '<span class="zf-green">', '</span>') ?></h1>
+    <p><?php echo sprintf($this->translate('Congratulations! You have successfully installed the %sZF2 Skeleton Application%s. You are currently running Zend Framework version %s. This skeleton can serve as a simple starting point for you to begin building your application on ZF2.'), '<a href="https://github.com/zendframework/ZendSkeletonApplication" target="_blank">', '</a>', \Zend\Version\Version::VERSION) ?></p>
+    <p><a class="btn btn-success btn-lg" href="https://github.com/zendframework/zf2" target="_blank"><?php echo $this->translate('Fork Zend Framework 2 on GitHub') ?> &raquo;</a></p>
+</div> -->
+
+<?php
+	$form = $this->form;
+	$form->setAttribute('action', $this->url('home', array('action' => 'index')));
+	$form->prepare();
+
+	echo $this->form()->openTag($form);
+	echo $this->formRow($form->get('word'));
+	echo $this->formSubmit($form->get('submit'));
+	echo $this->form()->closeTag();
+	if (isset($this->articles))
+		echo $this->articles;
+?>
+<!-- Modal -->
+ <div class="modal" id="tutorialModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" id="modal-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <div class="hidden" id="modalStart" > </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+/*    function paraClick(obj)
+    {
+        var para = $(obj).attr('id');
+        var baseurl = '<?php echo $this->url("paragraph"); ?>';
+        $.ajax({
+            url: baseurl,
+            async: false,
+            type: 'POST',
+            dataType: "json",
+            data: {
+                para : para,
+                action : 'para'
+            }, 
+            success: function(j)
+            {
+                //alert(j.title);
+                
+                $('#paraNum').nextAll().remove();
+                $('#paraNum').after('</div>');
+                
+                for (var i = j.rules.length - 1; i >= 0; i--) {
+                    if (j.rules[i].orthos.length > 0)
+                    {
+                        $('#paraNum').after('<div class="panel panel-default" id="panelForm' + j.rules[i].id + '" >');
+                        $('#paraNum').after('<p><b>Формулы:</b></p>');
+                        $('#panelForm' + j.rules[i].id).append('<div class="panel-body" id="panelFormBody' +j.rules[i].id + '" >')
+                        for (var k = 0; k < j.rules[i].orthos.length; k++) {
+                            var str = '<div><p>' + j.rules[i].orthos[k].ortho + ': ';
+                            if (j.rules[i].orthos[k].formula != null)
+                                str = str + j.rules[i].orthos[k].formula;
+                            if (j.rules[i].orthos[k].example != null)
+                                str = str + ' ' + j.rules[i].orthos[k].example;
+                            str = str + '</p></div>';
+                            $('#panelFormBody' + j.rules[i].id).append('<div><p>' + j.rules[i].orthos[k].ortho + ': ' + j.rules[i].orthos[k].formula + ' ' + j.rules[i].orthos[k].example + ' ' + j.rules[i].orthos[k].rest + '</p></div>');
+                        }
+                    }
+                    $('#paraNum').after('<div><p>' + j.rules[i].text + '</p></div>');
+                }
+                $('#paraNum').after('<div id="paragraph' + para + '" ><p>' + j.title + '</p></div>');
+//                window.location.hash = '#paragraph' + para;
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                $('#paraNum').nextAll().remove();
+            }
+        });
+    } */
+    function searchWord()
+    {
+        var word = $('#word').val();
+        var baseurl = '<?php echo $this->url("word"); ?>';
+        $.ajax({
+            url: baseurl,
+            async: false,
+            type: 'POST',
+            dataType: "json",
+            data: {
+                word : word,
+                action : 'word'
+            }, 
+            success: function(j)
+            {
+                $('#paraNum').nextAll().remove()
+                if (j.articles.length > 0) {
+                    $('#paraNum').after('<div class="panel panel-default col-lg-8" id="panelTutorial" >');
+                    $('#paraNum').after('<div class="panel panel-default col-lg-4" id="panelArticle" >');
+       //             $('#paraNum').after('</div>')
+                    for (var i = 0; i < j.articles.length; i++) {
+                        $('#panelArticle').append('<div class="panel-body" id="panelArticleBody" >');
+                        $('#panelArticleBody').append('<div class="row" id="art' + i + '" >');
+                        $('#art' + i).append('<div class="col-lg-12" id="artcol' + i + '" >');
+    //                    $('#art' + i).append('<div class="col-lg-6" id="rulecol' + i + '" >');
+                        $('#artcol' + i).append('<div><p>' + j.articles[i].article + '</p></div>');
+                    }   
+                    
+                    $('#panelTutorial').append('<div class="panel-body" id="panelTutorialBody" >');     
+                    addFormulas(j);
+                    $('#panelTutorial').append('<hr />');     
+                    addParagraphs(j);
+                    $('#panelTutorial').append('<hr />');     
+                }
+//                for (var i = j.articles.length - 1; i >= 0; i--) {
+//                    $('#paraNum').after('<p>' + j.articles[i].article + '</p>');
+//                }
+//                $('#paraNum').after('<div id="paragraph' + para + '" ><p>' + j.title + '</p></div>');
+  //              window.location.hash = '#paragraph' + para; */
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                $('#paraNum').nextAll().remove()                
+            }
+        });
+    }
+    
+    function addFormulas(j)
+    {
+        $('#panelTutorial').append('<div class="accordion" id="accordionOrthos" >');
+        for (var i = 0; i < j.orthos.length; i++) {
+            $('#accordionOrthos').append('<div class="accordion-group" id="accordion-group' + j.orthos[i].id + '" >');
+            $('#accordion-group' + j.orthos[i].id).append('<div class="accordion-heading" id="accordion-heading' + j.orthos[i].id + '" >');
+            $('#accordion-heading' + j.orthos[i].id).append('<a class="accordion-toggle" style="text-transform:none" data-toggle="collapse" data-parent="#accordionOrthos" href="#formulas' + j.orthos[i].id + '" >' + j.orthos[i].ortho + '</a >');
+                        
+            $('#accordion-group' + j.orthos[i].id).append('<div id="formulas' + j.orthos[i].id + '" class="accordion-body collapse">');
+            $('#formulas' + j.orthos[i].id).append('<div class="accordion-inner" id="formulas-inner' + j.orthos[i].id + '" style="margin-left:15px">');
+            for (var f = 0; f < j.orthos[i].formulas.length; f++) {
+                var str = '<div><p><a href="#formula' + j.orthos[i].formulas[f].id +'\" >' + j.orthos[i].formulas[f].name + '</a > ';
+                if (j.orthos[i].formulas[f].example != null)
+                    str = str + j.orthos[i].formulas[f].example;
+                if (j.orthos[i].formulas[f].rest != null)
+                    str = str + ' ' + j.orthos[i].formulas[f].rest;
+                            
+                str = str + '</p></div>';
+                $('#formulas-inner' + j.orthos[i].id).append(str);
+            }
+        }   
+    }
+
+    function addParagraphs(j)
+    {
+        $('#panelTutorial').append('<div class="accordion" id="accordionParas" >');
+        for (var i = 0; i < j.paras.length; i++) {
+            $('#accordionParas').append('<div class="accordion-group" id="accordion-group-p' + j.paras[i].id + '" >');
+            $('#accordion-group-p' + j.paras[i].id).append('<div class="accordion-heading" id="accordion-heading-p' + j.paras[i].id + '" >');
+            $('#accordion-heading-p' + j.paras[i].id).append('<a class="accordion-toggle" style="text-transform:none" data-toggle="collapse" data-parent="#accordionParas" href="#paras' + j.paras[i].id + '" >§' + j.paras[i].id + '.</a >');
+                        
+            $('#accordion-group-p' + j.paras[i].id).append('<div id="paras' + j.paras[i].id + '" class="accordion-body collapse">');
+            $('#paras' + j.paras[i].id).append('<div class="accordion-inner-p" id="paras-inner' + j.paras[i].id + '" style="margin-left:15px">');
+			$('#paras-inner' + j.paras[i].id).append('<div><p>' + j.paras[i].title + '</div></p>');
+            
+            for (var r = 0; r < j.paras[i].rules.length; r++) {
+                $('#paras-inner' + j.paras[i].id).append('<div><p>' + j.paras[i].rules[r].text + '</div></p>');
+				if (j.paras[i].rules[r].orthos.length > 0) {
+					$('#paras-inner' + j.paras[i].id).append('<p><b>Формулы:</b></p>');
+					$('#paras-inner' + j.paras[i].id).append('<div class="panel panel-default" id="panelForm-r' + j.paras[i].rules[r].id + '" >');
+					$('#panelForm-r' + j.paras[i].rules[r].id).append('<div class="panel-body" id="panelFormBody-r' + j.paras[i].rules[r].id + '" >')
+					for (var k = 0; k < j.paras[i].rules[r].orthos.length; k++) {
+						var str = '<div><p>' + j.paras[i].rules[r].orthos[k].ortho + ': ';
+						if (j.paras[i].rules[r].orthos[k].formula != null)
+							str = str + '<a href="#formula' + j.paras[i].rules[r].orthos[k].id_form +'\" >' + j.paras[i].rules[r].orthos[k].formula + '</a > ';
+						if (j.paras[i].rules[r].orthos[k].example != null)
+							str = str + ' ' + j.paras[i].rules[r].orthos[k].example;
+						str = str + '</p></div>';
+						$('#panelFormBody-r' + j.paras[i].rules[r].id).append(str);
+					}
+				}
+			}
+			for (var ar = 0; ar < j.paras[i].act_rules.length; ar++) {
+            	for (var r = 0; r < j.paras[i].rules.length; r++) {
+                	if (j.paras[i].act_rules[ar] ==  j.paras[i].rules[r].id) {
+            			$('#accordionParas').append('<div class="accordion-group" id="accordion-group-r' + j.paras[i].rules[r].id + '" >');
+            			$('#accordion-group-r' + j.paras[i].rules[r].id).append('<div class="accordion-heading" id="accordion-heading-r' + j.paras[i].rules[r].id + '" >');
+            			
+           	 			$('#accordion-heading-r' + j.paras[i].rules[r].id).append('<a class="accordion-toggle" style="text-transform:none" data-toggle="collapse" data-parent="#accordionParas" href="#rules' + j.paras[i].rules[r].id + '" >§' + j.paras[i].id + '. п. '  +  j.paras[i].rules[r].num + '</a >');
+			            $('#accordion-group-r' + j.paras[i].rules[r].id).append('<div id="rules' + j.paras[i].rules[r].id + '" class="accordion-body collapse">');
+            			$('#rules' + j.paras[i].rules[r].id).append('<div class="accordion-inner-r" id="rule-inner' + j.paras[i].rules[r].id + '" style="margin-left:15px">');
+						$('#rule-inner' + j.paras[i].rules[r].id).append('<div><p>' + j.paras[i].rules[r].text  + '</div></p>');
+						if (j.paras[i].rules[r].orthos.length > 0) {
+							$('#rule-inner' + j.paras[i].rules[r].id).append('<p><b>Формулы:</b></p>');
+							$('#rule-inner' + j.paras[i].rules[r].id).append('<div class="panel panel-default" id="panelForm-rp' + j.paras[i].rules[r].id + '" >');
+							$('#panelForm-rp' + j.paras[i].rules[r].id).append('<div class="panel-body" id="panelFormBody-rp' + j.paras[i].rules[r].id + '" >')
+							for (var k = 0; k < j.paras[i].rules[r].orthos.length; k++) {
+								var str = '<div><p>' + j.paras[i].rules[r].orthos[k].ortho + ': ';
+								if (j.paras[i].rules[r].orthos[k].formula != null)
+									str = str + '<a href="#formula' + j.paras[i].rules[r].orthos[k].id_form +'\" >' + j.paras[i].rules[r].orthos[k].formula + '</a > ';
+								if (j.paras[i].rules[r].orthos[k].example != null)
+									str = str + ' ' + j.paras[i].rules[r].orthos[k].example;
+								str = str + '</p></div>';
+								$('#panelFormBody-rp' + j.paras[i].rules[r].id).append(str);
+							}
+						}
+						break;
+					}
+				}
+			}
+        }
+    }
+    
+    function ruleFillModal(obj)
+    {
+        var rule = $(obj).attr('id').substring(4);
+        var baseurl = '<?php echo $this->url("rule"); ?>';
+        $.ajax({
+            url: baseurl,
+            async: false,
+            type: 'POST',
+            dataType: "json",
+            data: {
+                rule : rule,
+                action : 'rule'
+            }, 
+            success: function(j)
+            {
+                //alert(j.title);
+                $('#modalStart').nextAll().remove();
+//                alert(j.rule);
+                $('#modal-body').append('<div id="rule' + rule + '" ><p>' + j.rule + '</p></div>');
+//                $('#paraNum').after('</div>')
+
+/*                for (var i = j.rules.length - 1; i >= 0; i--) {
+                    $('#modal-body').append('<p>' + j.rules[i].text + '</p>');
+                } */
+                
+                if (j.orthos.length > 0)
+                {
+                    $('#modal-body').append('<p><b>Формулы:</b></p>');
+                    $('#modal-body').append('<div class="panel panel-default" id="panelForm" >');
+                    $('#panelForm').append('<div class="panel-body" id="panelFormBody" >')
+                    for (var i = 0; i < j.orthos.length; i++) {
+                        var str = '<div><p>' + j.orthos[i].ortho + ': ';
+                        if (j.orthos[i].formula != null) {
+                            str = str + '<a href="formula' + j.orthos[i].id_form +'\" >' + j.orthos[i].formula + '</a > ';
+                        }
+                        
+                        //if (j.orthos[i].formula != null)
+                        //    str = str + j.orthos[i].formula;
+                        if (j.orthos[i].example != null)
+                            str = str + j.orthos[i].example;
+                        if (j.orthos[i].rest != null)
+                            str = str + ' ' + j.orthos[i].rest;
+                            
+                        str = str + '</p></div>';
+                        $('#panelFormBody').append(str);
+                      //  $('#panelFormBody').append('<p>' + j.orthos[i].ortho + ': ' + j.orthos[i].formula + j.orthos[i].example + ' ' + j.orthos[i].rest + '</p>');
+                    }
+                } 
+//                window.location.hash = '#paragraph' + para;
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                $('#modalStart').nextAll().remove();
+                alert(textStatus);
+            }
+        });        
+    }
+   
+    function paraFillModal(obj)
+    {
+        var para = $(obj).attr('id').substring(4);
+        var baseurl = '<?php echo $this->url("paragraph"); ?>';
+        $.ajax({
+            url: baseurl,
+            async: false,
+            type: 'POST',
+            dataType: "json",
+            data: {
+                para : para,
+                action : 'para'
+            }, 
+            success: function(j)
+            {
+                //alert(j.title);
+                $('#modalStart').nextAll().remove();
+                $('#modal-body').append('<div id="paragraph' + para + '" ><p>' + j.title + '</p></div>');
+//                $('#paraNum').after('</div>')
+
+                for (var i = 0; i < j.rules.length; i++) {
+                 //   alert(j.rules[i].text);
+                    $('#modal-body').append('<div><p>' + j.rules[i].text + '</p></div>');
+                    if (j.rules[i].orthos.length > 0) {
+                        $('#modal-body').append('<p><b>Формулы:</b></p>');
+                        $('#modal-body').append('<div class="panel panel-default" id="panelFormRule' + j.rules[i].id + '" >');
+                        $('#panelFormRule' + j.rules[i].id).append('<div class="panel-body" id="panelFormRuleBody'  + j.rules[i].id + '" >')
+                        for (var k = 0; k < j.rules[i].orthos.length; k++) {
+                            var str = '<div><p>'
+//                            if (j.rules[i].orthos[k].active != '0')
+//                                str = str + '<a href="ortho' + j.rules[i].orthos[k].id_ortho + '\" >' + j.rules[i].orthos[k].ortho + '</a >:';
+//                            else
+                            str = str + j.rules[i].orthos[k].ortho + ': ';
+                            if (j.rules[i].orthos[k].formula != null) {
+                                str = str + '<a href="formula' + j.rules[i].orthos[k].id_form +'\" >' + j.rules[i].orthos[k].formula + '</a > ';
+                            }
+                            if (j.rules[i].orthos[k].example != null)
+                                str = str + ' ' + j.rules[i].orthos[k].example;
+                            if (j.rules[i].orthos[k].rest != null)
+                                str = str + ' ' + j.rules[i].orthos[k].rest;
+                            str = str + '</p></div>';
+                            $('#panelFormRuleBody' + j.rules[i].id).append(str);
+//                            $('#panelFormRuleBody' + j.rules[i].id).append('<div><p>' + j.rules[i].orthos[k].ortho + ': ' + j.rules[i].orthos[k].formula + j.rules[i].orthos[k].example + ' ' + j.rules[i].orthos[k].rest + '</p></div>');
+                        }
+                    }
+                }
+                
+/*                if (j.orthos.length > 0)
+                {
+                    $('#modal-body').append('<p><b>Формулы:</b></p>');
+                    $('#modal-body').append('<div class="panel panel-default" id="panelForm" >');
+                    $('#panelForm').append('<div class="panel-body" id="panelFormBody" >')
+                    for (var i = 0; i < j.orthos.length; i++) {
+                        var str = '<p>' + j.orthos[i].ortho + ': ';
+                        if (j.orthos[i].formula != null)
+                            str = str + j.orthos[i].formula;
+                        if (j.orthos[i].example != null)
+                            str = str + j.orthos[i].example;
+                        str = str + '</p>';
+                        $('#panelFormBody').append('<p>' + j.orthos[i].ortho + ': ' + j.orthos[i].formula + j.orthos[i].example + ' ' + j.orthos[i].rest + '</p>');
+                    }
+                } */
+//                window.location.hash = '#paragraph' + para;
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                $('#modalStart').nextAll().remove();
+                alert(textStatus);
+            }
+        });
+    }
+
+    function fillOrthoModal(obj)
+    {
+        var ortho = $(obj).attr('id').substring(5);
+        var baseurl = '<?php echo $this->url("ortho"); ?>';
+        $.ajax({
+            url: baseurl,
+            async: false,
+            type: 'POST',
+            dataType: "json",
+            data: {
+                ortho : ortho,
+                action : 'ortho'
+            }, 
+            success: function(j)
+            {
+                $('#modalStart').nextAll().remove();
+                $('#modal-body').append('<div id="ortho' + ortho + '" ><p><b>' + j.ortho + '</b></p></div>');
+                
+                if (j.formulas.length > 0)
+                {
+                    $('#modal-body').append('<p><b>Формулы:</b></p>');
+                    $('#modal-body').append('<div class="panel panel-default" id="panelForm" >');
+                    $('#panelForm').append('<div class="panel-body" id="panelFormBody" >')
+                    for (var i = 0; i < j.formulas.length; i++) {
+                        var str = '<div><p>'
+                        if (j.formulas[i].name != null) {
+                            str = str + '<a href="#formula' + j.formulas[i].id +'\" >' + j.formulas[i].name + '</a > ';
+                        }
+                        if (j.formulas[i].example != null)
+                            str = str + j.formulas[i].example;
+                        if (j.formulas[i].rest != null)
+                            str = str + ' ' + j.formulas[i].rest;
+                            
+                        str = str + '</p></div>';
+                        $('#panelFormBody').append(str);
+                    }
+                } 
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                $('#modalStart').nextAll().remove();
+                alert(textStatus);
+            }
+        });        
+    }
+    
+    function fillModal(obj)
+    {
+        var id = $(obj).attr('id');
+        $('#modal-body').append('id = ' + id);
+        
+    }
+</script>
+        
+
