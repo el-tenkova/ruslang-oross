@@ -41,6 +41,27 @@ namespace Contents\Model;
             return ($title->current()->title); 
         return false;        
      }
+
+     public static function getParaFullTitle($sm, $id)
+     {
+        //error_log("getParaTitle");
+        $table = $sm->get('Contents\Model\ParagraphTables');
+        //error_log("getParaTitle 2");
+        $title = $table->tableGateway->select(function(Select $select) use ($id)
+        {
+            $select->join(array('tp' => 'tiles_paras'), 'tp.id_para = p.id', array('id_tile'), 'left');
+            $select->join(array('t' => 'tiles'), 'tp.id_tile = t.id', array('id' => 'id', 'tile_name' => 'name'), 'left');
+            $select->join(array('pt' => 'parts_tiles'), 'pt.id_tile = t.id', array('id_part'), 'left');
+            $select->join(array('parts' => 'parts'), 'parts.id = pt.id_part', array('id' => 'id', 'part_name' => 'name'), 'left');
+            $select->where('p.id = '.strval($id));
+        });
+        if ($title->count()) {
+            $res = array('title' => $title->current()->title, 'tile' => $title->current()->tile_name, 'part' => $title->current()->part_name); 
+            //print_r($res);
+            return $res;
+        }
+        return false;        
+     }
      
 	public static function getAllParaWithOrtho($sm)
 	{
@@ -62,6 +83,7 @@ namespace Contents\Model;
         }
         return $result;
 	}
+	
  } 
  
  ?>

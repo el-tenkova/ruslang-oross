@@ -34,7 +34,8 @@ namespace Application\Controller;
 		if ($this->params('id') !== null) {
 			$id_para = $this->params('id');
 			$para = new ViewModel(array('id' => $id_para,
-										'title' => ParagraphTables::getParaTitle($this->getServiceLocator(), $id_para),
+										'title' => ParagraphTables::getParaFullTitle($this->getServiceLocator(), $id_para),
+										'contents' => RuleTables::getParaContents($this->getServiceLocator(), $id_para),
 		                            	'rules' => RuleTables::getRulesForPara($this->getServiceLocator(), $id_para),
 		                            	'footnotes' => FootNoteTables::getFootForPara($this->getServiceLocator(), $id_para)));
 		                                
@@ -102,7 +103,7 @@ namespace Application\Controller;
 				$marks = WordTables::getTutorial($this->getServiceLocator(), $_POST['query'], 1, $_POST['id']);
 				$rule = RuleTables::getRuleFull($this->getServiceLocator(), $_POST['id']);
 				if (count($marks) > 0) {
-		//			error_log("count marks > 0");
+				//	error_log("count marks > 0");
 					$mark_before = "<span class=\"marked\" >";
 					$mark_after = "</span>";
 					$mark_len = strlen($mark_before) + strlen($mark_after);
@@ -146,7 +147,7 @@ namespace Application\Controller;
 							}
 						}		
 						if (isset($marks[0][WordTables::$types[WordTables::typeFormula]['sign']])) {
-//							error_log("add mark to formula");
+							error_log("add mark to formula");
 							foreach ($marks[0][WordTables::$types[WordTables::typeFormula]['sign']] as $formula_mark) {
 								if ($formula_mark['id'] == $ortho['id_form']) {
 									$offset = 0;
@@ -161,7 +162,7 @@ namespace Application\Controller;
 						if (isset($marks[0][WordTables::$types[WordTables::typeFormulaExample]['sign']])) {
 							foreach ($marks[0][WordTables::$types[WordTables::typeFormulaExample]['sign']] as $example_mark) {
 								if ($example_mark['id'] == $ortho['id_form']) {
-							//error_log('example');
+							error_log('example');
 									$offset = 0;
 									foreach ($example_mark['marks'] as $em) {
 										$ortho['example'] = substr_replace($ortho['example'], $mark_before, $em['start'] + $offset, 0);
@@ -173,7 +174,7 @@ namespace Application\Controller;
 						} 
 					} 
 					foreach ($rule['footnotes'] as &$foot) {
-						//error_log('footnotes');					
+						error_log('footnotes');					
 						if (isset($marks[0][WordTables::$types[WordTables::typeFootNote]['sign']])) {
 							foreach ($marks[0][WordTables::$types[WordTables::typeFootNote]['sign']] as $foot_mark) {
 								if ($foot_mark['id'] == $foot['id']) {
@@ -192,6 +193,7 @@ namespace Application\Controller;
 			else {
 				$rule = RuleTables::getRuleFull($this->getServiceLocator(), $_POST['id']);
 			}
+			error_log(sprintf("rule count = %d", count($rule)));
             if (count($rule) != 0) {
                 $result = new JsonModel(array(
 //                    "title" => $title,

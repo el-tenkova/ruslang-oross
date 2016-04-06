@@ -15,6 +15,8 @@ namespace Contents\Model;
      public $name;
      public $title;
      public $examples;
+     public $tile_name;
+     public $part_name;
 
      public function exchangeArray($data)
      {
@@ -24,6 +26,8 @@ namespace Contents\Model;
         $this->name = (!empty($data['name'])) ? $data['name'] : null;
         $this->title = (!empty($data['title'])) ? $data['title'] : null;
         $this->examples = (!empty($data['examples'])) ? $data['examples'] : null; 
+        $this->tile_name = (!empty($data['tile_name'])) ? $data['tile_name'] : null; 
+        $this->part_name = (!empty($data['part_name'])) ? $data['part_name'] : null; 
      }
  }
  ?>
