@@ -83,6 +83,19 @@ namespace Contents\Model;
         }
         return $result;
 	}
+
+	public static function getParentTile($sm, $id_para)
+	{
+        $table = $sm->get('Contents\Model\ParagraphTables');
+        $para = $table->tableGateway->select(function(Select $select) use ($id_para)
+        {
+            $select->join(array('tp' => 'tiles_paras'), 'tp.id_para = p.id', array('id_tile'), 'left');
+            $select->where('p.id = '.strval($id_para));
+        });
+        if ($para->count())
+            return ($para->current()->id_tile); 
+        return false;        
+	}
 	
  } 
  

@@ -12,11 +12,13 @@ namespace Contents\Model;
  class Tile
  {
      public $id;
+     public $title;
      public $name;
 
      public function exchangeArray($data)
      {
          $this->id     = (!empty($data['id'])) ? $data['id'] : null;
+         $this->title = (!empty($data['title'])) ? $data['title'] : null;
          $this->name = (!empty($data['name'])) ? $data['name'] : null;
      }
  }

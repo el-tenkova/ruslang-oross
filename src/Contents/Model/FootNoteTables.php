@@ -30,12 +30,14 @@
 
 	public static function getFootForPara($sm, $id_para)
 	{
-        error_log("getFootNotes");
+        error_log("getFootForPara");
+        $tile = ParagraphTables::getParentTile($sm, $id_para);
+        error_log($tile);
         $table = $sm->get('Contents\Model\FootNoteTables');
-        $foots = $table->tableGateway->select(function(Select $select) use ($id_para)
+        $foots = $table->tableGateway->select(function(Select $select) use ($id_para, $tile)
         {
             //$select->join(array('fp' => 'footnotes_paras'), 'fp.id = f.id', array(), 'left');
-            $select->where('f.id_para = '.strval($id_para));
+            $select->where('f.id_para = '.strval($id_para).' OR (f.id_para=0 AND f.id_tile='.strval($tile).')');
             $select->order('f.id');
         });
         $result = array();

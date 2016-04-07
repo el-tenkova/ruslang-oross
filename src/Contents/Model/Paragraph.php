@@ -17,6 +17,7 @@ namespace Contents\Model;
      public $examples;
      public $tile_name;
      public $part_name;
+     public $id_tile;
 
      public function exchangeArray($data)
      {
@@ -28,6 +29,7 @@ namespace Contents\Model;
         $this->examples = (!empty($data['examples'])) ? $data['examples'] : null; 
         $this->tile_name = (!empty($data['tile_name'])) ? $data['tile_name'] : null; 
         $this->part_name = (!empty($data['part_name'])) ? $data['part_name'] : null; 
+        $this->id_tile = (!empty($data['id_tile'])) ? $data['id_tile'] : null; 
      }
  }
  ?>

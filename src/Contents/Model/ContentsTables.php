@@ -46,7 +46,7 @@ namespace Contents\Model;
             $tilesSet = $table->tableGateway->select(function(Select $select) use ($part) 
             {
                 $select->join(array('pt' => 'parts_tiles'), 'pt.id_part = p.id', array('id_tile', 'id_part'), 'left');
-                $select->join(array('t' => 'tiles'), 'pt.id_tile = t.id', array('id', 'name'), 'left');
+                $select->join(array('t' => 'tiles'), 'pt.id_tile = t.id', array('id', 'name' => 'title'), 'left');
                 $select->where('p.id = '.strval($part->id));
             });
     
