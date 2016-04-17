@@ -124,6 +124,9 @@ namespace Contents\Model;
 		$mark_before = "<span class=\"marked\" >";
 		$mark_after = "</span>";
 		$mark_len = strlen($mark_before) + strlen($mark_after);
+		$class_title = "class=\"title";
+		$mark_class_title = " marked";
+		$mark_class_len = strlen($mark_class_title);
 		
 		for ($i = 0; $i < 2; $i++) {
 			if ($i == 0 && count($id_title) > 0)
@@ -158,6 +161,9 @@ namespace Contents\Model;
 						$firstId += 1;
 					foreach ($id_array as $item) {
 						if ($article->id == $item['id']) {
+							$prev = 0;
+							$prev_len = 0;
+							//$prev_segment = 0;
 							foreach ($item['marks'] as $mark_word) {
 								if ($mark_word['start'] != 0 && $mark_word['step'] != -1) {
 	//								error_log($article->text);
@@ -165,10 +171,23 @@ namespace Contents\Model;
 	//								error_log($item['start']);
 	//								error_log("!!!222");
 	//								error_log(sprintf("id = %d, start = %d, len = %d", $item['id'], $mark_word['start'], $mark_word['len'], $mark_word['step']));
-									$article->text = substr_replace($article->text, $mark_before, $mark_word['start'] + $offset, 0);
-									$article->text = substr_replace($article->text, $mark_after, $mark_word['start'] + $mark_word['len'] + $offset + strlen($mark_before), 0);
-	//								error_log($article->text);
-									$offset += $mark_len;
+									if (/*$prev_segment == $mark_word['segment'] && */$mark_word['start'] + $mark_word['len'] <= $prev + $prev_len)
+										continue;
+									$prev = $mark_word['start'];
+									$prev_len = $mark_word['len'];
+									$prev_segment = $mark_word['segment'];
+									if ($mark_word['space'] == 1) {
+										$pos = strpos($article->text, $class_title);
+										$article->text = substr_replace($article->text, $mark_class_title, $pos + strlen($class_title) + $offset, 0);
+										$offset += $mark_class_len;
+									}
+									else {
+										$article->text = substr_replace($article->text, $mark_before, $mark_word['start'] + $offset, 0);
+										$article->text = substr_replace($article->text, $mark_after, $mark_word['start'] + $mark_word['len'] + $offset + strlen($mark_before), 0);
+										$offset += $mark_len;
+							//			error_log($article->text);
+									}
+
 								}
 							}
 						}
