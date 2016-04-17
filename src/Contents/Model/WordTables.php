@@ -68,13 +68,13 @@ namespace Contents\Model;
 			$LIKE = 'w.word REGEXP \'^'.$query.'$\'';
 			if (strpos($query, "*") !== false) {
 				if (strpos($query, "*") == 0 && strrpos($query, "*") == strlen($query) - 1) {
-					$LIKE = 'w.word REGEXP \''.$query.'\'';
+					$LIKE = 'w.word REGEXP \''.substr($query, 1, strlen($query) - 2).'\'';
 				}
 				else if (strpos($query, "*") == 0) {
-					$LIKE = 'w.word REGEXP \''.$query.'$\'';
+					$LIKE = 'w.word REGEXP \''.substr($query, 1).'$\'';
 				}
 				else if (strrpos($query, "*") == strlen($query) - 1) {
-					$LIKE = 'w.word REGEXP \'^'.$query.'\'';
+					$LIKE = 'w.word REGEXP \'^'.substr($query, 0, strlen($query) - 1).'\'';
 				}
 				$LIKE = str_replace("*", "[[:alpha:]{0,2}|[:punct:]|[:space:]|-]*", $LIKE);
 			}		        
@@ -90,37 +90,62 @@ namespace Contents\Model;
 
 	public static function fillResArray($id_array, $step, $type = false)
 	{
+//		print_r($id_array);
+/*		foreach ($id_array as $item) {
+			if (count($item['marks']) < $step)
+				continue;
+			error_log(sprintf("id = %d", $item['id']));
+			foreach ($item['marks'] as $mark) {
+				if (isset($mark['segment'])) {
+					error_log(sprintf("start = %d, len = %d, step = %d, segment = %d, number = %d", $mark['start'], $mark['len'], $mark['step'], $mark['segment'], $mark['number']));
+				}
+				else {
+					error_log(sprintf("start = %d, len = %d, step = %d, number = %d", $mark['start'], $mark['len'], $mark['step'], $mark['number']));
+				}
+			}
+		} */
+		
 		$res_id = array();
-//		error_log(sprintf("step = %d", $step));
+		//error_log(sprintf("step = %d", $step));
 		foreach ($id_array as &$item) {
+			if (count($item['marks']) < $step)
+				continue;
 			$start = 0;
 			foreach ($item['marks'] as &$mark) {
 				if ($type !== false && $mark['type'] != $type)
 					continue;
 				//error_log(sprintf("mark[step] = %d", $mark['step']));
-				if ($mark['step'] == 0) {
+				if ($mark['step'] == 0) { // find mark with step = 0
 //					$segment = $mark['segment'];
 					$number = $mark['number'];
-					for ($i = $start + 1, $j = 1; $i < count($item['marks']) && $j < $step; $i++, $j++) {
+					for ($i = $start + 1, $j = 1; $i < count($item['marks'])/* && $j < $step*/; $i++/*, $j++*/) {
 	//					error_log($end);
 	//					error_log($item['marks'][$i]['start'] - $end);
 //						error_log($item['marks'][$i]['len']);
 //						error_log(sprintf("id = %d, %d, %d, %d", $item['id'], $item['marks'][$i]['step'], $item['marks'][$i]['number'], $item['marks'][$i]['start']));
 //						error_log($item['marks'][$i]['number']);
 						if ($item['marks'][$i]['step'] != $j) { // || $item['marks'][$i]['start'] - $end > $item['marks'][$i]['len']) {
-							break;
+//							error_log("break step");
+							//break;
+							continue;
 						}
 						if ($item['marks'][$i]['number'] != $number + 1) {
-							break;
+							//break;
+							//
+							continue;
 						}
 						$number++;
+						$j++;
 					}
 					if ($j == $step) {
 						if (count($res_id) == 0) {
 							//error_log("fill res_id");
 							$res_id[] = array('id' => $item['id'], 'marks' => array());
-							for ($i = $start, $j = 0; $i < count($item['marks']) && $j < $step; $i++, $j++) {
+							for ($i = $start, $j = 0; $i < count($item['marks']) && $j < $step; $i++) {
+								if ($item['marks'][$i]['step'] != $j)
+									continue;
 								$res_id[count($res_id) - 1]['marks'][] = $item['marks'][$i];
+								$j++;
 								//error_log(sprintf("i = %d", $i));
 							}
 						}
@@ -129,16 +154,22 @@ namespace Contents\Model;
 							$done = false;
 							foreach ($res_id as &$res_item) {
 								if ($res_item['id'] == $item['id']) {
-									for ($i = $start, $j = 0; $i < count($item['marks']) && $j < $step; $i++, $j++) {
+									for ($i = $start, $j = 0; $i < count($item['marks']) && $j < $step; $i++) {
+										if ($item['marks'][$i]['step'] != $j)
+											continue;
 										$res_item['marks'][] = $item['marks'][$i];
+										$j++;
 									}
 									$done = true;
 								}
 							}
 							if ($done === false) {
 								$res_id[] = array('id' => $item['id'], 'marks' => array());
-								for ($i = $start, $j = 0; $i < count($item['marks']) && $j < $step; $i++, $j++) {
+								for ($i = $start, $j = 0; $i < count($item['marks']) && $j < $step; $i++) {
+									if ($item['marks'][$i]['step'] != $j)
+										continue;
 									$res_id[count($res_id) - 1]['marks'][] = $item['marks'][$i];
+									$j++;
 									//error_log(sprintf("i = %d", $i));
 								}
 							}
@@ -245,6 +276,7 @@ namespace Contents\Model;
     public static function getArticles($sm, $word, $where = 3, $paginated = false, $count_for_page = 0, $page = 0)
     {
 		error_log("WordTables: getArticles");
+		error_log(sprintf("word = %s", $word));
 		if ($where == 0) {
 			return WordTables::emptyResult($paginated, $count_for_page, $page);
 		}
@@ -282,7 +314,7 @@ namespace Contents\Model;
 	        if (count($id_arts) != 0) {
 	        	$w_LIKE .= " AND a.id IN (".implode(",", $id_arts).")"; 
 	        }
-	        error_log($w_LIKE);
+	        //error_log(sprintf("step = %d: %s", $step, $w_LIKE));
 	        $articles = $table->tableGateway->select(function(Select $select) use ($aw_ON, $w_LIKE)
 	        {
 	        	$select->join(array('aw' => 'words_articles'), new Expression($aw_ON), array('id_article', 'start', 'len', 'title', 'segment', 'number'), 'left'); 
@@ -297,8 +329,10 @@ namespace Contents\Model;
 	        if ($step == 0) {
 		        foreach ($articles as $article) {
 		        	if (isset($article->id_article)) {
+		        		$space = strpos($article->word, " ") === false ? 0 : 1;
+		        		//error_log(sprintf("id_article = %d", $article->id_article));
 		        		if ($artId != $article->id_article) {
-			        		$id_array[] = array('id' => $article->id_article, 'marks' => array(array('start' => $article->start, 'len' => $article->len, 'title' => $article->title, 'step' => $step, 'segment' => $article->segment, 'number' => $article->number)));
+			        		$id_array[] = array('id' => $article->id_article, 'marks' => array(array('start' => $article->start, 'len' => $article->len, 'title' => $article->title, 'step' => $step, 'segment' => $article->segment, 'number' => $article->number, 'space' => $space)));
 			        		$id_arts[] = $article->id_article;
 			        		$artId = $article->id_article;
 		        		}
@@ -312,7 +346,7 @@ namespace Contents\Model;
 		        				}
 		        			}
 		        			if ($add === true) {
-			        			$id_array[count($id_array) - 1]['marks'][] =  array('start' => $article->start, 'len' => $article->len, 'title' => $article->title, 'step' => $step, 'segment' => $article->segment, 'number' => $article->number);
+			        			$id_array[count($id_array) - 1]['marks'][] =  array('start' => $article->start, 'len' => $article->len, 'title' => $article->title, 'step' => $step, 'segment' => $article->segment, 'number' => $article->number, 'space' => $space);
 		        			}
 		        		}
 		        	}
@@ -321,6 +355,7 @@ namespace Contents\Model;
 	        else {
 		        foreach ($articles as $article) {
 		        	if (isset($article->id_article)) {
+		        		$space = strpos($article->word, " ") === false ? 0 : 1;
 		        		foreach ($id_array as &$id) {
 		        			if ($id['id'] == $article->id_article) {
 		        				$ins_idx = 0;
@@ -334,16 +369,18 @@ namespace Contents\Model;
 		        				}
 		//        				error_log(sprintf("ins_idx = %d count = %d", $ins_idx, count($id['marks'])));
 		        				if ($ins_idx == count($id['marks'])) {
-		        					$id['marks'][] = array('start' => $article->start, 'len' => $article->len, 'title' => $article->title, 'step' => $step, 'segment' => $article->segment, 'number' => $article->number);
+		        					$id['marks'][] = array('start' => $article->start, 'len' => $article->len, 'title' => $article->title, 'step' => $step, 'segment' => $article->segment, 'number' => $article->number, 'space' => $space);
 		        				}
 		        				else {
 		//        					error_log(sprintf("slice ins_idx = %d", $ins_idx));
 //		        					print_r(array_slice($id['marks'], 0, $ins_idx, true));
 //		        					print_r(array_slice($id['marks'], $ins_idx, count($id['marks']) - 1, true));
 								//	print_r($id['marks']);
-									array_splice($id['marks'], $ins_idx, 0, array(array('start' => $article->start, 'len' => $article->len, 'title' => $article->title, 'step' => $step, 'segment' => $article->segment, 'number' => $article->number)));
+									array_splice($id['marks'], $ins_idx, 0, array(array('start' => $article->start, 'len' => $article->len, 'title' => $article->title, 'step' => $step, 'segment' => $article->segment, 'number' => $article->number, 'space' => $space)));
 							//		print_r($id['marks']);
 		        				}
+		        				if (count($id_arts) == 0 || $id_arts[count($id_arts) - 1] != $article->id_article)
+			        				$id_arts[] = $article->id_article;
 		//        				error_log(sprintf("ins_idx = %d count = %d", $ins_idx, count($id['marks'])));
 		        			}
 		        		}
@@ -396,6 +433,7 @@ namespace Contents\Model;
 	public static function getTutorial($sm, $word, $check = 1, $rule_id = 0, $paginated = false, $count_for_page = 0, $page = 0)
 	{
         error_log("WordTables: getTutorial");
+		error_log(sprintf("word = %s", $word));
         
         if ($check == 0) {
 			return WordTables::emptyResult($paginated, $count_for_page, $page);
@@ -446,7 +484,7 @@ namespace Contents\Model;
 				    if ($rule_id != 0)
 						$w_LIKE = $types[$type]['like'].strval($rule_id).' AND '.$w_LIKE;
 
-			        error_log($w_LIKE);
+			        //error_log($w_LIKE);
 		            $select->where($w_LIKE);
 		            $select->order('tw.id_item, tw.type, tw.start');
 		        });
