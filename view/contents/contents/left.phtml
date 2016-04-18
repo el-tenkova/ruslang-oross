@@ -24,7 +24,7 @@
                                                                 <div class="accordion-heading h3" style="margin-left:0px">
                                                                     <a class="<?php echo "accordion-toggle h5"; if ($item['active'] == "0") echo " collapsed"; ?>" style="text-transform:none" data-toggle="collapse" data-parent="#accordion2" href=<?php echo ("#tile".$item['id']); ?> >
                                                                     <?php echo $this->escapeHtml($tilename);?>
-                                                                    </a>    
+                                                                    </a><h4 class="para"><?php echo $item['pp']; ?> </h4>
                                                                 </div>
                                                                 <div id=<?php echo ("tile".$item['id']); ?> class="<?php echo "accordion-body"; if ($item['active'] == "0") echo " collapse"; else echo " in"; ?>" >
                                                                     <div class="accordion-inner" style="margin-left:0px">
