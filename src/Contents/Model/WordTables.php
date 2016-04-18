@@ -430,6 +430,11 @@ namespace Contents\Model;
      
 	}     
     
+    public static function getRelArticles($sm, $word, $where = 3, $paginated = false, $count_for_page = 0, $page = 0)
+    {
+    	
+    }
+    
 	public static function getTutorial($sm, $word, $check = 1, $rule_id = 0, $paginated = false, $count_for_page = 0, $page = 0)
 	{
         error_log("WordTables: getTutorial");

@@ -15,8 +15,9 @@ use Contents\Model\RuleTables;
 use Contents\Model\OrthogrTables;
 use Contents\Model\FormulaTables;
 use Contents\Model\WordTables;
-use Contents\Model\HistoricTables;
+//use Contents\Model\HistoricTables;
 use Contents\Model\ArticleTables;
+use Contents\Model\MistakeTables;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
@@ -56,22 +57,33 @@ class SearchController extends AbstractActionController
 		$found = 0;
     	
 		$arts = WordTables::getArticles($this->getServiceLocator(), $query, ($title_check + $text_check), true, self::FOR_PAGE_COUNT, $page);
-		$found = isset($arts['count']) ? $arts['count'] : 0;	
+		$found = isset($arts['count']) ? $arts['count'] : 0;
+		$mist = false;
+		if ($found == 0) {
+			$arts = MistakeTables::getRelArticles($this->getServiceLocator(), $query, ($title_check + $text_check), true, self::FOR_PAGE_COUNT, $page);
+			$found = isset($arts['count']) ? $arts['count'] : 0;
+			$mist = true;
+		}
 		if ($found > 0) {
 			$a = $found;
 			while ($a > 100) {
 				$a = $a % 10;
 			}
-			if ($a > 10 && $a < 20) 
-				$title = sprintf('По запросу "%s" найдено %d статей', $query, $found);
-			else {
-				$a = $a % 10;
-				if ($a == 1)
-					$title = sprintf('По запросу "%s" найдена %d статья', $query, $found);
-				else if ($a == 2 || $a == 3 || $a == 4)
-					$title = sprintf('По запросу "%s" найдено %d статьи', $query, $found);
-				else
+			if ($mist === false) {
+				if ($a > 10 && $a < 20) 
 					$title = sprintf('По запросу "%s" найдено %d статей', $query, $found);
+				else {
+					$a = $a % 10;
+					if ($a == 1)
+						$title = sprintf('По запросу "%s" найдена %d статья', $query, $found);
+					else if ($a == 2 || $a == 3 || $a == 4)
+						$title = sprintf('По запросу "%s" найдено %d статьи', $query, $found);
+					else
+						$title = sprintf('По запросу "%s" найдено %d статей', $query, $found);
+				}
+			}
+			else {
+				$title = sprintf('По запросу "%s" в словаре найдены похожие статьи:', $query, $found);
 			}
 			$this->art_paginator = $arts['paginator'];
 			$show = $arts['show'];

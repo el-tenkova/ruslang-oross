@@ -38,6 +38,9 @@ use Contents\Model\ArticlesFormulasTables;
 use Contents\Model\Word;
 use Contents\Model\WordTables;
 
+use Contents\Model\Mistake;
+use Contents\Model\MistakeTables;
+
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -207,6 +210,18 @@ class Module
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Word());
                     return new TableGateway(array('w' => 'words'), $dbAdapter, null, $resultSetPrototype);
+                }, 
+                'Contents\Model\MistakeTables' =>  function($sm) {
+                    error_log("create Mistake table");
+                    $tableGateway = $sm->get('MistakeTableGateway');
+                    $table = new MistakeTables($tableGateway);
+                    return $table;
+                },
+                'MistakeTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Mistake());
+                    return new TableGateway(array('m' => 'mistakes'), $dbAdapter, null, $resultSetPrototype);
                 }, 
             ),
         );
