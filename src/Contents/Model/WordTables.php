@@ -85,6 +85,7 @@ namespace Contents\Model;
 		else {
 			$LIKE = 'w.word LIKE \''.$query.'\'';
 		}
+		error_log($LIKE);
 		return $LIKE;
 	}
 
@@ -157,7 +158,7 @@ namespace Contents\Model;
 									for ($i = $start, $j = 0; $i < count($item['marks']) && $j < $step; $i++) {
 										if ($item['marks'][$i]['step'] != $j)
 											continue;
-										$res_item['marks'][] = $item['marks'][$i];
+									$res_item['marks'][] = $item['marks'][$i];
 										$j++;
 									}
 									$done = true;
@@ -312,17 +313,22 @@ namespace Contents\Model;
 			$w_LIKE = WordTables::processSpecSym($item);//w.word LIKE \''.$item.'\'';
 
 	        if (count($id_arts) != 0) {
-	        	$w_LIKE .= " AND a.id IN (".implode(",", $id_arts).")"; 
+	        	$w_LIKE .= " AND aw.id_article IN (".implode(",", $id_arts).")"; 
 	        }
 	        //error_log(sprintf("step = %d: %s", $step, $w_LIKE));
-	        $articles = $table->tableGateway->select(function(Select $select) use ($aw_ON, $w_LIKE)
+	        $articles = $table->tableGateway->select(function(Select $select) use ($aw_ON, $w_LIKE, $words)
 	        {
 	        	$select->join(array('aw' => 'words_articles'), new Expression($aw_ON), array('id_article', 'start', 'len', 'title', 'segment', 'number'), 'left'); 
-	            $select->join(array('a' => 'articles'), 'aw.id_article = a.id', array('id'), 'left');
+	        	//$select->columns(array(new Expression('DISTINCT(id) as id')));
+	        //    $select->join(array('a' => 'articles'), 'aw.id_article = a.id', array('id'), 'left');
 	            $select->where($w_LIKE);
+	            //if (count($words) == 1) {
+		        //    $select->group('aw.id_article');
+	            //}
 	            $select->order('aw.title, aw.id_article, aw.start');
 	        });
-//			error_log(count($articles));
+	       // print_r($articles);
+			error_log(count($articles));
 //	        $id_array = array();
 	        $artId = 0;
 	        $id_arts = array();
@@ -391,7 +397,10 @@ namespace Contents\Model;
 	        $step ++;
 		}
 	//	error_log($id_array[0]['id']);
-		$res_id = WordTables::fillResArray($id_array, $step);
+	    if (count($words) > 1)
+			$res_id = WordTables::fillResArray($id_array, $step);
+		else
+			$res_id = $id_array;
 //		error_log(sprintf("step = %d", $step));
 
 //print_r($res_id);
@@ -429,12 +438,7 @@ namespace Contents\Model;
 		return $result;
      
 	}     
-    
-    public static function getRelArticles($sm, $word, $where = 3, $paginated = false, $count_for_page = 0, $page = 0)
-    {
-    	
-    }
-    
+        
 	public static function getTutorial($sm, $word, $check = 1, $rule_id = 0, $paginated = false, $count_for_page = 0, $page = 0)
 	{
         error_log("WordTables: getTutorial");
