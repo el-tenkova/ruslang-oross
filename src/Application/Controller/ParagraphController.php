@@ -133,46 +133,49 @@ namespace Application\Controller;
 							}
 						//}
 					}
-					foreach ($rule['orthos'] as &$ortho) {
-						if (isset($marks[0][WordTables::$types[WordTables::typeOrtho]['sign']])) {
-							foreach ($marks[0][WordTables::$types[WordTables::typeOrtho]['sign']] as $ortho_mark) {
-								if ($ortho_mark['id'] == $ortho['id_ortho']) {
-									$offset = 0;
-									foreach ($ortho_mark['marks'] as $om) {
-										$ortho['ortho'] = substr_replace($ortho['ortho'], $mark_before, $om['start'] + $offset, 0);
-										$ortho['ortho'] = substr_replace($ortho['ortho'], $mark_after, $om['start'] + $om['len'] + $offset + strlen($mark_before), 0);
-										$offset += $mark_len;
+					for ($i = 0; $i < 2; $i++) {
+						$t = $i == 0 ? 'words' : 'prefix';
+						foreach ($rule['orthos'][$t] as &$ortho) {
+							if (isset($marks[0][WordTables::$types[WordTables::typeOrtho]['sign']])) {
+								foreach ($marks[0][WordTables::$types[WordTables::typeOrtho]['sign']] as $ortho_mark) {
+									if ($ortho_mark['id'] == $ortho['id_ortho']) {
+										$offset = 0;
+										foreach ($ortho_mark['marks'] as $om) {
+											$ortho['ortho'] = substr_replace($ortho['ortho'], $mark_before, $om['start'] + $offset, 0);
+											$ortho['ortho'] = substr_replace($ortho['ortho'], $mark_after, $om['start'] + $om['len'] + $offset + strlen($mark_before), 0);
+											$offset += $mark_len;
+										}
 									}
 								}
-							}
-						}		
-						if (isset($marks[0][WordTables::$types[WordTables::typeFormula]['sign']])) {
-							error_log("add mark to formula");
-							foreach ($marks[0][WordTables::$types[WordTables::typeFormula]['sign']] as $formula_mark) {
-								if ($formula_mark['id'] == $ortho['id_form']) {
-									$offset = 0;
-									foreach ($formula_mark['marks'] as $fm) {
-										$ortho['formula'] = substr_replace($ortho['formula'], $mark_before, $fm['start'] + $offset, 0);
-										$ortho['formula'] = substr_replace($ortho['formula'], $mark_after, $fm['start'] + $fm['len'] + $offset + strlen($mark_before), 0);
-										$offset += $mark_len;
+							}		
+							if (isset($marks[0][WordTables::$types[WordTables::typeFormula]['sign']])) {
+								error_log("add mark to formula");
+								foreach ($marks[0][WordTables::$types[WordTables::typeFormula]['sign']] as $formula_mark) {
+									if ($formula_mark['id'] == $ortho['id_form']) {
+										$offset = 0;
+										foreach ($formula_mark['marks'] as $fm) {
+											$ortho['formula'] = substr_replace($ortho['formula'], $mark_before, $fm['start'] + $offset, 0);
+											$ortho['formula'] = substr_replace($ortho['formula'], $mark_after, $fm['start'] + $fm['len'] + $offset + strlen($mark_before), 0);
+											$offset += $mark_len;
+										}
 									}
 								}
-							}
-						}					
-						if (isset($marks[0][WordTables::$types[WordTables::typeFormulaExample]['sign']])) {
-							foreach ($marks[0][WordTables::$types[WordTables::typeFormulaExample]['sign']] as $example_mark) {
-								if ($example_mark['id'] == $ortho['id_form']) {
-							error_log('example');
-									$offset = 0;
-									foreach ($example_mark['marks'] as $em) {
-										$ortho['example'] = substr_replace($ortho['example'], $mark_before, $em['start'] + $offset, 0);
-										$ortho['example'] = substr_replace($ortho['example'], $mark_after, $em['start'] + $em['len'] + $offset + strlen($mark_before), 0);
-										$offset += $mark_len;
+							}					
+							if (isset($marks[0][WordTables::$types[WordTables::typeFormulaExample]['sign']])) {
+								foreach ($marks[0][WordTables::$types[WordTables::typeFormulaExample]['sign']] as $example_mark) {
+									if ($example_mark['id'] == $ortho['id_form']) {
+								error_log('example');
+										$offset = 0;
+										foreach ($example_mark['marks'] as $em) {
+											$ortho['example'] = substr_replace($ortho['example'], $mark_before, $em['start'] + $offset, 0);
+											$ortho['example'] = substr_replace($ortho['example'], $mark_after, $em['start'] + $em['len'] + $offset + strlen($mark_before), 0);
+											$offset += $mark_len;
+										}
 									}
 								}
-							}
+							} 
 						} 
-					} 
+					}
 					foreach ($rule['footnotes'] as &$foot) {
 						error_log('footnotes');					
 						if (isset($marks[0][WordTables::$types[WordTables::typeFootNote]['sign']])) {
