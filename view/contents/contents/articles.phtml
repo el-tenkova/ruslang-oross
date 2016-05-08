@@ -285,20 +285,41 @@
 		$(str).append('<div><p>' + rule.text + '</div></p>');
 		if (rule.info != null)
 			$(str).append('<div><p>' + rule.info + '</div></p>');
-		if (rule.orthos.length > 0) {
-			$(str).append('<p><b>Формулы:</b></p>');
-			$(str).append('<div class="panel panel-default" id="pdef' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id') + '_' + i + '" >');
-			$('#pdef' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id')	+ '_' + i).append('<div class="panel-body" id="pbody' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id')+ '_' + i + '" >');
-			for (var o = 0; o < rule.orthos.length; o++) {
-				var ortho = rule.orthos[o].ortho + ': ';
-				if (rule.orthos[o].formula != null) {
-					var formula = '<?php echo $this->url('orthogr', array('action' => 'formula')); ?>' + '?id=' + rule.orthos[o].id_form;
-					ortho = ortho + '<a href="' + formula + '" >' + rule.orthos[o].formula + '</a >';
+		if (rule.orthos.words.length > 0 || rule.orthos.prefix.length > 0) {
+			if (rule.orthos.words.length > 0) {
+				if (rule.orthos.prefix.length > 0)
+					$(str).append('<p><b>Формулы для слов:</b></p>');
+				else
+					$(str).append('<p><b>Формулы:</b></p>');
+				$(str).append('<div class="panel panel-default" id="pdef' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id') + '_' + i + '" >');
+				$('#pdef' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id')	+ '_' + i).append('<div class="panel-body" id="pbody' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id')+ '_' + i + '" >');
+				for (var o = 0; o < rule.orthos.words.length; o++) {
+					var ortho = rule.orthos.words[o].ortho + ': ';
+					if (rule.orthos.words[o].formula != null) {
+						var formula = '<?php echo $this->url('orthogr', array('action' => 'formula')); ?>' + '?id=' + rule.orthos.words[o].id_form;
+						ortho = ortho + '<a href="' + formula + '" >' + rule.orthos.words[o].formula + '</a >';
+					}
+					if (rule.orthos.words[o].example != null) {
+						ortho = ortho + ' ' + rule.orthos.words[o].example;
+					}
+					$('#pbody' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id')+ '_' + i).append('<div><p>' + ortho + '</p></div>');
 				}
-				if (rule.orthos[o].example != null) {
-					ortho = ortho + ' ' + rule.orthos[o].example;
+			}
+			if (rule.orthos.prefix.length > 0) {
+				$(str).append('<p><b>Формулы для первых частей:</b></p>');
+				$(str).append('<div class="panel panel-default" id="pdef_p' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id') + '_' + i + '" >');
+				$('#pdef_p' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id')	+ '_' + i).append('<div class="panel-body" id="pbody_p' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id')+ '_' + i + '" >');
+				for (var o = 0; o < rule.orthos.prefix.length; o++) {
+					var ortho = rule.orthos.prefix[o].ortho + ': ';
+					if (rule.orthos.prefix[o].formula != null) {
+						var formula = '<?php echo $this->url('orthogr', array('action' => 'formula')); ?>' + '?id=' + rule.orthos.prefix[o].id_form;
+						ortho = ortho + '<a href="' + formula + '" >' + rule.orthos.prefix[o].formula + '</a >';
+					}
+					if (rule.orthos.prefix[o].example != null) {
+						ortho = ortho + ' ' + rule.orthos.prefix[o].example;
+					}
+					$('#pbody_p' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id')+ '_' + i).append('<div><p>' + ortho + '</p></div>');
 				}
-				$('#pbody' + $(obj).attr('art_id') + '_' + $(obj).attr('rule_id')+ '_' + i).append('<div><p>' + ortho + '</p></div>');
 			}
 		}
 		

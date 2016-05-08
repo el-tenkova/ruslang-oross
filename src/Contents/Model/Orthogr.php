@@ -20,6 +20,7 @@ namespace Contents\Model;
      public $example;
      public $rest;
      public $id_form;
+     public $is_prefix;
 
      public function exchangeArray($data)
      {
@@ -34,6 +35,7 @@ namespace Contents\Model;
         $this->example      = (!empty($data['example'])) ? $data['example'] : null;
         $this->rest         = (!empty($data['rest'])) ? $data['rest'] : null;
         $this->id_form      = (!empty($data['id_form'])) ? $data['id_form'] : null;
+        $this->is_prefix    = (!empty($data['is_prefix'])) ? $data['is_prefix'] : null;
      }
  }
  ?>

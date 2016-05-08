@@ -65,17 +65,25 @@ namespace Contents\Model;
         $table = $sm->get('Contents\Model\OrthogrTables');
         $orthos = $table->tableGateway->select(function(Select $select) use ($id_rule)
         {
-            $select->join(array('f' => 'formulas'), 'f.id_ortho = o.id', array('formname' => 'name', 'id_form' => 'id', 'example' => 'example', 'rest' => 'rest'), 'left');
+            $select->join(array('f' => 'formulas'), 'f.id_ortho = o.id', array('formname' => 'name', 'id_form' => 'id', 'example' => 'example', 'rest' => 'rest', 'is_prefix' => 'is_prefix'), 'left');
             $select->where('f.id_rule = '.strval($id_rule));
             $select->order('f.id');
         });
-        $result = array();
+        $result = array('words' => array(), 'prefix' => array());
         foreach ($orthos as $ortho)
         {
-            if ($ortho->active != 0)
-                $result[] = array('id_ortho' => strval($ortho->id), 'ortho' => $ortho->name, 'active' => $ortho->active, 'formula' => $ortho->formname, 'example' => $ortho->example, 'rest' => $ortho->rest, 'id_form' => strval($ortho->id_form));
-            else
-                $result[] = array('ortho' => $ortho->name, 'active' => strval($ortho->active), 'formula' => $ortho->formname, 'example' => $ortho->example, 'rest' => $ortho->rest, 'id_form' => strval($ortho->id_form));
+        	if ($ortho->is_prefix == 0) {
+	            if ($ortho->active != 0)
+	                $result['words'][] = array('id_ortho' => strval($ortho->id), 'ortho' => $ortho->name, 'active' => $ortho->active, 'formula' => $ortho->formname, 'example' => $ortho->example, 'rest' => $ortho->rest, 'id_form' => strval($ortho->id_form));
+	            else
+	                $result['words'][] = array('ortho' => $ortho->name, 'active' => strval($ortho->active), 'formula' => $ortho->formname, 'example' => $ortho->example, 'rest' => $ortho->rest, 'id_form' => strval($ortho->id_form));
+        	}
+        	else {
+	            if ($ortho->active != 0)
+	                $result['prefix'][] = array('id_ortho' => strval($ortho->id), 'ortho' => $ortho->name, 'active' => $ortho->active, 'formula' => $ortho->formname, 'example' => $ortho->example, 'rest' => $ortho->rest, 'id_form' => strval($ortho->id_form));
+	            else
+	                $result['prefix'][] = array('ortho' => $ortho->name, 'active' => strval($ortho->active), 'formula' => $ortho->formname, 'example' => $ortho->example, 'rest' => $ortho->rest, 'id_form' => strval($ortho->id_form));
+        	}
         }
         return $result;
      }
