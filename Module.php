@@ -38,6 +38,15 @@ use Contents\Model\ArticlesFormulasTables;
 use Contents\Model\Word;
 use Contents\Model\WordTables;
 
+use Contents\Model\Bigramm;
+use Contents\Model\BigrammTables;
+
+use Contents\Model\Trigramm;
+use Contents\Model\TrigrammTables;
+
+use Contents\Model\Tetragramm;
+use Contents\Model\TetragrammTables;
+
 use Contents\Model\Mistake;
 use Contents\Model\MistakeTables;
 
@@ -78,19 +87,6 @@ class Module
     {
         return array(
             'factories' => array(
-//                'leftside' => 'Contents\ContentsNavigationFactory',
-             /*   'Contents\Model\PartsTable' =>  function($sm) {
-                    $tableGateway = $sm->get('PartsTableGateway');
-                    $table = new PartsTable($tableGateway);
-                    return $table;
-                },
-                'PartsTableGateway' => function ($sm) {
-                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
-                    $resultSetPrototype = new ResultSet();
-                    $resultSetPrototype->setArrayObjectPrototype(new Part());
-                    return new TableGateway('parts', $dbAdapter, null, $resultSetPrototype);
-                }, 
-                */ 
                 'Contents\Model\ContentsTables' =>  function($sm) {
                     $tableGateway = $sm->get('ContentsTableGateway');
                     error_log("create Contents table");
@@ -223,6 +219,42 @@ class Module
                     $resultSetPrototype->setArrayObjectPrototype(new Mistake());
                     return new TableGateway(array('m' => 'mistakes'), $dbAdapter, null, $resultSetPrototype);
                 }, 
+                'Contents\Model\BigrammTables' =>  function($sm) {
+                    error_log("create Bigramm table");
+                    $tableGateway = $sm->get('BigrammTableGateway');
+                    $table = new BigrammTables($tableGateway);
+                    return $table;
+                },
+                'BigrammTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Bigramm());
+                    return new TableGateway(array('b' => 'bigramms'), $dbAdapter, null, $resultSetPrototype);
+                },                 
+                'Contents\Model\TrigrammTables' =>  function($sm) {
+                    error_log("create Trigramm table");
+                    $tableGateway = $sm->get('TrigrammTableGateway');
+                    $table = new TrigrammTables($tableGateway);
+                    return $table;
+                },
+                'TrigrammTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Trigramm());
+                    return new TableGateway(array('tri' => 'trigramms'), $dbAdapter, null, $resultSetPrototype);
+                },                 
+                'Contents\Model\TetragrammTables' =>  function($sm) {
+                    error_log("create Tetragramm table");
+                    $tableGateway = $sm->get('TetragrammTableGateway');
+                    $table = new TetragrammTables($tableGateway);
+                    return $table;
+                },
+                'TetragrammTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Tetragramm());
+                    return new TableGateway(array('t' => 'tetragramms'), $dbAdapter, null, $resultSetPrototype);
+                },                 
             ),
         );
     }    
