@@ -38,7 +38,9 @@ namespace Application\Controller;
             }
 		}
 		if (isset($_POST['formula']) && isset($_POST['id_formula']) && $_POST['id_formula'] != "0") {
-			$ids = ArticlesFormulasTables::getArticlesForFormula($this->getServiceLocator(), $_POST['id_formula']);
+			error_log($_POST['id_formula']);
+			$ids = ArticlesFormulasTables::getArticlesForFormula($this->getServiceLocator(), array($_POST['id_formula']));
+			error_log(implode(",", $ids));
             $filename = ArticleTables::putArticlesToRtf($this->getServiceLocator(), implode(",", $ids));
             if ($filename !== false) {
 				return new JsonModel(array(
