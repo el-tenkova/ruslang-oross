@@ -28,6 +28,7 @@ namespace Contents\Model;
     public $id_formula;
     
     public $id_item;
+    public $art_count;
 
     public function exchangeArray($data)
     {
@@ -51,6 +52,7 @@ namespace Contents\Model;
         $this->id_formula   = (!empty($data['id_formula'])) ? $data['id_formula'] : null;
  
         $this->id_item      = (!empty($data['id_item'])) ? $data['id_item'] : null;
+        $this->art_count    = (!empty($data['art_count'])) ? $data['art_count'] : null;
         
      }
  }
