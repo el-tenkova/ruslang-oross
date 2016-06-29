@@ -244,7 +244,7 @@ namespace Contents\Model;
         return $result;
 	}
      
-	public static function putArticlesToRtf($sm, $id_array)
+	public static function putArticlesToRtf($sm, $id_array, $word, $formula)
 	{		
         //error_log("getArticles for id_array"); 
         $table = $sm->get('Contents\Model\ArticleTables');
@@ -260,6 +260,10 @@ namespace Contents\Model;
 		if ($fp) {
 			fwrite($fp, "{\\rtf1\\ansi\\ansicpg1251\\deff0\\deflang1049{\\fonttbl{\\f0\\froman\\fprq2\\fcharset204{\\*\\fname Times New Roman;}Times New Roman CYR;}{\\f1\\froman\\fprq2\\fcharset204 Times Roman Cyr Acsent;}}");
 //			$idx = 1;
+			if ($formula != null) {
+				fwrite($fp, "\\par".FormulaTables::getFRTF($sm, $formula));
+				fwrite($fp, "\\par");
+			}
 	        foreach ($articles as $article)
 	        {
 				fwrite($fp, "\\par".$article->rtf);
