@@ -15,7 +15,7 @@
 
  class Gramm
  {
-     public static function getDicGramms($sm, $words, $min)
+     public static function getDicGramms($sm, $words, &$min)
      {     	
      	error_log(count($words));
 		$min_arr = array();
@@ -46,6 +46,8 @@
 			}
 		}
 		error_log(sprintf("min after gramms = %d, idx = %d", $min_gr, $min_gr_idx));
+		if ($min_gr != -1)
+			$min = $min_gr;
 		switch ($min_gr_idx) {
 			case 0: // bigramms
 				$ids = BigrammTables::getIdsArray($sm, $words, $ret2['min_idx'], $ret2['gramm']);
