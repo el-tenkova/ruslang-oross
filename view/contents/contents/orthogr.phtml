@@ -11,12 +11,23 @@
 						<p><span><?php echo $formula['title'];?></span></p>
 						<div style="margin-left:15px">
 							<?php foreach ($formula['ortho'] as $ortho) : ?>
-								<div class="accordion-group">
-									<div class="accordion-heading h3" style="margin-left:15px">
-										<p><a class="accordion-toggle h5" style="text-transform:none" data-toggle="collapse" data-parent="#accordion2" href=<?php echo ("#ortho".$ortho['id_ortho']); ?> >
-											<?php echo $ortho['ortho_name'];?>
-										</a></p>    
+							<div class="accordion-group">
+								<div class="accordion-heading h3" style="margin-left:15px">
+									<div class="row h3">
+										<div class="col-lg-8" >
+											<p><a class="accordion-toggle h5" style="text-transform:none" data-toggle="collapse" data-parent="#accordion2" href=<?php echo ("#ortho".$ortho['id_ortho']); ?> >
+												<?php echo $ortho['ortho_name'];?>
+											</a></p>
+										</div>
+										<div class="col-lg-4" >
+											<span class="ortho_link"> 
+												<?php echo "<a href=\"".$this->url('orthogr', array('action' => 'orthogr')).'?id='.$ortho['id_ortho']."\">статей в справочнике: ";?> 
+												<?php echo $ortho['art_count']; ?>
+												<?php echo "</a>"; ?>
+											</span>
+										</div>
 									</div>
+								</div>
 									<div id=<?php echo ("ortho".$ortho['id_ortho']); ?> class="accordion-body <?php if ($ortho['id_ortho'] == 18) echo ' in'; else echo ' collapse'; ?>" >
 										<div class="accordion-inner" style="margin-left:15px">
 											<div style="margin-left:30px">
@@ -36,7 +47,7 @@
 								</div>	
 					    	<?php endforeach; ?>
 				    	</div>
-					</div>
+				    </div>
 		    	<?php endforeach; ?>
 		    </div>
     	</div>

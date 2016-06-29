@@ -48,6 +48,78 @@ namespace Application\Controller;
         return $view;        
      }
 
+     public function orthogrAction()
+     {
+        error_log("Orthogr orthogrAction");
+        $view = new ViewModel();
+
+		$id_ortho = $this->params()->fromQuery('id', 0); //$this->params('id');
+		$page = $this->params()->fromQuery('page', 1);
+		
+		$word = OrthogrTables::getOrthogr($this->getServiceLocator(), $id_ortho);
+		$formulas = FormulaTables::getFormulas($this->getServiceLocator(), $id_ortho);
+		$id_formulas = array();
+		foreach ($formulas as $formula) {
+			$id_formulas[] = $formula['id'];
+		}
+		$arts = array();
+		if (count($id_formulas) > 0)
+			$arts = ArticlesFormulasTables::getArticlesForFormula($this->getServiceLocator(), $id_formulas, true, self::FOR_PAGE_COUNT, $page);
+
+		$found = $arts['count'];	
+		if ($found > 0) {
+			$a = $found;
+			while ($a > 100) {
+				$a = $a % 10;
+			}
+			if ($a > 10 && $a < 20) 
+				$title = sprintf('По орфограмме "%s" найдено %d статей', $word, $found);
+			else {
+				$a = $a % 10;
+				if ($a == 1)
+					$title = sprintf('По орфограмме "%s" найдена %d статья', $word, $found);
+				else if ($a == 2 || $a == 3 || $a == 4)
+					$title = sprintf('По орфограмме "%s" найдено %d статьи', $word, $found);
+				else
+					$title = sprintf('По орфограмме "%s" найдено %d статей', $word, $found);
+			}
+			$this->paginator = $arts['paginator'];
+			$show = $arts['show'];
+			$f = 'orthogr?id='.$id_ortho;
+			foreach ($show as &$article) {
+				$pos = strpos($article['article'], $f);
+				if ($pos !== false) {
+					$tmp = substr($article['article'], 0, $pos);
+					$pos = strrpos($tmp, 'formula');
+					$article['article'] = substr($article['article'], 0, $pos - 1).'marked '.substr($article['article'], $pos);
+					//error_log($article['article']);
+				}
+			}
+		}
+		else {
+			$title = sprintf('По формуле "%s" ничего не найдено', $word, count($arts));
+		}				
+
+		$articles = new ViewModel(array('articles' => $show, 
+										'paginator' => $this->paginator, 
+										'route' => 'orthogr',
+										'action' => 'orthogr',
+										'pag_part' => 'contents/paginator.phtml',
+										'title' => $title, 
+										'id' => $id_ortho, 
+										'pageCount' => count($this->paginator), 
+										'formula' => "1"));
+		
+/*		$articles = new ViewModel(array('title' => 'Статьи по формуле: '.FormulaTables::getFormula($this->getServiceLocator(), $id_formula),
+		                                'articles' => $arts,
+		                                'formula' => "1")); */
+		                                
+        $articles->setTemplate('contents/articles');
+        $view->addChild($articles, 'articles');
+
+        return $view;        
+     }
+
      public function formulaAction()
      {
         error_log("Orthogr formulaAction");
@@ -57,7 +129,7 @@ namespace Application\Controller;
 		$page = $this->params()->fromQuery('page', 1);
 		
 		$word = FormulaTables::getFormula($this->getServiceLocator(), $id_formula);
-		$arts = ArticlesFormulasTables::getArticlesForFormula($this->getServiceLocator(), $id_formula, true, self::FOR_PAGE_COUNT, $page);
+		$arts = ArticlesFormulasTables::getArticlesForFormula($this->getServiceLocator(), array($id_formula), true, self::FOR_PAGE_COUNT, $page);
 
 		$found = $arts['count'];	
 		if ($found > 0) {
