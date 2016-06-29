@@ -244,7 +244,7 @@ namespace Contents\Model;
         return $result;
 	}
      
-	public static function putArticlesToRtf($sm, $id_array, $word, $formula)
+	public static function putArticlesToRtf($sm, $id_array, $word, $formula, $ortho)
 	{		
         //error_log("getArticles for id_array"); 
         $table = $sm->get('Contents\Model\ArticleTables');
@@ -262,6 +262,10 @@ namespace Contents\Model;
 //			$idx = 1;
 			if ($formula != null) {
 				fwrite($fp, "\\par".FormulaTables::getFRTF($sm, $formula));
+				fwrite($fp, "\\par");
+			}
+			else if ($ortho != null) {
+				fwrite($fp, "\\par".OrthogrTables::getFRTF($sm, $ortho));
 				fwrite($fp, "\\par");
 			}
 	        foreach ($articles as $article)

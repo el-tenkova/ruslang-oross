@@ -19,6 +19,7 @@ namespace Contents\Model;
      public $formname;
      public $example;
      public $rest;
+     public $rtf;
      public $id_form;
      public $is_prefix;
 
@@ -34,6 +35,7 @@ namespace Contents\Model;
         $this->formname     = (!empty($data['formname'])) ? $data['formname'] : null;
         $this->example      = (!empty($data['example'])) ? $data['example'] : null;
         $this->rest         = (!empty($data['rest'])) ? $data['rest'] : null;
+        $this->rtf          = (!empty($data['rtf'])) ? $data['rtf'] : null;
         $this->id_form      = (!empty($data['id_form'])) ? $data['id_form'] : null;
         $this->is_prefix    = (!empty($data['is_prefix'])) ? $data['is_prefix'] : null;
      }

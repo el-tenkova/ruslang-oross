@@ -13,6 +13,7 @@ namespace Application\Controller;
  use Contents\Model\HistoricTables;
  use Contents\Model\ArticlesFormulasTables;
  use Contents\Model\WordTables;
+ use Contents\Model\FormulaTables;
  
  use Zend\Mvc\Controller\AbstractActionController;
 
@@ -31,7 +32,24 @@ namespace Application\Controller;
 			//error_log($_POST['id_formula']);
 			$ids = ArticlesFormulasTables::getArticlesForFormula($this->getServiceLocator(), array($_POST['id_formula']));
 			//error_log(implode(",", $ids));
-            $filename = ArticleTables::putArticlesToRtf($this->getServiceLocator(), implode(",", $ids), null, $_POST['id_formula']);
+            $filename = ArticleTables::putArticlesToRtf($this->getServiceLocator(), implode(",", $ids), null, $_POST['id_formula'], null);
+            if ($filename !== false) {
+				return new JsonModel(array(
+					'filename' => $filename,
+					'success' => false,
+				));
+            }
+		}
+		if (isset($_POST['ortho']) && isset($_POST['id_ortho']) && $_POST['id_ortho'] != "0") {
+			//error_log($_POST['id_formula']);
+			$formulas = FormulaTables::getFormulas($this->getServiceLocator(), $_POST['id_ortho']);
+			$id_formulas = array();
+			foreach ($formulas as $formula) {
+				$id_formulas[] = $formula['id'];
+			}
+			$ids = ArticlesFormulasTables::getArticlesForFormula($this->getServiceLocator(), $id_formulas);
+			//error_log(implode(",", $ids));
+            $filename = ArticleTables::putArticlesToRtf($this->getServiceLocator(), implode(",", $ids), null, null, $_POST['id_ortho']);
             if ($filename !== false) {
 				return new JsonModel(array(
 					'filename' => $filename,
@@ -41,7 +59,7 @@ namespace Application\Controller;
 		}
 		if (isset($_POST['word']) && isset($_POST['query']) && strlen($_POST['query']) > 0) {
 			$ids = WordTables::getArticles($this->getServiceLocator(), $_POST['query'], intval($_POST['title_check']) + intval($_POST['text_check']), $_POST['search_part']);
-            $filename = ArticleTables::putArticlesToRtf($this->getServiceLocator(), implode(",", $ids), $_POST['word'], null);
+            $filename = ArticleTables::putArticlesToRtf($this->getServiceLocator(), implode(",", $ids), $_POST['word'], null, null);
             if ($filename !== false) {
 				return new JsonModel(array(
 					'filename' => $filename,

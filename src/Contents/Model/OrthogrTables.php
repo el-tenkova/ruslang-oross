@@ -41,6 +41,16 @@ namespace Contents\Model;
         return false;        
      }
      
+     public static function getFRTF($sm, $id_ortho)
+     {
+        $table = $sm->get('Contents\Model\OrthogrTables');
+        $formulas = $table->tableGateway->select(function(Select $select) use ($id_ortho)
+        {
+            $select->where('o.id = '.strval($id_ortho));
+        });
+        return $formulas->current()->rtf;
+     }
+     
      public static function getFormulasForPara($sm, $id_para)
      {
         //error_log("getFormulas");
