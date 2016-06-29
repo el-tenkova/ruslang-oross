@@ -27,21 +27,11 @@ namespace Application\Controller;
      public function doAction()
      {
 		error_log("Download doAction");
-		if (isset($_POST['hist']) && isset($_POST['id_hist']) && $_POST['id_hist'] != "0") {
-			$ids = HistoricTables::getArticles($this->getServiceLocator(), $_POST['id_hist']);
-            $filename = ArticleTables::putArticlesToRtf($this->getServiceLocator(), implode(",", $ids));
-            if ($filename !== false) {
-				return new JsonModel(array(
-					'filename' => $filename,
-					'success' => false,
-				));
-            }
-		}
 		if (isset($_POST['formula']) && isset($_POST['id_formula']) && $_POST['id_formula'] != "0") {
-			error_log($_POST['id_formula']);
+			//error_log($_POST['id_formula']);
 			$ids = ArticlesFormulasTables::getArticlesForFormula($this->getServiceLocator(), array($_POST['id_formula']));
-			error_log(implode(",", $ids));
-            $filename = ArticleTables::putArticlesToRtf($this->getServiceLocator(), implode(",", $ids));
+			//error_log(implode(",", $ids));
+            $filename = ArticleTables::putArticlesToRtf($this->getServiceLocator(), implode(",", $ids), null, $_POST['id_formula']);
             if ($filename !== false) {
 				return new JsonModel(array(
 					'filename' => $filename,
@@ -51,7 +41,7 @@ namespace Application\Controller;
 		}
 		if (isset($_POST['word']) && isset($_POST['query']) && strlen($_POST['query']) > 0) {
 			$ids = WordTables::getArticles($this->getServiceLocator(), $_POST['query'], intval($_POST['title_check']) + intval($_POST['text_check']), $_POST['search_part']);
-            $filename = ArticleTables::putArticlesToRtf($this->getServiceLocator(), implode(",", $ids));
+            $filename = ArticleTables::putArticlesToRtf($this->getServiceLocator(), implode(",", $ids), $_POST['word'], null);
             if ($filename !== false) {
 				return new JsonModel(array(
 					'filename' => $filename,
