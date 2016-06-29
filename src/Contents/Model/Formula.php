@@ -18,10 +18,13 @@ namespace Contents\Model;
 	public $name;
 	public $example;
 	public $rest;
+	public $rtf;
 	public $is_prefix;
+	public $art_count;
     //
 	public $para_title;
 	public $ortho_name;
+	public $ortho_art_count;
 		     
 
 	public function exchangeArray($data)
@@ -35,10 +38,13 @@ namespace Contents\Model;
         $this->name         = (!empty($data['name'])) ? $data['name'] : null;
         $this->example      = (!empty($data['example'])) ? $data['example'] : null;
         $this->rest         = (!empty($data['rest'])) ? $data['rest'] : null;
+        $this->rtf          = (!empty($data['rtf'])) ? $data['rtf'] : null;
         $this->is_prefix    = (!empty($data['is_prefix'])) ? $data['is_prefix'] : null;
+        $this->art_count    = (!empty($data['art_count'])) ? $data['art_count'] : null;
         // 
         $this->para_title	= (!empty($data['para_title'])) ? $data['para_title'] : null;
         $this->ortho_name	= (!empty($data['ortho_name'])) ? $data['ortho_name'] : null;
+        $this->ortho_art_count	= (!empty($data['ortho_art_count'])) ? $data['ortho_art_count'] : null;
      }
  }
  ?>
