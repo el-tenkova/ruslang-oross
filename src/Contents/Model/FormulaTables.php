@@ -38,6 +38,16 @@ namespace Contents\Model;
         return $formulas->current()->name;
      }
 
+     public static function getFRTF($sm, $id_formula)
+     {
+        $table = $sm->get('Contents\Model\FormulaTables');
+        $formulas = $table->tableGateway->select(function(Select $select) use ($id_formula)
+        {
+            $select->where('f.id = '.strval($id_formula));
+        });
+        return $formulas->current()->rtf;
+     }
+
      public static function getFormulas($sm, $id_ortho)
      {
         error_log("getFormulas from FormulaTable");
@@ -61,7 +71,7 @@ namespace Contents\Model;
         $formulas = $table->tableGateway->select(function(Select $select)
         {
             $select->join(array('p' => 'paras'), 'f.id_para = p.id', array('id_para' => 'id', 'para_title' => 'name'), 'left');
-            $select->join(array('o' => 'orthos'), 'f.id_ortho = o.id', array('id_ortho' => 'id', 'ortho_name' => 'name'), 'left');
+            $select->join(array('o' => 'orthos'), 'f.id_ortho = o.id', array('id_ortho' => 'id', 'ortho_name' => 'name', 'ortho_art_count' => 'art_count'), 'left');
             $select->order('p.id, o.id');
         });
         $result = array();
@@ -71,19 +81,19 @@ namespace Contents\Model;
         {
         	if ($paraId != $formula->id_para) {
         		$result[] = array('id_para' => $formula->id_para, 'title' => $formula->para_title, 
-        						  'ortho' => array(array('id_ortho' => $formula->id_ortho, 'ortho_name' => $formula->ortho_name, 
-        						  'formulas' => array(array('id_formula' => $formula->id, 'name' => $formula->name, 'example' => $formula->example, 'arts_count' => ArticlesFormulasTables::getArtCountForFormula($sm, $formula->id))))));
+        						  'ortho' => array(array('id_ortho' => $formula->id_ortho, 'ortho_name' => $formula->ortho_name, 'art_count' => $formula->ortho_art_count,
+        						  'formulas' => array(array('id_formula' => $formula->id, 'name' => $formula->name, 'example' => $formula->example, 'arts_count' => $formula->art_count)))));
         		$paraId = $formula->id_para;
         		$orthoId = $formula->id_ortho;
         	}
         	else {
         		if ($orthoId != $formula->id_ortho) {
-        			$result[count($result) - 1]['ortho'][] = array('id_ortho' => $formula->id_ortho, 'ortho_name' => $formula->ortho_name, 
-        													       'formulas' => array(array('id_formula' => $formula->id, 'name' => $formula->name, 'example' => $formula->example, 'arts_count' => ArticlesFormulasTables::getArtCountForFormula($sm, $formula->id))));
+        			$result[count($result) - 1]['ortho'][] = array('id_ortho' => $formula->id_ortho, 'ortho_name' => $formula->ortho_name, 'art_count' => $formula->ortho_art_count,
+        													       'formulas' => array(array('id_formula' => $formula->id, 'name' => $formula->name, 'example' => $formula->example, 'arts_count' => $formula->art_count)));
 	        		$orthoId = $formula->id_ortho;
         		}
         		else {
-					$result[count($result) - 1]['ortho'][count($result[count($result) - 1]['ortho']) - 1]['formulas'][] = array('id_formula' => $formula->id, 'name' => $formula->name, 'example' => $formula->example, 'arts_count' => ArticlesFormulasTables::getArtCountForFormula($sm, $formula->id));
+					$result[count($result) - 1]['ortho'][count($result[count($result) - 1]['ortho']) - 1]['formulas'][] = array('id_formula' => $formula->id, 'name' => $formula->name, 'example' => $formula->example, 'arts_count' => $formula->art_count);
         		}
         	}
         }
