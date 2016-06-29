@@ -149,7 +149,6 @@ namespace Application\Controller;
 								}
 							}		
 							if (isset($marks[0][WordTables::$types[WordTables::typeFormula]['sign']])) {
-								error_log("add mark to formula");
 								foreach ($marks[0][WordTables::$types[WordTables::typeFormula]['sign']] as $formula_mark) {
 									if ($formula_mark['id'] == $ortho['id_form']) {
 										$offset = 0;
@@ -160,7 +159,7 @@ namespace Application\Controller;
 										}
 									}
 								}
-							}					
+							}
 							if (isset($marks[0][WordTables::$types[WordTables::typeFormulaExample]['sign']])) {
 								foreach ($marks[0][WordTables::$types[WordTables::typeFormulaExample]['sign']] as $example_mark) {
 									if ($example_mark['id'] == $ortho['id_form']) {
@@ -173,7 +172,7 @@ namespace Application\Controller;
 										}
 									}
 								}
-							} 
+							}
 						} 
 					}
 					foreach ($rule['footnotes'] as &$foot) {
