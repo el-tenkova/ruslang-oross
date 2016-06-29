@@ -41,14 +41,21 @@ namespace Contents\Model;
         	return 0; 
     }
 
-    public static function getArticlesForFormula($sm, $id_formula, $paginated = false, $count_for_page = 0, $page = 0)
+    public static function getArticlesForFormula($sm, $id_formulas, $paginated = false, $count_for_page = 0, $page = 0)
     {
         $table = $sm->get('Contents\Model\ArticlesFormulasTables');
-        $articles = $table->tableGateway->select(function(Select $select) use ($id_formula)
+        $articles = $table->tableGateway->select(function(Select $select) use ($id_formulas)
         {
-            $select->where('af.id_formula = '.strval($id_formula));
+        	if (count($id_formulas) == 1)
+	            $select->where('af.id_formula = '.strval($id_formulas[0]));
+	        else {
+	        	$ids = implode(",", $id_formulas);
+	        	$select->where('af.id_formula IN ('.$ids.')');
+//	        	$select->where('af.id_formula = '.strval($id_formulas[0]));
+	        }
             $select->order('af.id');
         });
+        //error_log(sprintf("count of articles by formula = %d is %d", $id_formulas[0],count($articles)));
         if (count($articles) == 0)
         	return array();
         	
@@ -81,7 +88,7 @@ namespace Contents\Model;
 		else {
 //			$result = $id_array; //ArticleTables::getArticles($sm, $id_array);
 			foreach ($id_array as $item) {
-				$result[] = $item['id']; //$id_array; //ArticleTables::getArticles($sm, $id_array);
+				$result[] = $item['id']; //ArticleTables::getArticles($sm, $id_array);
 			}
 		}
 //		error_log(sprintf("HistoricTables::getArticles %d", count($result)));		
