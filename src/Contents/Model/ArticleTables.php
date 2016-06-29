@@ -82,16 +82,17 @@ namespace Contents\Model;
      
 	public static function isFirst($title, $query)
     {
+		$query = trim($query, " \t.,:;-");    		
     	if (strlen($title) == strlen($query) && $title == $query) {
     		return true;
     	}
     	else if (strlen($title) > strlen($query)) {
     		$head = substr($title, 0, strlen($query));
-    		//error_log(sprintf("query = %s", $query));
+//    		error_log(sprintf("query = %s len = %d", $query, strlen($query)));
     		//error_log(sprintf("head  = %s", $head));
     		if ($head == $query) {
 	    		$tail = substr($title, strlen($query));
-	    		//error_log(sprintf("tail = %s", $tail));
+//	    		error_log(sprintf("tail = %s", $tail));
 				if (preg_match('/^[^\p{L}]+$/u', $tail))
 					return true;
     		}
@@ -244,8 +245,8 @@ namespace Contents\Model;
 	}
      
 	public static function putArticlesToRtf($sm, $id_array)
-	{
-        //error_log("getArticles for id_array");
+	{		
+        //error_log("getArticles for id_array"); 
         $table = $sm->get('Contents\Model\ArticleTables');
         $articles = $table->tableGateway->select(function(Select $select) use ($id_array)
         {
