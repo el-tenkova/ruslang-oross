@@ -85,6 +85,8 @@ namespace Contents\Model;
 				$LIKE = str_replace("?", "[[:alpha:]|[:punct:]|[:space:]|-]{0,2}", $LIKE);
 			}
 			$LIKE = preg_replace("/[её]/u", "[её]{2}", $LIKE);			
+			$LIKE = mb_strtolower($LIKE, 'UTF-8');					
+
 		}
 		else {
 			$LIKE = 'w.word LIKE \''.$query.'\'';
