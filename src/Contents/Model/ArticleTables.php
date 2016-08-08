@@ -164,6 +164,16 @@ namespace Contents\Model;
 						if ($article->id == $item['id']) {
 							$prev = 0;
 							$prev_len = 0;
+							if ($i == 0) {
+								$offset = 0;
+								$pos = strpos($article->text, $mark_before);
+//								error_log(sprintf("pos mark-before = %d", $pos));
+								while ($pos !== false && $pos - $offset < $item['marks'][0]['start']) {
+									$offset += $mark_len;
+									$pos = strpos($article->text, $mark_before, $pos + $offset);
+//									error_log(sprintf("pos mark-before = %d", $pos));
+								}
+							}														
 							//$prev_segment = 0;
 							foreach ($item['marks'] as $mark_word) {
 								if ($mark_word['start'] != 0 && $mark_word['step'] != -1) {
