@@ -167,9 +167,19 @@ namespace Contents\Model;
 							if ($i == 0) {
 								$offset = 0;
 								$pos = strpos($article->text, $mark_before);
+								$title_m = false;
+								if ($pos == false) {
+									$pos = strpos($article->text, $mark_class_title);
+									$title_m = true;
+								}
 //								error_log(sprintf("pos mark-before = %d", $pos));
 								while ($pos !== false && $pos - $offset < $item['marks'][0]['start']) {
-									$offset += $mark_len;
+									if ($title_m) {
+										$title_m = false;
+										$offset += $mark_class_len;
+									}
+									else
+										$offset += $mark_len;
 									$pos = strpos($article->text, $mark_before, $pos + $offset);
 //									error_log(sprintf("pos mark-before = %d", $pos));
 								}
@@ -177,11 +187,11 @@ namespace Contents\Model;
 							//$prev_segment = 0;
 							foreach ($item['marks'] as $mark_word) {
 								if ($mark_word['start'] != 0 && $mark_word['step'] != -1) {
-	//								error_log($article->text);
+						//			error_log($article->text);
 	//								error_log(strpos($article->text, "<span"));
 	//								error_log($item['start']);
-	//								error_log("!!!222");
-	//								error_log(sprintf("id = %d, start = %d, len = %d", $item['id'], $mark_word['start'], $mark_word['len'], $mark_word['step']));
+						//			error_log("!!!222");
+						//			error_log(sprintf("id = %d, start = %d, len = %d, step = %d, space = %d", $item['id'], $mark_word['start'], $mark_word['len'], $mark_word['step'], $mark_word['space']));
 									if (/*$prev_segment == $mark_word['segment'] && */$mark_word['start'] + $mark_word['len'] <= $prev + $prev_len)
 										continue;
 									$prev = $mark_word['start'];
@@ -190,7 +200,10 @@ namespace Contents\Model;
 									if ($mark_word['space'] == 1) {
 										$pos = strpos($article->text, $class_title);
 										$article->text = substr_replace($article->text, $mark_class_title, $pos + strlen($class_title) + $offset, 0);
+										error_log(sprintf("offset = %d", $offset));
 										$offset += $mark_class_len;
+								//		error_log("title marked");
+								//		error_log(sprintf("offset = %d", $offset));
 									}
 									else {
 										$article->text = substr_replace($article->text, $mark_before, $mark_word['start'] + $offset, 0);
@@ -198,6 +211,7 @@ namespace Contents\Model;
 										$offset += $mark_len;
 							//			error_log($article->text);
 									}
+								//	error_log($article->text);
 
 								}
 							}
