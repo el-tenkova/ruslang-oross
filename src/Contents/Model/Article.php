@@ -25,6 +25,7 @@ namespace Contents\Model;
     public $text;
     public $rtf;
     public $src;
+    public $dic;
 
     public function exchangeArray($data)
     {
@@ -38,6 +39,7 @@ namespace Contents\Model;
         $this->text         = (!empty($data['text'])) ? $data['text'] : null;
         $this->rtf         = (!empty($data['rtf'])) ? $data['rtf'] : null;
         $this->src         = (!empty($data['src'])) ? $data['src'] : null;
+        $this->dic     = (!empty($data['dic'])) ? $data['dic'] : null;
 
         $this->id_para      = (!empty($data['id_para'])) ? $data['id_para'] : null;
         $this->id_ortho      = (!empty($data['id_ortho'])) ? $data['id_ortho'] : null;

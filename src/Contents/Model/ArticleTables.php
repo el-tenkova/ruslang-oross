@@ -57,6 +57,20 @@ namespace Contents\Model;
             return ($articles->current()->title); 
 	}
 
+	public static function getByTitle($sm, $title)
+	{
+        $table = $sm->get('Contents\Model\ArticleTables');
+        $articles = $table->tableGateway->select(function(Select $select) use ($title)
+        {
+            //print_r('(a.title = '.$title.' AND a.dic=49)');
+            $select->where('(a.title = \''.$title.'\')');
+        });
+        //print_r($articles);
+        if ($articles->count())
+            return ($articles->current()->dic); 
+        return false;
+	}
+
     public static function getCountForFormula($sm, $id_formula)
     {
         $table = $sm->get('Contents\Model\ArticleTables');
@@ -78,6 +92,25 @@ namespace Contents\Model;
         });
         if ($articles->count())
             return ($articles->current()->text); 
+    }
+
+    public static function getArticlesForRule($sm, $id_rule)
+    {
+        error_log("getArticlesForRule");
+        $table = $sm->get('Contents\Model\ArticleTables');
+        $articles = $table->tableGateway->select(function(Select $select) use ($id_rule)
+        {
+            $select->join(array('ar' => 'articles_rules'), 'a.id = ar.id', array('id'), 'left'); 
+            $select->where('ar.id_rule = '.strval($id_rule));
+        });
+        $ids = array();
+        if ($articles->count()) {
+            error_log(count($articles));
+            foreach ($articles as $article) {
+                $ids[] = $article->id;
+            }
+        }
+        return $ids;
     }
      
 	public static function isFirst($title, $query)
