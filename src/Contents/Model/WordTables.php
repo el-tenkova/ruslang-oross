@@ -299,6 +299,7 @@ namespace Contents\Model;
 	
 	public static function checkQuery($word)
 	{
+		$word = str_replace("'", "", $word);
 		$word = preg_replace("/[\[|\]|\{|\}|\d|\$|\%|\^|\&|\(|\)|\!|\:|\;|\#]/", "", $word);
 		$word = preg_replace("/[\*]+/", "*", $word);
 		$word = preg_replace("/\s+/", " ", $word);
@@ -461,6 +462,7 @@ namespace Contents\Model;
 			        $articles = $table->tableGateway->select(function(Select $select) use ($aw_ON, $w_LIKE)
 			        {
 				        $select->join(array('aw' => 'words_articles'), new Expression($aw_ON), array('id_article', 'start', 'len', 'title', 'segment', 'number'), 'left'); 
+//				        $select->order('aw.title, aw.id_article, aw.start');
 				        $select->order('aw.title, aw.id_article, aw.start');
 			            $select->where($w_LIKE);
 			        });
