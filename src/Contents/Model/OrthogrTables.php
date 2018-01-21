@@ -28,6 +28,30 @@ namespace Contents\Model;
          return $resultSet;
      }
 
+     public static function getAllOrthogr($sm)
+     {
+        //error_log("getOrthogr");
+        $table = $sm->get('Contents\Model\OrthogrTables');
+        $orthogr = $table->tableGateway->select(function(Select $select)
+        {
+            $select->join(array('f' => 'formulas'), 'f.id_ortho = o.id', array('formname' => 'name', 'id_form' => 'id'), 'left');
+            $select->order('o.id_para, f.id');            
+        });
+        $result = array();
+        if ($orthogr->count()) {
+            $id = 0;
+            foreach ($orthogr as $ortho)
+            {
+                if ($ortho->id != $id) {
+                    $id = $ortho->id;
+                    $result[] = array('id' => $ortho->id, 'name' => $ortho->name, 'para' => $ortho->id_para, 'formulas' => array());
+                }
+                $result[count($result) - 1]['formulas'][] = array('id' => $ortho->id_form, 'name' => $ortho->formname);
+            }
+        }
+        return $result;        
+     }
+
      public static function getOrthogr($sm, $id)
      {
         //error_log("getOrthogr");

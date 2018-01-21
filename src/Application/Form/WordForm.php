@@ -16,6 +16,7 @@ class WordForm extends Form
             'name' => 'word',
             'attributes' => array(
                 'type'  => 'text',
+				'id' => 'word',                
             ),
             'options' => array(
                 'label' => 'Поиск слова',
@@ -68,6 +69,20 @@ class WordForm extends Form
                 'value' => 'yes',
             ),
         ));
+        $this->add(array(
+			'type'  => 'checkbox',
+            'name' => 'yo',
+    		'options' => array(
+	        	'label' => "  Ё \xE2\x89\xA0 Е",
+		        'use_hidden_element' => false,
+	    	    'checked_value' => 'yes',
+	        	'unchecked_value' => 'no'
+    		),
+            'attributes' => array(
+                'value' => 'no',
+            ),
+        ));
+        
 /*        $this->add(array(
 			'type'  => 'radio',
             'name' => 'search_part',

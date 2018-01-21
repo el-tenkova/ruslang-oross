@@ -1,24 +1,59 @@
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+    (function (d, w, c) {
+        (w[c] = w[c] || []).push(function() {
+            try {
+                w.yaCounter45412578 = new Ya.Metrika({
+                    id:45412578,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true
+                });
+            } catch(e) { }
+        });
 
-<h4>Информационно-поисковая система</h4>
-<h4>разработана при поддержке <a href="http://www.rfh.ru/index.php/ru/">Российского гуманитарного научного фонда</a></h4>
+        var n = d.getElementsByTagName("script")[0],
+            s = d.createElement("script"),
+            f = function () { n.parentNode.insertBefore(s, n); };
+        s.type = "text/javascript";
+        s.async = true;
+        s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+        if (w.opera == "[object Opera]") {
+            d.addEventListener("DOMContentLoaded", f, false);
+        } else { f(); }
+    })(document, window, "yandex_metrika_callbacks");
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/45412578" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+<h4 class="text-center"><?php echo $this->predisl['title'] ?></h4>
+<div class="row">
+	<div class="col-md-12 text-center">
+		<?php echo $this->predisl['sub_title'] ?>
+	</div>
+</div>
 <hr>
-<!--<div><span><b>Словарь-справочник</b> состоит из двух частей:</span></div>
-<div><span><b>Словаря</b> – расположенных в алфавитном порядке слов с объяснениями при каждом слове и <b>Справочника</b>, содержащего правила правописания, соответствующие объяснительным формулам в словаре.
-</span>
-</div> 
-<br> -->
-<div><span><b>Полная по объему словарная статья</b> включает следующие зоны информации:</span></div> 
-<div><img src="<?php echo $this->basePath() . '/img/article.png'; ?>"></div>
-<!-- Modal -->
- <div class="modal" id="tutorialModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" id="modal-close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            </div>
-            <div class="modal-body" id="modal-body">
-                <div class="hidden" id="modalStart" > </div>
-            </div>
-        </div>
-    </div>
+<div class="row">
+	<div class="col-md-1"></div>
+	<div class="col-md-10">
+		<div class="text-center"><span><b>Полная по объему словарная статья</b> включает следующие зоны информации:</span></div> 
+		<div><img src="<?php echo $this->basePath() . '/img/article.png'; ?>"></div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-1"></div>
+	<div class="col-md-10">
+		<div class="predisl-empl"><?php echo $this->predisl['empl'] ?></div>
+		<div class="predisl"><?php echo $this->predisl['text'] ?></div>
+	</div>
+	<div class="col-md-1"></div>
+</div>
+<div class="row top_buffer">
+	<div class="col-md-1"></div>
+	<div class="col-md-10">
+		<div class="predisl-empl text-center"><?php echo $this->predisl['lit_title'] ?></div>
+		<div><?php echo $this->predisl['lit'] ?></div>
+	</div>
+	<div class="col-md-1"></div>
 </div>

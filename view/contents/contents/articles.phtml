@@ -1,4 +1,4 @@
-
+    <?php $this->headMeta()->setName('description', strip_tags($this->word)); ?>
     <?php //error_log($this->title); ?>
     <?php //error_log($this->route); ?>
 	<div class="panel panel-default">
@@ -22,6 +22,7 @@
 <?php   
 	if ($this->pageCount > 1) {
 		//error_log(sprintf("this->title_check = %d", $this->title_check));
+		error_log(sprintf("this->query = %s", $this->query));
 		echo $this->paginationControl(
 			// the paginator object
 			$this->paginator, //articles,
@@ -30,7 +31,7 @@
 			// the partial to use to render the control
 			$this->pag_part,
 			// the route to link to when a user clicks a control link
-			array('route' => $this->route, 'action' => $this->action, 'id' => $this->id, 'query' => $this->query.'&title_check='.$this->title_check.'&text_check='.$this->text_check.'&tut_check='.$this->tut_check, 'tab' => 'dic')
+			array('route' => $this->route, 'action' => $this->action, 'id' => $this->id, 'query' => urlencode($this->query).'&title_check='.$this->title_check.'&text_check='.$this->text_check.'&tut_check='.$this->tut_check.'&yo='.$this->yo, 'tab' => 'dic')
 		);
 	}
 ?>
@@ -121,7 +122,7 @@
 			// the partial to use to render the control
 			$this->pag_part,
 			// the route to link to when a user clicks a control link
-			array('route' => $this->route, 'action' => $this->action, 'id' => $this->id, 'query' => $this->query.'&title_check='.$this->title_check.'&text_check='.$this->text_check.'&tut_check='.$this->tut_check, 'tab' => 'dic')
+			array('route' => $this->route, 'action' => $this->action, 'id' => $this->id, 'query' => urlencode($this->query).'&title_check='.$this->title_check.'&text_check='.$this->text_check.'&tut_check='.$this->tut_check.'&yo='.$this->yo, 'tab' => 'dic')
 		);
 	}
 ?>
@@ -343,6 +344,7 @@
 				query: '<?php if ($this->action == "word") echo $this->query; else echo ""; ?>',
 			    title_check: '<?php if ($this->action == "word") echo $this->title_check; else echo ""; ?>',
 			    text_check: '<?php if ($this->action == "word") echo $this->text_check; else echo ""; ?>',
+			    yo: '<?php if ($this->action == "word") echo $this->yo; else echo ""; ?>',
 			    search_part: '<?php if ($this->action == "word") echo $this->search_part; else echo ""; ?>'
 			}, 
 			success: function(j)

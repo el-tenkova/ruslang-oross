@@ -11,6 +11,7 @@ namespace Contents\Model;
 
  use Zend\Db\TableGateway\TableGateway;
  use Zend\Db\Sql\Select;
+ use Zend\Db\Sql\Delete;
  use Zend\Db\Sql\Sql;
  use Zend\Db\Sql\Expression;
  
@@ -30,7 +31,7 @@ namespace Contents\Model;
         return $resultSet;
     }
      
-	public static function checkQuery($sm, $words, $min_word)
+	public static function checkQuery($sm, $words, $min_word, $yo)
 	{
 		$min = -1;
 		$min_idx = 0;
@@ -54,10 +55,13 @@ namespace Contents\Model;
 		$table = $sm->get('Contents\Model\TrigrammTables');
 		$idx = 0;
 		foreach ($trigramms as $trigramm) {
-	        $num = $table->tableGateway->select(function(Select $select) use ($trigramm)
+	        $num = $table->tableGateway->select(function(Select $select) use ($trigramm, $yo)
 	        {
 			//	$select->columns(array('art_count'));
-	            $select->where('tri.trigramm LIKE \''.$trigramm.'\'');
+				if (intval($yo) == 1)
+					$select->where('tri.trigramm REGEXP \'^'.$trigramm.'$\'');
+				else
+	            	$select->where('tri.trigramm LIKE \''.$trigramm.'\'');
 	        });
 	        error_log(sprintf("trigr num = %d", count($num)));
 	        if (count($num) > 0)
@@ -79,15 +83,18 @@ namespace Contents\Model;
 		return array('min' => $min, 'gramm' => $trigramms[$min_idx], 'min_idx' => $min_idx);
 	}
 			
-	public static function getIdsArray($sm, $words, $min_idx, $gramm)
+	public static function getIdsArray($sm, $words, $min_idx, $gramm, $yo)
 	{
 		$table = $sm->get('Contents\Model\TrigrammTables');
 		
-		$id_articles = $table->tableGateway->select(function(Select $select) use ($gramm)
+		$id_articles = $table->tableGateway->select(function(Select $select) use ($gramm, $yo)
 		{
 			$select->columns(array('art_count'));
 	        $select->join(array('trw' => 'trigramms_articles'), 'tri.id = trw.id', array('id_article'), 'left'); 
-	        $select->where('tri.trigramm LIKE \''.$gramm.'\'');
+	        if (intval($yo) == 1)
+	        	$select->where('tri.trigramm REGEXP \'^'.$gramm.'$\'');
+	        else
+	        	$select->where('tri.trigramm LIKE \''.$gramm.'\'');
 		});
 		$ids = array();
 	    foreach ($id_articles as $id) {
@@ -114,7 +121,7 @@ namespace Contents\Model;
 		return array();
 	}
 
-	public static function getArticles($sm, $query, $where)
+	public static function getArticles($sm, $query, $where, $yo)
 	{
 		$table = $sm->get('Contents\Model\TrigrammTables');
 		
@@ -128,7 +135,10 @@ namespace Contents\Model;
 			else
 				$bw_ON .= ' AND (trw.title = 2 OR trw.title = 3)'; 	
 		}
-		$w_LIKE = 'tri.trigramm LIKE \''.$query.'\'';
+		if (intval($yo) == 1)
+			$w_LIKE = 'tri.trigramm REGEXP \'^'.$query.'$\'';
+		else
+			$w_LIKE = 'tri.trigramm LIKE \''.$query.'\'';
 	
 		$articles = $table->tableGateway->select(function(Select $select) use ($bw_ON, $w_LIKE)
 		{
@@ -190,6 +200,15 @@ namespace Contents\Model;
 		});
 		
 		return $articles;
+	}
+	public static function deleteArticle($sm, $id)
+	{
+		$action = new Delete('trigramms_articles');
+        $action->where(array('id_article = ?' => $id));
+
+        $sql    = new Sql($sm->get('Zend\Db\Adapter\Adapter'));
+        $stmt   = $sql->prepareStatementForSqlObject($action);
+        $result = $stmt->execute();		
 	}
  } 
  

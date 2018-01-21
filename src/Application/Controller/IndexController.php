@@ -15,7 +15,9 @@ use Contents\Model\RuleTables;
 use Contents\Model\OrthogrTables;
 use Contents\Model\FormulaTables;
 use Contents\Model\WordTables;
-use Contents\Model\HistoricTables;
+//use Contents\Model\HistoricTables;
+use Contents\Model\PredislTable;
+use Contents\Model\StateTable;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
@@ -36,45 +38,13 @@ class IndexController extends AbstractActionController
     public function indexAction()
     {
         error_log("IndexController : indexAction");
+        $state = StateTable::getState($this->getServiceLocator());
+        $s = StateTable::Ok;
+        if (count($state) > 0 && $state['state'] == StateTable::UnderReconstruction)
+            $s = 2;
         $view = new ViewModel();
-/*       	$form = new SearchForm(null, HistoricTables::getAllHistoric($this->getServiceLocator()));
-       	$view->setVariable('form', $form); 
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-        	//error_log("request is Post");
-			$data = $request->getPost();
-			$arts = array();
-			$word = "";
-			if (isset($data['submit']) || isset($data['submithist'])) {
-				if (isset($data['submit']) && isset($data['word']) && strlen($data['word']) > 0) {
-					$word = $data['word']; 
-					$arts = WordTables::getArticles($this->getServiceLocator(), $word);
-				}
-				else if (isset($data['submithist']) && isset($data['historic']) && $data['historic'] != 0) {
-					$word = HistoricTables::getName($this->getServiceLocator(), $data['historic']);
-					$arts = HistoricTables::getArticles($this->getServiceLocator(), $data['historic']);
-				}
-				if (count($arts) > 0) {
-					$a = count($arts);
-					while ($a > 10) {
-						$a = $a % 10;
-					}
-					if ($a == 1)
-						$title = sprintf('По запросу "%s" найдена 1 статья', $word);
-					else if ($a == 2 || $a == 3 || $a == 4)
-						$title = sprintf('По запросу "%s" найдено %d статьи', $word, count($arts));
-					else
-						$title = sprintf('По запросу "%s" найдено %d статей', $word, count($arts));
-				}
-				else {
-					$title = sprintf('По запросу "%s" ничего не найдено', $word, count($arts));
-				}
-				$articles = new ViewModel(array('articles' => $arts, 'title' => $title));
-						
-				$articles->setTemplate('contents/articles');
-				$view->addChild($articles, 'articles');
-			} 
-        } */
-		return $view;       	
+    	$predisl = PredislTable::getPredisl($this->getServiceLocator());
+		return new ViewModel(array('predisl' => $predisl,
+		                                              'state' => $s));    	
     }
 }

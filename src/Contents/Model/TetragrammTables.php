@@ -11,6 +11,7 @@ namespace Contents\Model;
 
  use Zend\Db\TableGateway\TableGateway;
  use Zend\Db\Sql\Select;
+ use Zend\Db\Sql\Delete; 
  use Zend\Db\Sql\Sql;
  use Zend\Db\Sql\Expression;
  
@@ -30,7 +31,7 @@ namespace Contents\Model;
         return $resultSet;
     }
      
-	public static function checkQuery($sm, $words, $min_word)
+	public static function checkQuery($sm, $words, $min_word, $yo)
 	{
 		$min = -1;
 		$idx = 0;
@@ -56,10 +57,13 @@ namespace Contents\Model;
 		}		
 		$table = $sm->get('Contents\Model\TetragrammTables');
 		foreach ($tetragramms as $tetragramm) {
-	        $num = $table->tableGateway->select(function(Select $select) use ($tetragramm)
+	        $num = $table->tableGateway->select(function(Select $select) use ($tetragramm, $yo)
 	        {
 			//	$select->columns(array('art_count'));
-	            $select->where('t.tetragramm LIKE \''.$tetragramm.'\'');
+				if (intval($yo) == 1)
+					$select->where('t.tetragramm REGEXP \'^'.$tetragramm.'$\'');
+				else
+	            	$select->where('t.tetragramm LIKE \''.$tetragramm.'\'');
 	        });
 	        error_log(sprintf("tetragr %s num = %d", $tetragramm, count($num)));
 	        if (count($num) > 0)
@@ -82,15 +86,18 @@ namespace Contents\Model;
 		return array('min' => $min, 'gramm' => $tetragramms[$min_idx], 'min_idx' => $min_idx);
 	}
 		
-	public static function getIdsArray($sm, $words, $min_idx, $gramm)
+	public static function getIdsArray($sm, $words, $min_idx, $gramm, $yo)
 	{
 		$table = $sm->get('Contents\Model\TetragrammTables');
 		
-		$id_articles = $table->tableGateway->select(function(Select $select) use ($gramm)
+		$id_articles = $table->tableGateway->select(function(Select $select) use ($gramm, $yo)
 		{
 			$select->columns(array('art_count'));
 	        $select->join(array('tw' => 'tetragramms_articles'), 't.id = tw.id', array('id_article'), 'left'); 
-	        $select->where('t.tetragramm LIKE \''.$gramm.'\'');
+	        if (intval($yo))
+		        $select->where('t.tetragramm REGEXP \'^'.$gramm.'$\'');
+	        else
+	        	$select->where('t.tetragramm LIKE \''.$gramm.'\'');
 		});
 		$ids = array();
 	    foreach ($id_articles as $id) {
@@ -117,7 +124,7 @@ namespace Contents\Model;
 		return array();
 	}
 
-	public static function getArticles($sm, $query, $where)
+	public static function getArticles($sm, $query, $where, $yo)
 	{
 		$table = $sm->get('Contents\Model\TetragrammTables');
 		
@@ -131,7 +138,10 @@ namespace Contents\Model;
 			else
 				$bw_ON .= ' AND (tw.title = 2 OR tw.title = 3)'; 	
 		}
-		$w_LIKE = 't.tetragramm LIKE \''.$query.'\'';
+		if (intval($yo) == 1)
+			$w_LIKE = 't.tetragramm REGEXP \'^'.$query.'$\'';
+		else
+			$w_LIKE = 't.tetragramm LIKE \''.$query.'\'';
 		if (count($id_arts) != 0) {
 			$w_LIKE .= " AND aw.id_article IN (".implode(",", $id_arts).")"; 
 		}
@@ -201,7 +211,16 @@ namespace Contents\Model;
 		});
 		return $articles;
 	}          
- } 
+ 	public static function deleteArticle($sm, $id)
+	{
+		$action = new Delete('tetragramms_articles');
+        $action->where(array('id_article = ?' => $id));
+
+         $sql    = new Sql($sm->get('Zend\Db\Adapter\Adapter'));
+         $stmt   = $sql->prepareStatementForSqlObject($action);
+         $result = $stmt->execute();		
+	}	    
+} 
  
  ?>
  

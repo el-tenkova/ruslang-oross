@@ -11,6 +11,7 @@ namespace Contents\Model;
 
  use Zend\Db\TableGateway\TableGateway;
  use Zend\Db\Sql\Select;
+ use Zend\Db\Sql\Delete;
  use Zend\Db\Sql\Sql;
  use Zend\Db\Sql\Expression;
  
@@ -30,7 +31,7 @@ namespace Contents\Model;
         return $resultSet;
     }
      
-	public static function checkQuery($sm, $words, $min_word)
+	public static function checkQuery($sm, $words, $min_word, $yo)
 	{
 		$min = -1;
 		$idx = 0;
@@ -52,10 +53,13 @@ namespace Contents\Model;
 		}
 		$table = $sm->get('Contents\Model\BigrammTables');
 		foreach ($bigramms as $bigramm) {
-	        $num = $table->tableGateway->select(function(Select $select) use ($bigramm)
+	        $num = $table->tableGateway->select(function(Select $select) use ($bigramm, $yo)
 	        {
 			//	$select->columns(array('art_count'));
-	            $select->where('b.bigramm LIKE \''.$bigramm.'\'');
+				if (intval($yo) == 1)
+		        	$select->where('b.bigramm REGEXP \'^'.$bigramm.'$\'');
+	    	    else
+		            $select->where('b.bigramm LIKE \''.$bigramm.'\'');
 	        });
 	        error_log(sprintf("brg num = %d", count($num)));
 	        if (count($num) > 0)
@@ -78,16 +82,21 @@ namespace Contents\Model;
 		return array('min' => $min, 'gramm' => $bigramms[$min_idx], 'min_idx' => $min_idx);
 	}
 	
-	public static function getIdsArray($sm, $words, $min_idx, $gramm)
+	public static function getIdsArray($sm, $words, $min_idx, $gramm, $yo)
 	{
 		$table = $sm->get('Contents\Model\BigrammTables');
-		$id_articles = $table->tableGateway->select(function(Select $select) use ($gramm)
+		error_log(sprintf("getIdsArray gramm = %s yo = %d", $gramm, $yo));
+		$id_articles = $table->tableGateway->select(function(Select $select) use ($gramm, $yo)
 		{
 			$select->columns(array('art_count'));
 	        $select->join(array('bw' => 'bigramms_articles'), 'b.id = bw.id', array('id_article'), 'left'); 
-	        $select->where('b.bigramm LIKE \''.$gramm.'\'');
+	        if (intval($yo) == 1)
+	        	$select->where('b.bigramm REGEXP \'^'.$gramm.'$\'');
+	        else
+	        	$select->where('b.bigramm LIKE \''.$gramm.'\'');
 		});
 		$ids = array();
+		error_log(sprintf("getIdsArray count(id_articles)=%d", count($id_articles)));
 	    foreach ($id_articles as $id) {
 	    	$ids[] = $id->id_article;
 	    }
@@ -113,7 +122,7 @@ namespace Contents\Model;
 		return array();
 	}
 
-	public static function getArticles($sm, $query, $where)
+	public static function getArticles($sm, $query, $where, $yo)
 	{
 		$table = $sm->get('Contents\Model\BigrammTables');
 		
@@ -127,7 +136,11 @@ namespace Contents\Model;
 			else
 				$bw_ON .= ' AND (bw.title = 2 OR bw.title = 3)'; 	
 		}
-		$w_LIKE = 'b.bigramm LIKE \''.$query.'\'';
+		if (intval($yo) == 1)
+			$w_LIKE = 'b.bigramm REGEXP \'^'.$query.'$\'';
+		else
+			$w_LIKE = 'b.bigramm LIKE \''.$query.'\'';
+		error_log(sprintf("bgr getArticles %s", $w_LIKE));
 	
 		$articles = $table->tableGateway->select(function(Select $select) use ($bw_ON, $w_LIKE)
 		{
@@ -190,6 +203,16 @@ namespace Contents\Model;
 		});
 		return $articles;
 	}         
+	public static function deleteArticle($sm, $id)
+	{
+		$action = new Delete('bigramms_articles');
+        $action->where(array('id_article = ?' => $id));
+
+         $sql    = new Sql($sm->get('Zend\Db\Adapter\Adapter'));
+         $stmt   = $sql->prepareStatementForSqlObject($action);
+         $result = $stmt->execute();		
+	}
+	
  } 
  
  ?>

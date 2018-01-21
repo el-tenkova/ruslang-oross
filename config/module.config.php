@@ -28,6 +28,10 @@ return array(
         	    'route' => 'paragraph',
         	    'action' => 'view',
 			),
+	        array(
+    	        'label' => 'Научная статья по проекту',
+                'uri'   => '/doc/ot_orph_slovarya_k_resursu.pdf'
+			),
 		),
 	),
     'router' => array(
@@ -126,6 +130,7 @@ return array(
         'factories' => array(
             'translator' => 'Zend\Mvc\Service\TranslatorServiceFactory',
             'ContentsMenu' => 'Contents\ContentsMenuFactory',
+            'SiteState' => 'Contents\StateFactory',
             'navigation' => 'Zend\Navigation\Service\DefaultNavigationFactory',
         ),
     ),

@@ -50,17 +50,17 @@ class SearchController extends AbstractActionController
         $this->rule_paginator->setItemCountPerPage(self::FOR_PAGE_COUNT);
     }
     
-    public function getArticles($query, $title_check, $text_check, $tut_check, $page)    
+    public static function getArticles($sm, $query, $title_check, $text_check, $yo, $tut_check, $page)    
     {
 		$arts = array();
 		$show = array();
 		$found = 0;
     	
-		$arts = WordTables::getArticles($this->getServiceLocator(), $query, ($title_check + $text_check), true, self::FOR_PAGE_COUNT, $page);
+		$arts = WordTables::getArticles($sm, $query, ($title_check + $text_check), $yo, true, self::FOR_PAGE_COUNT, $page);
 		$found = isset($arts['count']) ? $arts['count'] : 0;
 		$mist = false;
 		if ($found == 0) {
-			$arts = MistakeTables::getRelArticles($this->getServiceLocator(), $query, ($title_check + $text_check), true, self::FOR_PAGE_COUNT, $page);
+			$arts = MistakeTables::getRelArticles($sm, $query, ($title_check + $text_check), $yo, true, self::FOR_PAGE_COUNT, $page);
 			$found = isset($arts['count']) ? $arts['count'] : 0;
 			$mist = true;
 		}
@@ -85,14 +85,14 @@ class SearchController extends AbstractActionController
 			else {
 				$title = sprintf('По запросу "%s" в словаре найдены похожие статьи:', $query, $found);
 			}
-			$this->art_paginator = $arts['paginator'];
+			//$this->art_paginator = $arts['paginator'];
 			$show = $arts['show'];
 		}
 		else {
 			$title = sprintf('По запросу "%s" в словаре ничего не найдено', $query);
 		}
 		$articles = new ViewModel(array('articles' => $show, 
-										'paginator' => $this->art_paginator, 
+										'paginator' => $arts['paginator'], //$this->art_paginator, 
 										'route' => 'search', 
 										'action' => 'word', 
 										'pag_part' => 'contents/paginator1.phtml',
@@ -101,7 +101,8 @@ class SearchController extends AbstractActionController
 										'title_check' => $title_check,
 										'text_check' => $text_check,
 										'tut_check' => $tut_check,
-										'pageCount' => count($this->art_paginator)));
+										'yo' => $yo,
+										'pageCount' => count($arts['paginator']))); //$this->art_paginator)));
 						
 		$articles->setTemplate('contents/articles');
 		return $articles;    	
@@ -147,8 +148,62 @@ class SearchController extends AbstractActionController
        	$view->setVariable('wordform', $wordform); 
    //    	$histform = new HistoricForm(null, HistoricTables::getAllHistoric($this->getServiceLocator()));
    //    	$view->setVariable('histform', $histform); 
-
 		return $view;       	
+    }
+    
+    public static function processRequest($sm, $request, $params, $view)
+    {
+        $title = "";
+		$query = urldecode($params->fromQuery('query', "-"));
+		$page = $params->fromQuery('page', 1);
+		$found = 0;
+		
+		$title_check = $params->fromQuery('title_check', 0);
+		$text_check = $params->fromQuery('text_check', 0);
+		$yo = $params->fromQuery('yo', 0);
+		
+		$wordform = $view->wordform;
+  //      error_log(sprintf("search_part = %s", $search_part));
+        if ($request->isPost()) {
+			$data = $request->getPost();
+			if (isset($data['submit'])) {
+				if (isset($data['word']) && strlen($data['word']) > 0) {
+					$query = $data['word'];
+				}
+			}
+			if (isset($data['title_check']))
+				$title_check = $data['title_check'] == 'yes' ? 1 : 0;
+			if (isset($data['text_check']))
+				$text_check = $data['text_check'] == 'yes' ? 2 : 0;
+			if (isset($data['yo']))
+				$yo = $data['yo'] == 'yes' ? 1 : 0;
+        }
+        if (strlen($query) > 0) {
+			$wordform->get('word')->setAttribute('value', $query);
+        	if ($title_check != 0)
+				$wordform->get('title_check')->setAttribute('value', 'yes');
+			else if ($title_check == 0 || !isset($data['title_check']) || $data['title_check'] == "no") {
+				//$title_check = 0;
+				$wordform->get('title_check')->setAttribute('value', 'no');
+			}
+			if ($text_check != 0)
+				$wordform->get('text_check')->setAttribute('value', 'yes');
+			else if ($text_check == 0 || !isset($data['text_check']) || $data['text_check'] == "no") {
+				//$text_check = 0;
+				$wordform->get('text_check')->setAttribute('value', 'no');
+			}
+			if ($yo != 0)
+				$wordform->get('yo')->setAttribute('value', 'yes');
+			else if ($yo == 0 || !isset($data['yo']) || $data['yo'] == "no") {
+				//$yo = 0;
+				if ($wordform->has('yo'))
+					$wordform->get('yo')->setAttribute('value', 'no');
+			}
+			//print_r($data);
+			$articles = SearchController::getArticles($sm, $query, $title_check, $text_check, $yo, 0, $page);
+
+        }
+		return $articles;    	
     }
     
     public function wordAction()
@@ -163,7 +218,8 @@ class SearchController extends AbstractActionController
         $request = $this->getRequest();
 
         $title = "";
-		$query = $this->params()->fromQuery('query', "-");
+		$query = urldecode($this->params()->fromQuery('query', '-'));
+		error_log(sprintf("after decode: %s", $query));
 		$tab = $this->params()->fromQuery('tab', 'dic');
 		$page = $this->params()->fromQuery('page', 1);
 		$found = 0;
@@ -171,6 +227,7 @@ class SearchController extends AbstractActionController
 		$title_check = $this->params()->fromQuery('title_check', 0);
 		$text_check = $this->params()->fromQuery('text_check', 0);
 		$tut_check = $this->params()->fromQuery('tut_check', 0);
+		$yo = $this->params()->fromQuery('yo', 0);
 		
   //      error_log(sprintf("search_part = %s", $search_part));
         if ($request->isPost()) {
@@ -180,12 +237,15 @@ class SearchController extends AbstractActionController
 					$query = $data['word'];
 				}
 			}
+			//print_r($data);
 			if (isset($data['title_check']))
 				$title_check = $data['title_check'] == 'yes' ? 1 : 0;
 			if (isset($data['text_check']))
 				$text_check = $data['text_check'] == 'yes' ? 2 : 0;
 			if (isset($data['tut_check']))
 				$tut_check = $data['tut_check'] == 'yes' ? 1 : 0;
+			if (isset($data['yo']))
+				$yo = $data['yo'] == 'yes' ? 1 : 0;
         }
         if (strlen($query) > 0) {
 			$wordform->get('word')->setAttribute('value', $query);
@@ -207,17 +267,23 @@ class SearchController extends AbstractActionController
 				//$text_check = 0;
 				$wordform->get('tut_check')->setAttribute('value', 'no');
 			}
+			if ($yo != 0)
+				$wordform->get('yo')->setAttribute('value', 'yes');
+			else if ($yo == 0 || !isset($data['yo']) || $data['yo'] == "no") {
+				//$text_check = 0;
+				$wordform->get('yo')->setAttribute('value', 'no');
+			}
 			//print_r($data);
 			if ($tab == 'dic')
-				$articles = $this->getArticles($query, $title_check, $text_check, $tut_check, $page);
+				$articles = SearchController::getArticles($this->getServiceLocator(), $query, $title_check, $text_check, $yo, $tut_check, $page);
 			else
-				$articles = $this->getArticles($query, $title_check, $text_check, $tut_check, 1);
+				$articles = SearchController::getArticles($this->getServiceLocator(), $query, $title_check, $text_check, $yo, $tut_check, 1);
 			$view->addChild($articles, 'articles');
 
 			if ($tab == 'tutorial')
-				$rules = $this->getRules($query, $title_check, $text_check, $tut_check, $page);
+				$rules = $this->getRules($query, $title_check, $text_check, $yo, $tut_check, $page);
 			else
-				$rules = $this->getRules($query, $title_check, $text_check, $tut_check, 1);
+				$rules = $this->getRules($query, $title_check, $text_check, $yo, $tut_check, 1);
 			$view->addChild($rules, 'rules');
 			
 			$view->setVariable('tab', $tab);

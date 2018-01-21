@@ -106,6 +106,7 @@ namespace Application\Controller;
 										'action' => 'orthogr',
 										'pag_part' => 'contents/paginator.phtml',
 										'title' => $title, 
+										'word' => $word,
 										'id' => $id_ortho, 
 										'pageCount' => count($this->paginator), 
 										'formula' => "1"));
@@ -171,6 +172,7 @@ namespace Application\Controller;
 										'action' => 'formula',
 										'pag_part' => 'contents/paginator.phtml',
 										'title' => $title, 
+										'word' => $word,
 										'id' => $id_formula, 
 										'pageCount' => count($this->paginator), 
 										'formula' => "1"));

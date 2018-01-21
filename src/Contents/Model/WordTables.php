@@ -11,6 +11,7 @@ namespace Contents\Model;
 
  use Zend\Db\TableGateway\TableGateway;
  use Zend\Db\Sql\Select;
+ use Zend\Db\Sql\Delete;
  use Zend\Db\Sql\Sql;
  use Zend\Db\Sql\Expression;
  
@@ -65,7 +66,7 @@ namespace Contents\Model;
         return $resultSet;
     }
      
-	public static function processSpecSym($query)
+	public static function processSpecSym($query, $yo, $accented)
 	{
 		if (strpos($query, "?") !== false || strpos($query, "*") !== false) {
 			$LIKE = 'w.word REGEXP \'^'.$query.'$\'';
@@ -79,19 +80,32 @@ namespace Contents\Model;
 				else if (strrpos($query, "*") == strlen($query) - 1) {
 					$LIKE = 'w.word REGEXP \'^'.substr($query, 0, strlen($query) - 1).'\'';
 				}
-				$LIKE = str_replace("*", "[[:alpha:]{0,2}|[:punct:]|[:space:]|-]*", $LIKE);
+				if ($accented === true)
+					$LIKE = str_replace("*", "[[:alpha:]{0,2}|[:punct:]|[:space:]|[:digit:]|-]*", $LIKE);
+				else
+					$LIKE = str_replace("*", "[[:alpha:]{0,2}|[:punct:]|[:space:]|-]*", $LIKE);
 			}		        
 			if (strpos($query, "?") !== false) {
-				$LIKE = str_replace("?", "[[:alpha:]|[:punct:]|[:space:]|-]{0,2}", $LIKE);
+				if ($accented === true)
+					$LIKE = str_replace("?", "[[:alpha:]|[:punct:]|[:space:]|[:digit:]|-]{0,2}", $LIKE);
+				else
+					$LIKE = str_replace("?", "[[:alpha:]|[:punct:]|[:space:]|-]{0,2}", $LIKE);
 			}
-			$LIKE = preg_replace("/[её]/u", "[её]{2}", $LIKE);			
+			if (intval($yo) != 1) {
+				$LIKE = preg_replace("/[её]/u", "[её]{2}", $LIKE);			
+			}
 			$LIKE = mb_strtolower($LIKE, 'UTF-8');					
-
 		}
 		else {
-			$LIKE = 'w.word LIKE \''.$query.'\'';
+			if (intval($yo) == 1)
+				$LIKE = 'w.word REGEXP \'^'.$query.'$\'';
+			else
+				$LIKE = 'w.word LIKE \''.$query.'\'';
 		}
-		//error_log($LIKE);
+		$LIKE = preg_replace("/8/", "[[:digit:]]{0,1}", $LIKE);			
+		error_log($LIKE);
+//print_r($LIKE);
+		
 		return $LIKE;
 	}
 
@@ -297,33 +311,114 @@ namespace Contents\Model;
 		
 	}
 	
-	public static function checkQuery($word)
+	function mb_substr_replace($string, $replacement, $start, $length){
+    	return mb_substr($string, 0, $start).$replacement.mb_substr($string, $start+$length);
+	}	
+	public static function checkQuery($word, &$accent)
 	{
 		$word = str_replace("'", "", $word);
-		$word = preg_replace("/[\[|\]|\{|\}|\d|\$|\%|\^|\&|\(|\)|\!|\:|\;|\#]/", "", $word);
+		if ($accent === false)
+			$word = preg_replace("/[\[|\]|\{|\}|\d|\$|\%|\^|\&|\(|\)|\!|\:|\;|\#]/", "", $word);
+		else
+			$word = preg_replace("/[\[|\]|\{|\}|\d|\$|\%|\^|\(|\)|\!|\:|\;]/", "", $word);
 		$word = preg_replace("/[\*]+/", "*", $word);
 		$word = preg_replace("/\s+/", " ", $word);
        	$words = explode(" ", $word);
        	foreach ($words as $item) {
-       		if (strpos($item, "*") !== false) {
-       			$tmp = preg_replace("/[\*]/","",$item);
+       		if (strpos($item, "*") !== false || strpos($item, "?") !== false) {
+       			$tmp = preg_replace("/[\*\?]/","",$item);
        			if (mb_strlen($tmp, 'UTF-8') < 2) {
        				return array();
        			}
        		}
 //       		error_log($item);
        	}
+       	if ($accent === false)
+       		return $words;
+       	foreach ($words as &$word) {
+       		$pos = strpos($word, "&");
+       		if ($pos !== false && strpos($word, "&", $pos + 1) !== false)
+       		{
+       			return array(); // two accents
+       		}
+       		else if ($pos === false)
+       		{
+	       		$pos = strpos($word, "#");
+	       		if ($pos === false)  {
+	       			$accent = false;
+	       			return $words;
+	       		}
+	       	}
+	       	$accent = true;
+       		$word = preg_replace("/[\&]/", "1", $word);
+       		$len = mb_strlen($word);
+       		$vowels = array('а', 'о', 'э', 'и', 'у', 'ы', 'е', 'ё', 'ю', 'я');
+       		$i = 0;
+       		while ($i < $len) {
+       			$c = mb_substr($word, $i, 1);
+       			//error_log($c);
+       			for ($j =0; $j < count($vowels); $j++) {
+	       			if ($c == $vowels[$j]) {
+	       				//error_log("vowel");
+	       				if ($i + 1 < $len) {
+	       					$n = mb_substr($word, $i + 1, 1);
+	       					if ($n == '1') {
+	       						continue;
+	       					}
+	       					else {
+			       				$head = mb_substr($word, 0, $i + 1);
+		       					if ($n == '#')
+		       					{
+		       						if ($i + 2 < $len) {
+			       						$k = mb_substr($word, $i + 2, 1);
+			       						if ($k == "*") {
+			       							$tail = "[^1]".mb_substr($word, $i + 2);
+			       							$len += 4;
+			       							$i += 4;
+			       						}
+			       						else {
+				       						$tail = mb_substr($word, $i + 2);
+				       						$len--;
+				       					}
+				       				}
+				       				else {
+				       					$tail = "";
+			       						$len --;
+				       				}
+			       					$word = $head.$tail;
+				       			}
+		       					else {
+			       					$tail = mb_substr($word, $i + 1);
+			       					$word = $head."8".$tail;
+		       						$len += 1;
+		       						$i += 1;
+		       					}
+	       						//error_log($word);
+	       					}
+	       				}
+	       				else {
+			       			$word = $word."[1]8";
+	       				}
+	       				break;
+	    			}
+       			}
+	    		$i++;	       			
+       		}
+       		//error_log(sprintf("word with accent %s", $word));
+//       		error_log($item);
+       	}
+       	
        	return $words;
 	}
 	
-	public static function heuristic($sm, $table, $words)
+	public static function heuristic($sm, $table, $words, $yo)
 	{
 		$min = -1;
 		$idx = 0;
 		$min_idx = -1;
 		foreach ($words as &$word) {
 	        $word = trim($word, " \t.,:;-");
-	        $w_LIKE = WordTables::processSpecSym($word);
+	        $w_LIKE = WordTables::processSpecSym($word, $yo);
 	        $num = $table->tableGateway->select(function(Select $select) use ($word, $w_LIKE)
 	        {
 				$select->columns(array('art_count', 'word'));
@@ -355,9 +450,10 @@ namespace Contents\Model;
 	        }
 	        $idx++;
 		}
-	   // error_log(sprintf("min = %d", $min));
+//	    error_log(sprintf("min = %d", $min));
 	    $gr_min = $min;
-	    $gramms = Gramm::getDicGramms($sm, $words, $gr_min);
+	    $gramms = Gramm::getDicGramms($sm, $words, $gr_min, $yo);
+//	    error_log(sprintf("count(gramms) = %d, gr_min = %d, $min = %d", count($gramms), $gr_min, $min));
 	    if (count($gramms) != 0 && $gr_min < $min)
 	    	return $gramms;
 
@@ -366,7 +462,7 @@ namespace Contents\Model;
 	 		
 	    if ($min != -1) {	    
 		    $word = $words[$min_idx];
-	        $w_LIKE = WordTables::processSpecSym($word);
+	        $w_LIKE = WordTables::processSpecSym($word, $yo);
 		    $id_articles = $table->tableGateway->select(function(Select $select) use ($word, $w_LIKE)
 			{
 				$select->columns(array('art_count'));
@@ -385,38 +481,42 @@ namespace Contents\Model;
 		return array();
 	}
 	
-    public static function getArticles($sm, $word, $where = 3, $paginated = false, $count_for_page = 0, $page = 0)
+    public static function getArticles($sm, $word, $where = 3, $yo, $paginated = false, $count_for_page = 0, $page = 0)
     {
 		error_log("WordTables: getArticles");
-		error_log(sprintf("word = %s", $word));
+//		error_log(sprintf("word = %s yo = %d page = %d", $word, $yo, $page));
 		if ($where == 0) {
 			return WordTables::emptyResult($paginated, $count_for_page, $page);
 		}
      //   error_log(sprintf("getArticles, word = %s, where = %d, search_part = %s", $word, $where, $search_part));
        	$query = $word;
-       	$table = $sm->get('Contents\Model\WordTables');
+       	$table = $sm->get('Contents\Model\AccentTables'); //WordTables');
        	$word = trim($word, " \t.-");
-       	$words = WordTables::checkQuery($word);
+       	$accented = true;
+       	$words = WordTables::checkQuery($word, $accented);
        	if (count($words) == 0) {
        		return WordTables::emptyResult($paginated, $count_for_page, $page);
        	}
 //        $word = str_replace("-", "", $word);
 //        $word = str_replace(" ", "", $word);
 //        $word = str_replace(".", "", $word);
-
+		if ($accented === true)
+	       	$table = $sm->get('Contents\Model\AccentTables'); //WordTables');
+		else
+	       	$table = $sm->get('Contents\Model\WordTables');
 	   	$id_array = array();
 	   	$id_arts = array();
 		$step = 0;
 		$heur_array = array();
 		if (count($words) > 1)
-			$heur_array = WordTables::heuristic($sm, $table, $words);
+			$heur_array = WordTables::heuristic($sm, $table, $words, $yo);
 		$find_bgr = false;
 		//error_log(sprintf("count nwords = %d", $heur_array['nwords']));
 		//error_log(sprintf("len bigramms = %d", strlen($heur_array['bigramms'])));
 		//error_log($heur_array['bigramms']);	
 		if (isset($heur_array['gramms']	) && isset($heur_array['nwords']) && count($heur_array['nwords']) == 1) {
 			$find_bgr = true;
-			$id_array = Gramm::getArticlesId($sm, $heur_array['delta'], $heur_array['nwords'][0], $where);
+			$id_array = Gramm::getArticlesId($sm, $heur_array['delta'], $heur_array['nwords'][0], $where, $yo);
 		} 
 		elseif (!isset($heur_array['stop'])) {
 			if (isset($heur_array['nwords']))
@@ -438,7 +538,10 @@ namespace Contents\Model;
 		        	else
 		        		$aw_ON .= ' AND (aw.title = 2 OR aw.title = 3)'; 	
 		        }
-				$w_LIKE = WordTables::processSpecSym($item);//w.word LIKE \''.$item.'\'';
+//		        error_log("before processSpecSym");
+		error_log(sprintf("word = %s yo = %d page = %d", $word, $yo, $page));
+				$w_LIKE = WordTables::processSpecSym($item, $yo, $accented);//w.word LIKE \''.$item.'\'';
+//		        error_log("after processSpecSym");
 	
 		        if (count($id_arts) != 0) {
 		        	$w_LIKE .= " AND aw.id_article IN (".implode(",", $id_arts).")"; 
@@ -459,9 +562,13 @@ namespace Contents\Model;
 			        	$articles = Gramm::getGrammArticles($sm, $heur_array['delta'], $item, $where, $heur_array['gramms']); 
 		        }
 		        else { 
-			        $articles = $table->tableGateway->select(function(Select $select) use ($aw_ON, $w_LIKE)
+			        $articles = $table->tableGateway->select(function(Select $select) use ($aw_ON, $w_LIKE, $accented)
 			        {
-				        $select->join(array('aw' => 'words_articles'), new Expression($aw_ON), array('id_article', 'start', 'len', 'title', 'segment', 'number'), 'left'); 
+			        	if ($accented === false)
+					        $select->join(array('aw' => 'words_articles'), new Expression($aw_ON), 				        array('id_article', 'start', 'len', 'title', 'segment', 'number'), 'left'); 
+						else 
+					        $select->join(array('aw' => 'accents_articles'), new Expression($aw_ON),				        array('id_article', 'start', 'len', 'title', 'segment', 'number'), 'left'); 
+	        
 //				        $select->order('aw.title, aw.id_article, aw.start');
 				        $select->order('aw.title, aw.id_article, aw.start');
 			            $select->where($w_LIKE);
@@ -580,7 +687,7 @@ namespace Contents\Model;
      
 	}     
         
-	public static function getTutorial($sm, $word, $check = 1, $rule_id = 0, $paginated = false, $count_for_page = 0, $page = 0)
+	public static function getTutorial($sm, $word, $check = 1, $yo, $rule_id = 0, $paginated = false, $count_for_page = 0, $page = 0)
 	{
         error_log("WordTables: getTutorial");
 		error_log(sprintf("word = %s", $word));
@@ -593,7 +700,8 @@ namespace Contents\Model;
         $table = $sm->get('Contents\Model\WordTables');
         $word = trim($word, " \t.-");
 
-       	$words = WordTables::checkQuery($word);
+		$accented = false;
+       	$words = WordTables::checkQuery($word, $accented);
        	if (count($words) == 0) {
        		return WordTables::emptyResult($paginated, $count_for_page, $page);
        	}
@@ -615,7 +723,7 @@ namespace Contents\Model;
 	        $aw_ON = 'w.id = tw.id';
 			for ($type = self::typeRule; $type <= self::typeOrtho; $type++) {
 //	        	error_log($type);
-		        $w_LIKE = 'tw.type='.$type.' AND '. WordTables::processSpecSym($item);//w.word LIKE \''.$item.'\'';
+		        $w_LIKE = 'tw.type='.$type.' AND '. WordTables::processSpecSym($item, $yo, false);//w.word LIKE \''.$item.'\'';
 				if ($step > 0 && count($id_rules[$types[$type]['sign']]) == 0) {
 					continue;
 				}
@@ -781,6 +889,15 @@ namespace Contents\Model;
 		}
 		error_log(count($res_id)); 
 	}   
+	public static function deleteArticle($sm, $id)
+	{
+		$action = new Delete('words_articles');
+        $action->where(array('id_article = ?' => $id));
+
+         $sql    = new Sql($sm->get('Zend\Db\Adapter\Adapter'));
+         $stmt   = $sql->prepareStatementForSqlObject($action);
+         $result = $stmt->execute();		
+	}
           
  } 
  

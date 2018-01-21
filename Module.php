@@ -35,6 +35,7 @@ use Contents\Model\ArticleTables;
 use Contents\Model\ArticleFormula;
 use Contents\Model\ArticlesFormulasTables;
 
+use Contents\Model\Accent;
 use Contents\Model\Word;
 use Contents\Model\WordTables;
 
@@ -50,6 +51,15 @@ use Contents\Model\TetragrammTables;
 use Contents\Model\Mistake;
 use Contents\Model\MistakeTables;
 
+use Contents\Model\Predisl;
+use Contents\Model\PredislTable;
+
+use Contents\Model\DicUser;
+use Contents\Model\DicUserTable;
+
+use Contents\Model\State;
+use Contents\Model\StateTable;
+
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -63,8 +73,6 @@ class Module
         $eventManager        = $e->getApplication()->getEventManager();
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
-       // $leftside = new ContentItem();
-       // $application->getServiceManager()->addService('leftside' => $leftside);
     }
 
     public function getConfig()
@@ -207,6 +215,18 @@ class Module
                     $resultSetPrototype->setArrayObjectPrototype(new Word());
                     return new TableGateway(array('w' => 'words'), $dbAdapter, null, $resultSetPrototype);
                 }, 
+                'Contents\Model\AccentTables' =>  function($sm) {
+                    error_log("create Accent table");
+                    $tableGateway = $sm->get('AccentTableGateway');
+                    $table = new WordTables($tableGateway);
+                    return $table;
+                },
+                'AccentTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Accent());
+                    return new TableGateway(array('w' => 'accents'), $dbAdapter, null, $resultSetPrototype);
+                }, 
                 'Contents\Model\MistakeTables' =>  function($sm) {
                     error_log("create Mistake table");
                     $tableGateway = $sm->get('MistakeTableGateway');
@@ -254,7 +274,42 @@ class Module
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Tetragramm());
                     return new TableGateway(array('t' => 'tetragramms'), $dbAdapter, null, $resultSetPrototype);
-                },                 
+                },  
+                'Contents\Model\PredislTable' =>  function($sm) {
+                    $tableGateway = $sm->get('PredislTableGateway');
+                    $table = new PredislTable($tableGateway);
+                    return $table;
+                },
+                'PredislTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Predisl());
+                    return new TableGateway(['p' => 'predisl'], $dbAdapter, null, $resultSetPrototype);
+                },   
+                //dic_users
+                'Contents\Model\DicUserTable' =>  function($sm) {
+                    $tableGateway = $sm->get('DicUserTableGateway');
+                    $table = new DicUserTable($tableGateway);
+                    return $table;
+                },
+                'DicUserTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new DicUser());
+                    return new TableGateway(['d' => 'dic_users'], $dbAdapter, null, $resultSetPrototype);
+                },   
+                //status
+                'Contents\Model\StateTable' =>  function($sm) {
+                    $tableGateway = $sm->get('StateTableGateway');
+                    $table = new StateTable($tableGateway);
+                    return $table;
+                },
+                'StateTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new State());
+                    return new TableGateway(['s' => 'status'], $dbAdapter, null, $resultSetPrototype);
+                },   
             ),
         );
     }    

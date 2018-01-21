@@ -12,6 +12,7 @@ namespace Contents\Model;
  use Zend\Db\TableGateway\TableGateway;
  use Zend\Db\ResultSet\ResultSet;
  use Zend\Db\Sql\Select;
+ use Zend\Db\Sql\Delete;
  use Zend\Db\Sql\Sql;
  use Zend\Session\SessionManager;
 
@@ -45,7 +46,19 @@ namespace Contents\Model;
             return ($articles->current()->src); 
         return false;
 	}
-
+    
+    public static function getText($sm, $id)
+	{
+        $table = $sm->get('Contents\Model\ArticleTables');
+        $articles = $table->tableGateway->select(function(Select $select) use ($id)
+        {
+            $select->where('a.id = '.strval($id));
+        });
+        if ($articles->count())
+            return ($articles->current()->text); 
+        return false;
+	}
+	
 	public static function getTitle($sm, $id)
 	{
         $table = $sm->get('Contents\Model\ArticleTables');
@@ -92,6 +105,22 @@ namespace Contents\Model;
         });
         if ($articles->count())
             return ($articles->current()->text); 
+    }
+
+    public static function deleteArticle($sm, $id)
+    {
+        // delete links
+        WordTables::deleteArticle($sm, $id);
+        BigrammTables::deleteArticle($sm, $id);
+        TrigrammTables::deleteArticle($sm, $id);
+        TetragrammTables::deleteArticle($sm, $id);
+        // delete article
+		$action = new Delete('articles');
+        $action->where(array('id = ?' => $id));
+
+         $sql    = new Sql($sm->get('Zend\Db\Adapter\Adapter'));
+         $stmt   = $sql->prepareStatementForSqlObject($action);
+         $result = $stmt->execute();		
     }
 
     public static function getArticlesForRule($sm, $id_rule)
