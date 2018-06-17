@@ -143,14 +143,14 @@ namespace Contents\Model;
 				}
 			}
         }
-        // if exists orthos connected to rule with id 0 add them to last item in result
+        // if exist orthos connected to rule with id 0 add them to last item in result
         $orthos = OrthogrTables::getFormulasForNull($sm, $id_para);
         if (count($orthos) > 0) {
         	foreach ($orthos as $ortho) {
-	        	$result[count($result) - 1]['orthos'][] = $ortho;
+	        	$result[count($result) - 1]['orthos']['words'][] = $ortho;
         	}
         }
-//        print_r($result);
+        //print_r($result);
         return $result;
      }
 
