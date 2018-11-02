@@ -67,7 +67,7 @@ namespace Contents\Model;
                 $paraSet = $adapter->query($selectString, $adapter::QUERY_MODE_EXECUTE);                
 
                 $contents[$part->name]['tiles'][$tile->name] = array('id' => $tile->id, 'active' => "0", 'paras' => array());
-                $pp = "§§";
+                $pp = "§ ";
 	        	//error_log("tile2 = ");
                 foreach ($paraSet as $para)
                 {
