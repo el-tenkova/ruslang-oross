@@ -60,6 +60,12 @@ use Contents\Model\DicUserTable;
 use Contents\Model\State;
 use Contents\Model\StateTable;
 
+use Contents\Model\Sources;
+use Contents\Model\SourcesTable;
+
+use Contents\Model\ArticleAddInfo;
+use Contents\Model\ArticleAddInfoTable;
+
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -203,6 +209,18 @@ class Module
                     $resultSetPrototype->setArrayObjectPrototype(new ArticleFormula());
                     return new TableGateway(array('af' => 'articles_formulas'), $dbAdapter, null, $resultSetPrototype);
                 }, 
+                'Contents\Model\ArticleAddInfoTable' =>  function($sm) {
+                    error_log("create ArticleAddInfoTable");
+                    $tableGateway = $sm->get('ArticleAddInfoTable');
+                    $table = new ArticleAddInfoTable($tableGateway);
+                    return $table;
+                },
+                'ArticleAddInfoTable' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new ArticleAddInfo());
+                    return new TableGateway(array('ai' => 'articles_addinfo'), $dbAdapter, null, $resultSetPrototype);
+                }, 
                 'Contents\Model\WordTables' =>  function($sm) {
                     error_log("create Word table");
                     $tableGateway = $sm->get('WordTableGateway');
@@ -309,7 +327,19 @@ class Module
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new State());
                     return new TableGateway(['s' => 'status'], $dbAdapter, null, $resultSetPrototype);
-                },   
+                },
+                // external sources   
+                'Contents\Model\SourcesTable' =>  function($sm) {
+                    $tableGateway = $sm->get('SourcesTableGateway');
+                    $table = new SourcesTable($tableGateway);
+                    return $table;
+                },
+                'SourcesTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Sources());
+                    return new TableGateway(['s' => 'sources'], $dbAdapter, null, $resultSetPrototype);
+                },
             ),
         );
     }    
