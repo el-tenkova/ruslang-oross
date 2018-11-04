@@ -37,12 +37,28 @@
 ?>
 			<?php foreach ($this->articles as $article) : ?>
 				<div class="row">
-					<?php if (count($article['orthos']) > 0 || count($article['paras']) > 0 || count($article['comments']) > 0) : ?>
+					<?php if (count($article['orthos']) > 0 || count($article['paras']) > 0 || count($article['comments']) > 0 || count($article['addinfo']) > 0) : ?>
 						<div class="col-lg-4" >
-							<?php //error_log($article['article']); ?>
-							<p><span><?php echo $article['article']; ?></span></p>
+							<p><?php if ($article['dic'] == '50') echo "<img src=\"".$this->basePath() . '/img/book-ok.png'."\" style=\"margin: 4px 5px 0px 0px\" align=\"left\" title=\"орфографический комментарий\">"; ?><span><?php echo $article['article']; ?></span></p>
 						</div>
 						<div class="col-lg-8" >
+						<?php if (count($article['addinfo']) != 0): ?>
+							<?php //echo "<hr />"; ?>
+								<div class="accordion" id="accordionAddinfo1" >
+									<?php foreach ($article['addinfo'] as $addinfo_id => $addinfo) : ?>
+										<div class="accordion-group" id="accordion-group-addinfo1_<?php echo $addinfo_id; ?>" >
+											<div class="accordion-heading" id="accordion-heading-addinfo1_<?php echo $addinfo_id; ?>" >
+												<a class="accordion-toggle addinfo1" addinfo_id="<?php echo $addinfo_id; ?>" style="text-transform:none" data-toggle="collapse" data-parent="#accordionAddinfo1" href="#addinfo1_<?php echo $addinfo_id; ?>" ><?php echo $addinfo['src']; ?></a >
+											</div>
+										</div>
+										<div id="addinfo1_<?php echo $addinfo_id; ?>" class="accordion-body collapse">
+											<div class="accordion-inner" id="addinfo-inner1_<?php echo $addinfo_id; ?>" style="margin-left:15px">
+											<!-- filled by click -->
+											</div>
+										</div>
+									<?php endforeach; ?>
+								</div>
+							<?php endif; ?>
 							<?php if (count($article['comments']) != 0): ?>
 								<div class="accordion" id="accordionComment" >
 									<?php foreach ($article['comments'] as $comment_id => $comment) : ?>
@@ -58,13 +74,13 @@
 										</div>
 									<?php endforeach; ?>
 								</div>
-								<?php if (count($article['orthos']) != 0 || count($article['paras']) != 0 ) echo "<hr />"; ?>
+								<?php //if (count($article['orthos']) != 0 || count($article['paras']) != 0 ) echo "<hr />"; ?>
 							<?php endif; ?>
-							<div class="accordion" id="accordionOrthos" >
+							<div class="accordion" id="accordionOrthos"  >
 								<?php foreach ($article['orthos'] as $ortho_id => $ortho) : ?>
 									<div class="accordion-group" id="accordion-group<?php echo $article['id']; ?>_<?php echo $ortho_id; ?>" >
 										<div class="accordion-heading" id="accordion-heading<?php echo $article['id']; ?>_<?php echo $ortho_id; ?>" >
-											<a class="accordion-toggle orthogramm" ortho_id="<?php echo $ortho_id; ?>" art_id="<?php echo $article['id']; ?>"style="text-transform:none" data-toggle="collapse" data-parent="#accordionOrthos" href="#formulas<?php echo $article['id']; ?>_<?php echo $ortho_id; ?>" ><?php echo $ortho['name'] ?></a >
+											<a class="accordion-toggle orthogramm" ortho_id="<?php echo $ortho_id; ?>" art_id="<?php echo $article['id']; ?>"style="text-transform:none" data-toggle="collapse" data-parent="#accordionOrthos" href="#formulas<?php echo $article['id']; ?>_<?php echo $ortho_id; ?>" ><?php echo $ortho['name']; ?></a >
 										</div>
 									</div>
 									<div id="formulas<?php echo $article['id']; ?>_<?php echo $ortho_id; ?>" class="accordion-body collapse">
@@ -74,12 +90,12 @@
 									</div>
 								<?php endforeach; ?>
 							</div>
-							<?php if (count($article['orthos']) > 0) echo "<hr />"; ?>
+							<?php //if (count($article['comments']) > 0 && count($article['orthos']) > 0) echo "<hr />"; ?>
 							<div class="accordion" id="accordionParas" >
 								<?php foreach ($article['paras'] as $para_id => $para) : ?>
 									<div class="accordion-group" id="accordion-group<?php echo $article['id']; ?>_<?php echo $para_id; ?>" >
 										<div class="accordion-heading" id="accordion-heading<?php echo $article['id']; ?>_<?php echo $para_id; ?>" >
-											<a class="accordion-toggle paragraph" para_id="<?php echo $para_id; ?>" art_id="<?php echo $article['id']; ?>" style="text-transform:none" data-toggle="collapse" data-parent="#accordionParas" href="#paras<?php echo $article['id']; ?>_<?php echo $para_id; ?>" >§ <?php echo $para_id ?></a >
+											<a class="accordion-toggle paragraph" para_id="<?php echo $para_id; ?>" art_id="<?php echo $article['id']; ?>" style="text-transform:none" data-toggle="collapse" data-parent="#accordionParas" href="#paras<?php echo $article['id']; ?>_<?php echo $para_id; ?>" >§ <?php echo $para_id; ?></a >
 										</div>
 									</div>
 									<div id="paras<?php echo $article['id']; ?>_<?php echo $para_id; ?>" class="accordion-body collapse">
@@ -100,12 +116,13 @@
 										</div>
 									<?php endforeach; ?>
 								<?php endforeach; ?>
+								<?php //if ((count($article['orthos']) > 0 || count($article['paras']) > 0) && count($article['addinfo']) != 0) echo "<hr />"; ?>
 							</div>
 						</div>
 					<?php else: ?>
 						<div class="col-lg-12" >
 							<?php //error_log($article['article']); ?>
-							<p><span><?php echo $article['article']; ?></span></p>
+							<p><?php if ($article['dic'] == '50') echo "<img src=\"".$this->basePath() . '/img/book-ok.png'."\" style=\"margin: 4px 5px 0px 0px\" align=\"left\" title=\"орфографический комментарий\">"; ?><span><?php echo $article['article']; ?></span></p>
 						</div>
 					<?php endif; ?>
 				</div>
@@ -268,6 +285,32 @@
 		            success: function(j)
 	    	        {
 						$(str).append('<div><p>' + j.src + '</p></div>');		                	
+	    	        },
+		            error: function(XMLHttpRequest, textStatus, errorThrown)
+		            {
+		            	alert(textStatus);
+		            }
+		        });
+			}
+		});
+
+		$('.addinfo1').unbind('click').click(function(e) {
+			e.preventDefault();
+			var str = '#addinfo-inner1' + '_' + $(this).attr('addinfo_id');
+			if ($(str).has('div').length == 0) {
+				var url = '<?php echo $this->url('article', array('action' => 'addinfo')); ?>';
+				$.ajax({
+	            	url: url,
+	            	async: false,
+	            	type: 'POST',
+	            	dataType: "json",
+	            	add_id : $(this).attr('addinfo_id'),
+	            	data: {
+	                	id : $(this).attr('addinfo_id'),
+	            	}, 
+		            success: function(j)
+	    	        {
+						$(str).append('<div><p>' + j.text + '</p></div>');		                	
 	    	        },
 		            error: function(XMLHttpRequest, textStatus, errorThrown)
 		            {
