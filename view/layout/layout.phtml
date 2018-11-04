@@ -27,7 +27,7 @@
     </head>
     <body>
         <?php 
-            $state =  $this->contents = $this->getHelperPluginManager()->getServiceLocator()->get('SiteState');
+            $state =  $this->getHelperPluginManager()->getServiceLocator()->get('SiteState');
         ?>
         <?php if ($state === true): ?>
         <nav class="navbar navbar-inverse" role="navigation">
