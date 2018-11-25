@@ -29,17 +29,22 @@ return array(
         	    'action' => 'view',
 			),
 	        array(
+    	        'label' => 'Литература',
+        	    'route' => 'home',
+        	    'action' => 'literature',
+			),
+/*	        array(
     	        'label' => 'Научная статья по проекту',
                 'uri'   => '/doc/ot_orph_slovarya_k_resursu.pdf'
-			),
+			), */
 		),
 	),
     'router' => array(
         'routes' => array(
             'home' => array(
-				'type' => 'Zend\Mvc\Router\Http\Literal',
+				'type' => 'segment', //'Zend\Mvc\Router\Http\Literal',
                 'options' => array(
-                    'route'       => '/',
+                    'route'       => '/[:action]',
                     'constraints' => array(
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                     ),

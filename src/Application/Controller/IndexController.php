@@ -35,7 +35,7 @@ use Zend\Http\Client;
 
 class IndexController extends AbstractActionController
 {
-    public function indexAction()
+/*    public function indexAction()
     {
         error_log("IndexController : indexAction");
         $state = StateTable::getState($this->getServiceLocator());
@@ -46,5 +46,31 @@ class IndexController extends AbstractActionController
     	$predisl = PredislTable::getPredisl($this->getServiceLocator());
 		return new ViewModel(array('predisl' => $predisl,
 		                                              'state' => $s));    	
-    }
+    } */
+    public function indexAction()
+    {
+        error_log("IndexController : indexAction");
+        $state = StateTable::getState($this->getServiceLocator());
+        $s = StateTable::Ok;
+        if (count($state) > 0 && $state['state'] == StateTable::UnderReconstruction)
+            $s = 2;
+        $view = new ViewModel();
+    	$predisl = PredislTable::getNewPredisl($this->getServiceLocator());
+//    	 $article->setTemplate('admin/admin-rosan/edit-article');
+		return (new ViewModel(array('predisl' => $predisl,
+		                                              'state' => $s)))->setTemplate('application/index/indexnew');    	
+    }    
+    public function literatureAction()
+    {
+        error_log("IndexController : literatureAction");
+        $state = StateTable::getState($this->getServiceLocator());
+        $s = StateTable::Ok;
+        if (count($state) > 0 && $state['state'] == StateTable::UnderReconstruction)
+            $s = 2;
+        $view = new ViewModel();
+    	$litra = PredislTable::getLiterature($this->getServiceLocator());
+		return new ViewModel(array('litra' => $litra,
+		                                              'state' => $s));    	
+    }    
+
 }
