@@ -29,7 +29,20 @@ namespace Contents\Model;
         $resultSet = $this->tableGateway->select();
         return $resultSet;
     }
-
+    public static function getAll($sm)
+    {
+        $table = $sm->get('Contents\Model\ArticleAddInfoTable');
+        $infos = $table->tableGateway->select(function(Select $select)
+        {
+            $select->order('ai.id_article');
+        });
+        $result = array();
+        foreach ($infos as $info)
+        {
+        	$result[] = array('id' => $info->id, 'id_article' => $info->id_article);
+        }
+        return $result;
+    }
     public static function getAllForArticle($sm, $id_article)
     {
         $table = $sm->get('Contents\Model\ArticleAddInfoTable');

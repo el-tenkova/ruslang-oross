@@ -388,7 +388,8 @@
 			    title_check: '<?php if ($this->action == "word") echo $this->title_check; else echo ""; ?>',
 			    text_check: '<?php if ($this->action == "word") echo $this->text_check; else echo ""; ?>',
 			    yo: '<?php if ($this->action == "word") echo $this->yo; else echo ""; ?>',
-			    search_part: '<?php if ($this->action == "word") echo $this->search_part; else echo ""; ?>'
+			    search_part: '<?php if ($this->action == "word") echo $this->search_part; else echo ""; ?>',
+			    addinfo: '<?php if (isset($this->addinfo)) echo "1"; else echo "0"; ?>'
 			}, 
 			success: function(j)
 			{

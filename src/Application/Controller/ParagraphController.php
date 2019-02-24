@@ -94,13 +94,13 @@ namespace Application\Controller;
      public function markedruleAction()
      {
 		error_log("Paragraph  MARKED ruleAction");
-		
+		$yo = 0;
         if (isset($_POST['id'])) {
          //   error_log($_POST['id']);
 //            $title = ParagraphTables::getParaTitle($this->getServiceLocator(), $_POST['id']);
 		//	error_log($_POST['query']);
 			if (isset($_POST['query'])) {
-				$marks = WordTables::getTutorial($this->getServiceLocator(), $_POST['query'], 1, $_POST['id']);
+				$marks = WordTables::getTutorial($this->getServiceLocator(), $_POST['query'], 1, $yo, $_POST['id']);
 				$rule = RuleTables::getRuleFull($this->getServiceLocator(), $_POST['id']);
 				if (count($marks) > 0) {
 				//	error_log("count marks > 0");

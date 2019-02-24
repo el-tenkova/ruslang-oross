@@ -23,7 +23,12 @@ return array(
         	    'route' => 'orthogr',
         	    'action' => 'index',
 			),
-	        array(
+            array(
+    	        'label' => 'Статьи+',
+        	    'route' => 'article',
+        	    'action' => 'view',
+			),
+            array(
     	        'label' => 'Справочник',
         	    'route' => 'paragraph',
         	    'action' => 'view',

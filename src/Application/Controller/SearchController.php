@@ -108,13 +108,14 @@ class SearchController extends AbstractActionController
 		return $articles;    	
     }
     
-    public function getRules($query, $title_check, $text_check, $tut_check, $page)
+    public function getRules($query, $title_check, $text_check, $yo, $tut_check, $page)
     {
 		$rls = array();
 		$show = array();
 		$found = 0;
+		$yo = 0;
     	
-		$rls = WordTables::getTutorial($this->getServiceLocator(), $query, $tut_check, 0, true, self::FOR_PAGE_COUNT, $page);
+		$rls = WordTables::getTutorial($this->getServiceLocator(), $query, $tut_check, $yo, 0, true, self::FOR_PAGE_COUNT, $page);
 		$found = isset($rls['count']) ? $rls['count'] : 0;	
 		if ($found == 0) {
 			$title = sprintf('По запросу "%s" в справочнике ничего не найдено', $query);
@@ -224,9 +225,9 @@ class SearchController extends AbstractActionController
 		$page = $this->params()->fromQuery('page', 1);
 		$found = 0;
 		
-		$title_check = $this->params()->fromQuery('title_check', 0);
-		$text_check = $this->params()->fromQuery('text_check', 0);
-		$tut_check = $this->params()->fromQuery('tut_check', 0);
+		$title_check = $this->params()->fromQuery('title_check', $query == "-" ? 0 : 1);
+		$text_check = $this->params()->fromQuery('text_check', $query == "-" ? 0 : 2);
+		$tut_check = $this->params()->fromQuery('tut_check', $query == "-" ? 0 : 1);
 		$yo = $this->params()->fromQuery('yo', 0);
 		
   //      error_log(sprintf("search_part = %s", $search_part));

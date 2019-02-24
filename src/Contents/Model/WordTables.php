@@ -351,6 +351,7 @@ namespace Contents\Model;
 	       	}
 	       	$accent = true;
        		$word = preg_replace("/[\&]/", "1", $word);
+       		error_log($word);
        		$len = mb_strlen($word);
        		$vowels = array('а', 'о', 'э', 'и', 'у', 'ы', 'е', 'ё', 'ю', 'я');
        		$i = 0;
@@ -393,11 +394,12 @@ namespace Contents\Model;
 		       						$len += 1;
 		       						$i += 1;
 		       					}
-	       						//error_log($word);
+	 //      						error_log($word);
 	       					}
 	       				}
 	       				else {
-			       			$word = $word."[1]8";
+			       			$word = $word."8";
+	       					error_log($word);
 	       				}
 	       				break;
 	    			}
@@ -416,9 +418,10 @@ namespace Contents\Model;
 		$min = -1;
 		$idx = 0;
 		$min_idx = -1;
+		$accented = false;
 		foreach ($words as &$word) {
 	        $word = trim($word, " \t.,:;-");
-	        $w_LIKE = WordTables::processSpecSym($word, $yo);
+	        $w_LIKE = WordTables::processSpecSym($word, $yo, $accented);
 	        $num = $table->tableGateway->select(function(Select $select) use ($word, $w_LIKE)
 	        {
 				$select->columns(array('art_count', 'word'));
@@ -457,12 +460,17 @@ namespace Contents\Model;
 	    if (count($gramms) != 0 && $gr_min < $min)
 	    	return $gramms;
 
-	 	if ($min > MAX_ARTS)
-	 		return array('stop' => 1);
+	/*	if ($min > MAX_ARTS)
+	 	{
+	 		error_log($min);
+	 		error_log("return stop = 1");
+	 	//	return array('stop' => 1);
+	 	return array();
+	 	} */
 	 		
 	    if ($min != -1) {	    
 		    $word = $words[$min_idx];
-	        $w_LIKE = WordTables::processSpecSym($word, $yo);
+	        $w_LIKE = WordTables::processSpecSym($word, $yo, $accented);
 		    $id_articles = $table->tableGateway->select(function(Select $select) use ($word, $w_LIKE)
 			{
 				$select->columns(array('art_count'));
@@ -490,7 +498,7 @@ namespace Contents\Model;
 		}
      //   error_log(sprintf("getArticles, word = %s, where = %d, search_part = %s", $word, $where, $search_part));
        	$query = $word;
-       	$table = $sm->get('Contents\Model\AccentTables'); //WordTables');
+   //    	$table = $sm->get('Contents\Model\AccentTables'); //WordTables');
        	$word = trim($word, " \t.-");
        	$accented = true;
        	$words = WordTables::checkQuery($word, $accented);
@@ -514,14 +522,14 @@ namespace Contents\Model;
 		//error_log(sprintf("count nwords = %d", $heur_array['nwords']));
 		//error_log(sprintf("len bigramms = %d", strlen($heur_array['bigramms'])));
 		//error_log($heur_array['bigramms']);	
-		if (isset($heur_array['gramms']	) && isset($heur_array['nwords']) && count($heur_array['nwords']) == 1) {
+		if (isset($heur_array['gramms']) && isset($heur_array['nwords']) && count($heur_array['nwords']) == 1) {
 			$find_bgr = true;
 			$id_array = Gramm::getArticlesId($sm, $heur_array['delta'], $heur_array['nwords'][0], $where, $yo);
 		} 
 		elseif (!isset($heur_array['stop'])) {
 			if (isset($heur_array['nwords']))
 				$words = $heur_array['nwords'];
-			//error_log(sprintf("new_words count = %d", count($words)));
+			error_log(sprintf("new_words count = %d", count($words)));
 			foreach ($words as &$item) {
 	//			if ($step != 0 && count($id_arts) == 0)
 	//!!!				break;
@@ -644,6 +652,9 @@ namespace Contents\Model;
 				$step += $delta;
 			}
 		}
+		else {
+			error_log("stop after heuristic");
+		}
 	//	error_log($id_array[0]['id']);
 	    if (count($words) > 1 && $find_bgr == false)
 			$res_id = WordTables::fillResArray($id_array, $step);
@@ -690,7 +701,7 @@ namespace Contents\Model;
 	public static function getTutorial($sm, $word, $check = 1, $yo, $rule_id = 0, $paginated = false, $count_for_page = 0, $page = 0)
 	{
         error_log("WordTables: getTutorial");
-		error_log(sprintf("word = %s", $word));
+		error_log(sprintf("word = %s check = ", $word, $check));
         
         if ($check == 0) {
 			return WordTables::emptyResult($paginated, $count_for_page, $page);
@@ -707,7 +718,6 @@ namespace Contents\Model;
        	}
         
 //        $words = explode(" ", $word);
-		
 		$types = @self::$types;					   					  
 		
 		$id_array = array();

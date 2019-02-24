@@ -34,7 +34,7 @@ namespace Contents\Model;
         $table = $sm->get('Contents\Model\PredislTable');
         $predisl = $table->tableGateway->select(function(Select $select)
         {
-            $select->where('1');
+            $select->where('id=1');
         });
         if ($predisl->count())
             return (array('title' => $predisl->current()->title,
@@ -46,6 +46,35 @@ namespace Contents\Model;
         return $ret;
     	
     }
+    public static function getNewPredisl($sm)
+    {
+        $table = $sm->get('Contents\Model\PredislTable');
+        $predisl = $table->tableGateway->select(function(Select $select)
+        {
+            $select->where('id=2');
+        });
+        if ($predisl->count())
+            return (array('title' => $predisl->current()->title,
+                                 'sub_title' => $predisl->current()->sub_title,
+                                 'empl' => $predisl->current()->empl,
+            			         'text' => $predisl->current()->text,
+            			         'lit_title' => $predisl->current()->lit_title,
+            			         'lit' => $predisl->current()->lit)); 
+        return $ret;
+    }
+    public static function getLiterature($sm)
+    {
+        $table = $sm->get('Contents\Model\PredislTable');
+        $predisl = $table->tableGateway->select(function(Select $select)
+        {
+            $select->where('id=2');
+        });
+        if ($predisl->count())
+            return (array('title' => $predisl->current()->title,
+                                 'lit_title' => $predisl->current()->lit_title,
+            			         'lit' => $predisl->current()->lit)); 
+        return $ret;
+    }    
  } 
  
  ?>

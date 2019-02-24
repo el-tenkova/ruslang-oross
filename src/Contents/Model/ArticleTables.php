@@ -66,8 +66,11 @@ namespace Contents\Model;
         {
             $select->where('a.id = '.strval($id));
         });
-        if ($articles->count())
-            return ($articles->current()->title); 
+        if ($articles->count()) {
+            return ($articles->current()->title[0]);
+            //$t = explode(";", $str);
+            //return $t[0]; 
+        }
 	}
 
 	public static function getByTitle($sm, $title)
@@ -144,19 +147,25 @@ namespace Contents\Model;
      
 	public static function isFirst($title, $query)
     {
-		$query = trim($query, " \t.,:;-");    		
-    	if (strlen($title) == strlen($query) && $title == $query) {
-    		return true;
-    	}
-    	else if (strlen($title) > strlen($query)) {
-    		$head = substr($title, 0, strlen($query));
+		$query = trim($query, " \t.,:;-");    	
+		foreach ( $title as $item)
+		{	
+		    #error_log($item);
+        	if (strlen($item) == strlen($query) && $item == $query) {
+        	   # error_log("ok");
+        		return true;
+    	    }
+    	    else if (strlen($item) > strlen($query)) {
+    		    $head = substr($item, 0, strlen($query));
 //    		error_log(sprintf("query = %s len = %d", $query, strlen($query)));
     		//error_log(sprintf("head  = %s", $head));
-    		if ($head == $query) {
-	    		$tail = substr($title, strlen($query));
+    		    if ($head == $query) {
+	    		    $tail = substr($item, strlen($query));
 //	    		error_log(sprintf("tail = %s", $tail));
-				if (preg_match('/^[^\p{L}]+$/u', $tail))
-					return true;
+				    if (preg_match('/^[^\p{L}]+$/u', $tail)) {
+					    return true;
+					}
+    		    }
     		}
     	}
     	return false;
@@ -178,8 +187,9 @@ namespace Contents\Model;
 		foreach ($id_array as $item) {
 			foreach ($item['marks'] as $mark)
 				if ($mark['title'] == 1) {
+//				    error_log(sprintf("title %d", $item['id']));
 					$id_title[] = $item['id'];
-				break;
+				    break;
 			}
 		}
 		$id_arts = array_diff($id_all, $id_title);		
@@ -198,7 +208,9 @@ namespace Contents\Model;
 				$ids = implode(",", $id_arts);//$id_array);
 			else 
 				continue;
-	//		error_log($ids);
+//			error_log($i);
+//			error_log($ids);
+//$ids = '161221';
 	        $articles = $table->tableGateway->select(function(Select $select) use ($ids)
 	        {
 	            $select->join(array('ap' => 'articles_paras'), 'a.id = ap.id', array('id_para'), 'left');
@@ -206,6 +218,7 @@ namespace Contents\Model;
 	            $select->join(array('ao' => 'articles_orthos'), 'a.id = ao.id', array('id_ortho'), 'left'); 
 	//            $select->join(array('af' => 'articles_formulas'), 'a.id = af.id', array('id_formula'), 'left'); 
 	            $select->join(array('ac' => 'articles_comments'), 'a.id = ac.id', array('id_comment'), 'left'); 
+	            $select->join(array('ai' => 'articles_addinfo'), 'a.id = ai.id_article', array('id_addinfo' => 'id', 'id_src' => 'id_src', 'addinfo' => 'text'), 'left'); 
 	            $select->where('a.id IN ('.$ids.')');
 	            $select->order('a.id');
 	        }); 
@@ -215,7 +228,7 @@ namespace Contents\Model;
 	        $firstId = -1;
 	        foreach ($articles as $article)
 	        {
-//	            error_log(sprintf("%d, %d", $article->id, $artId));
+	            error_log(sprintf("%d, %d", $article->id, $artId));
 	            if ($artId != $article->id) {
 					$offset = 0;
 					if ($i == 0)
@@ -247,7 +260,12 @@ namespace Contents\Model;
 								}
 							}														
 							//$prev_segment = 0;
+		//					$k = 0;
 							foreach ($item['marks'] as $mark_word) {
+		/*					    $k++;
+							    error_log($k);
+							    if ($k != 2)
+							        continue; */
 								if ($mark_word['start'] != 0 && $mark_word['step'] != -1) {
 						//			error_log($article->text);
 	//								error_log(strpos($article->text, "<span"));
@@ -271,7 +289,8 @@ namespace Contents\Model;
 										$article->text = substr_replace($article->text, $mark_before, $mark_word['start'] + $offset, 0);
 										$article->text = substr_replace($article->text, $mark_after, $mark_word['start'] + $mark_word['len'] + $offset + strlen($mark_before), 0);
 										$offset += $mark_len;
-							//			error_log($article->text);
+									//	break;
+					//					error_log($article->text);
 									}
 								//	error_log($article->text);
 
@@ -281,15 +300,15 @@ namespace Contents\Model;
 					}
 					if ($first === true) {
 						if ($firstId == count($result))
-			                $result[] = array('article' => $article->text, 'id' => $article->id, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array());
+			                $result[] = array('article' => $article->text, 'id' => $article->id, 'dic' => $article->dic, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array(), 'addinfo' => array());
 			            else {
 //							error_log(sprintf("firstId before slice %d", $firstId));
-							array_splice($result, $firstId, 0, array(array('article' => $article->text, 'id' => $article->id, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array())));
+							array_splice($result, $firstId, 0, array(array('article' => $article->text, 'id' => $article->id, 'dic' => $article->dic, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array(), 'addinfo' => array())));
 			            } 
 					}
 						
 					else {
-		                $result[] = array('article' => $article->text, 'id' => $article->id, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array());
+		                $result[] = array('article' => $article->text, 'id' => $article->id, 'dic' => $article->dic, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array(), 'addinfo' => array());
 					}
 	                $artId = $article->id;
 	            }
@@ -323,6 +342,9 @@ namespace Contents\Model;
 		        if ($article->id_comment != null && array_key_exists(strval($article->id_comment), $result[$idx]['comments']) == false) {
 	//				$ortho = OrthogrTables::getOrthogr($sm, $article->id_ortho);
 		            $result[$idx]['comments'][strval($article->id_comment)] = array('title' => ArticleTables::getTitle($sm, $article->id_comment));
+		        }
+		        if ($article->id_addinfo != null && array_key_exists(strval($article->id_addinfo), $result[$idx]['addinfo']) == false) {
+		            $result[$idx]['addinfo'][strval($article->id_addinfo)] = array('src' => SourcesTable::getSrcById($sm, $article->id_src));
 		        } 
 	        }
         }
@@ -343,9 +365,10 @@ namespace Contents\Model;
         // save result to rtf.
         $filename = 'articles'.uniqid().'.rtf';
 		$fp = fopen('downloads/'.$filename, 'w');
+	//	$ft = fopen('downloads/'.$filename.".txt", 'w');
 		if ($fp) {
 			fwrite($fp, "{\\rtf1\\ansi\\ansicpg1251\\deff0\\deflang1049{\\fonttbl{\\f0\\froman\\fprq2\\fcharset204{\\*\\fname Times New Roman;}Times New Roman CYR;}{\\f1\\froman\\fprq2\\fcharset204 Times Roman Cyr Acsent;}}");
-//			$idx = 1;
+	//		$idx = 1;
 			if ($formula != null) {
 				fwrite($fp, "\\par".FormulaTables::getFRTF($sm, $formula));
 				fwrite($fp, "\\par");
@@ -356,13 +379,20 @@ namespace Contents\Model;
 			}
 	        foreach ($articles as $article)
 	        {
-				fwrite($fp, "\\par".$article->rtf);
-//				error_log($idx);
-//				$idx += 1;
+/*	            $posb = strpos($article->src, "</b>");
+	            $posa = strpos($article->src, "&#x301");
+	            if ($posa === false || $posa > $posb) {
+//	                fwrite($ft, $article->id."\t".$article->title."\n");
+	                fwrite($ft, $article->src."\n"); */
+    				fwrite($fp, "\\par".$article->rtf);
+/*    				$idx++;
+    			} */
 	        }
+    //        error_log(sprintf("rtf without accent %d", $idx));
 	        //print_r($result);
 	        fwrite($fp, "}");
 			fclose($fp);
+	//		fclose($ft);
 			return $filename;
 		}
 		return false;
