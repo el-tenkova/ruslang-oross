@@ -247,7 +247,7 @@ namespace Contents\Model;
 									$pos = strpos($article->text, $mark_class_title);
 									$title_m = true;
 								}
-//								error_log(sprintf("pos mark-before = %d", $pos));
+								//error_log(sprintf("pos mark-before = %d", $pos));
 								while ($pos !== false && $pos - $offset < $item['marks'][0]['start']) {
 									if ($title_m) {
 										$title_m = false;
@@ -256,16 +256,17 @@ namespace Contents\Model;
 									else
 										$offset += $mark_len;
 									$pos = strpos($article->text, $mark_before, $pos + $offset);
-//									error_log(sprintf("pos mark-before = %d", $pos));
+									//error_log(sprintf("pos mark-before = %d", $pos));
 								}
 							}														
 							//$prev_segment = 0;
-		//					$k = 0;
+//                            $k=0;
 							foreach ($item['marks'] as $mark_word) {
-		/*					    $k++;
+/*							    $k++;
 							    error_log($k);
 							    if ($k != 2)
 							        continue; */
+							       error_log(sprintf("marks n = %d, start = %d", $k, $mark_word['start']));
 								if ($mark_word['start'] != 0 && $mark_word['step'] != -1) {
 						//			error_log($article->text);
 	//								error_log(strpos($article->text, "<span"));
@@ -277,23 +278,13 @@ namespace Contents\Model;
 									$prev = $mark_word['start'];
 									$prev_len = $mark_word['len'];
 									$prev_segment = $mark_word['segment'];
-									if ($mark_word['space'] == 1) {
-										$pos = strpos($article->text, $class_title);
-										$article->text = substr_replace($article->text, $mark_class_title, $pos + strlen($class_title) + $offset, 0);
-										error_log(sprintf("offset = %d", $offset));
-										$offset += $mark_class_len;
-								//		error_log("title marked");
-								//		error_log(sprintf("offset = %d", $offset));
-									}
-									else {
-										$article->text = substr_replace($article->text, $mark_before, $mark_word['start'] + $offset, 0);
-										$article->text = substr_replace($article->text, $mark_after, $mark_word['start'] + $mark_word['len'] + $offset + strlen($mark_before), 0);
-										$offset += $mark_len;
+									//    error_log(sprintf("222mark_word start %s offset %d",$mark_word['start'],$offset));
+									$article->text = substr_replace($article->text, $mark_before, $mark_word['start'] + $offset, 0);
+									$article->text = substr_replace($article->text, $mark_after, $mark_word['start'] + $mark_word['len'] + $offset + strlen($mark_before), 0);
+									$offset += $mark_len;
 									//	break;
 					//					error_log($article->text);
-									}
 								//	error_log($article->text);
-
 								}
 							}
 						}
