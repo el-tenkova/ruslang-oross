@@ -29,6 +29,11 @@ return array(
         	    'action' => 'view',
 			),
             array(
+    	        'label' => 'Алфавитный указатель',
+        	    'route' => 'abc',
+        	    'action' => 'view',
+			),
+            array(
     	        'label' => 'Справочник',
         	    'route' => 'paragraph',
         	    'action' => 'view',
@@ -128,6 +133,22 @@ return array(
                         'controller' => 'Application\Controller\Download',
                         'action'     => 'do',
                     ),
+                ),
+            ), 
+            'abc' => array(
+                'type'    => 'segment',
+                'options' => array(
+                    'route'       => '/abc[/:action][/:id]',
+                    'constraints' => array(
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z][a-zA-Z0-9_-]*'
+
+                    ),
+                    'defaults' => array(
+                        'controller' => 'Application\Controller\Abc',
+                        'action'     => 'view',
+                        'id' => 'a',
+                    ),
                 ), 
             ),
         ),
@@ -164,6 +185,7 @@ return array(
             'Application\Controller\Paragraph' => 'Application\Controller\ParagraphController',
             'Application\Controller\Download' => 'Application\Controller\DownloadController',
             'Application\Controller\Articles' => 'Application\Controller\ArticlesController',
+            'Application\Controller\Abc' => 'Application\Controller\AbcController',
         ),
     ),
     'view_manager' => array(

@@ -1,0 +1,69 @@
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+    (function (d, w, c) {
+        (w[c] = w[c] || []).push(function() {
+            try {
+                w.yaCounter50874710 = new Ya.Metrika2({
+                    id:45412578,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true,
+                    webvisor:true
+                });
+            } catch(e) { }
+        });
+ 
+        var n = d.getElementsByTagName("script")[0],
+            s = d.createElement("script"),
+            f = function () { n.parentNode.insertBefore(s, n); };
+        s.type = "text/javascript";
+        s.async = true;
+        s.src = "https://mc.yandex.ru/metrika/tag.js";
+ 
+        if (w.opera == "[object Opera]") {
+            d.addEventListener("DOMContentLoaded", f, false);
+        } else { f(); }
+    })(document, window, "yandex_metrika_callbacks2");
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/50874710" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+    <div class="related">
+		<ul>
+				<li class="prev">
+				</li>
+				<li class = "middle">
+				<?php foreach ($this->abc as $key => $letter): ?>
+					<a href=<?php echo $this->url('abc', array('action' => 'letter', 'id' => $letter)); ?> ><?php echo $key ?></a><?php echo ' ' ?>
+				<?php endforeach; ?>
+				</li>
+				<li class="next">
+				</li>
+		</ul>
+	</div>
+
+		<?php $idx = 0; ?>
+		<?php if (count($this->parts) <= 20) : ?>
+			<?php foreach ($this->parts as $part) : ?>
+				<div class="row">
+					<div class="col-md-4"></div>
+					<div class="col-md-4">
+						<p><a href=<?php echo ($this->url('abc', array('action' => 'part', 'id' => $this->letter)).'?start='.$part['id_first'].'&end='.$part['id_last']); ?> ><?php echo $part['a_first'].' - '.$part['a_last'] ?></a>
+					</div>
+					<div class="col-md-4"></div>
+				</div>
+			<?php endforeach; ?>
+		<?php else: ?>
+			<div class="row">
+				<div class="col-md-1"></div>
+				<div class="col-md-5">
+					<?php foreach ($this->parts as $part) : ?>
+						<p><a href=<?php echo ($this->url('abc', array('action' => 'part', 'id' => $this->letter)).'?start='.$part['id_first'].'&end='.$part['id_last']); ?> ><?php echo $part['a_first'].' - '.$part['a_last'] ?></a>
+						<?php if (intval(count($this->parts) / 2) == $idx) : ?>
+							</div>
+							<div class="col-md-6">
+						<?php endif; ?>
+						<?php $idx++; ?>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		<?php endif; ?>

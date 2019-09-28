@@ -66,6 +66,9 @@ use Contents\Model\SourcesTable;
 use Contents\Model\ArticleAddInfo;
 use Contents\Model\ArticleAddInfoTable;
 
+use Contents\Model\Abc;
+use Contents\Model\AbcTables;
+
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -340,8 +343,367 @@ class Module
                     $resultSetPrototype->setArrayObjectPrototype(new Sources());
                     return new TableGateway(['s' => 'sources'], $dbAdapter, null, $resultSetPrototype);
                 },
+                // abc_a             
+                'Contents\Model\AbcTables_a' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_a');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_a' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['a' => 'abc_a'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_be
+                'Contents\Model\AbcTables_be' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_be');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_be' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['be' => 'abc_be'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_che
+                'Contents\Model\AbcTables_che' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_che');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_che' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['che' => 'abc_che'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_de
+                'Contents\Model\AbcTables_de' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_de');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_de' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['de' => 'abc_de'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_e
+                'Contents\Model\AbcTables_e' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_e');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_e' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['e' => 'abc_e'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_ef
+                'Contents\Model\AbcTables_ef' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_ef');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_ef' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['ef' => 'abc_ef'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_el
+                'Contents\Model\AbcTables_el' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_el');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_el' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['el' => 'abc_el'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_em
+                'Contents\Model\AbcTables_em' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_em');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_em' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['em' => 'abc_em'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_en
+                'Contents\Model\AbcTables_en' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_en');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_en' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['en' => 'abc_en'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_er
+                'Contents\Model\AbcTables_er' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_er');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_er' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['er' => 'abc_er'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_ery
+                'Contents\Model\AbcTables_ery' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_ery');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_ery' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['ery' => 'abc_ery'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_es
+                'Contents\Model\AbcTables_es' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_es');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_es' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['es' => 'abc_es'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_ghe
+                'Contents\Model\AbcTables_ghe' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_ghe');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_ghe' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['ghe' => 'abc_ghe'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_ha
+                'Contents\Model\AbcTables_ha' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_ha');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_ha' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['ha' => 'abc_ha'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_i
+                'Contents\Model\AbcTables_i' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_i');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_i' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['i' => 'abc_i'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_ka
+                'Contents\Model\AbcTables_ka' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_ka');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_ka' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['ka' => 'abc_ka'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_o
+                'Contents\Model\AbcTables_o' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_o');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_o' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['o' => 'abc_o'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_pe
+                'Contents\Model\AbcTables_pe' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_pe');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_pe' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['pe' => 'abc_pe'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_reverse_e
+                'Contents\Model\AbcTables_reverse_e' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_reverse_e');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_reverse_e' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['reverse_e' => 'abc_reverse_e'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_sha
+                'Contents\Model\AbcTables_sha' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_sha');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_sha' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['sha' => 'abc_sha'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_shcha
+                'Contents\Model\AbcTables_shcha' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_shcha');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_shcha' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['shcha' => 'abc_shcha'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_short_i
+                'Contents\Model\AbcTables_short_i' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_short_i');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_short_i' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['short_i' => 'abc_short_i'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_te
+                'Contents\Model\AbcTables_te' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_te');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_te' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['te' => 'abc_te'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_tse
+                'Contents\Model\AbcTables_tse' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_tse');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_tse' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['tse' => 'abc_tse'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_u
+                'Contents\Model\AbcTables_u' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_u');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_u' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['u' => 'abc_u'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_ve
+                'Contents\Model\AbcTables_ve' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_ve');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_ve' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['ve' => 'abc_ve'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_ya
+                'Contents\Model\AbcTables_ya' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_ya');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_ya' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['ya' => 'abc_ya'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_yu
+                'Contents\Model\AbcTables_yu' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_yu');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_yu' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['yu' => 'abc_yu'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_ze
+                'Contents\Model\AbcTables_ze' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_ze');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_ze' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['ze' => 'abc_ze'], $dbAdapter, null, $resultSetPrototype);
+                },  
+				// abc_zhe
+                'Contents\Model\AbcTables_zhe' =>  function($sm) {
+                    $tableGateway = $sm->get('AbcTableGateway_zhe');
+                    $table = new AbcTables($tableGateway);
+                    return $table;
+                },
+                'AbcTableGateway_zhe' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Abc());
+                    return new TableGateway(['zhe' => 'abc_zhe'], $dbAdapter, null, $resultSetPrototype);
+                },  
             ),
         );
     }    
-    
 }
