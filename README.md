@@ -1,2 +1,2 @@
-# ruslang-oross
-ruslang-oross.ru frontend
+# «ОРФОГРАФИЧЕСКОЕ КОММЕНТИРОВАНИЕ РУССКОГО СЛОВАРЯ»
+http://oross.ruslang.ru/ frontend
