@@ -29,6 +29,7 @@ namespace Contents\Model;
     public $src;
     public $dic;
     public $addinfo;
+    public $link;
 
     public function exchangeArray($data)
     {
@@ -43,6 +44,7 @@ namespace Contents\Model;
         $this->src         = (!empty($data['src'])) ? $data['src'] : null;
         $this->dic     = (!empty($data['dic'])) ? $data['dic'] : null;
         $this->addinfo     = (!empty($data['addinfo'])) ? $data['addinfo'] : null;
+        $this->link      = (!empty($data['link'])) ? $data['link'] : null;
         
         $this->id_para      = (!empty($data['id_para'])) ? $data['id_para'] : null;
         $this->id_ortho      = (!empty($data['id_ortho'])) ? $data['id_ortho'] : null;

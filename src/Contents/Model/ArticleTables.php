@@ -16,6 +16,7 @@ namespace Contents\Model;
  use Zend\Db\Sql\Sql;
  use Zend\Session\SessionManager;
 
+
  class ArticleTables
  {
     protected $tableGateway;
@@ -171,6 +172,17 @@ namespace Contents\Model;
     	return false;
     }
      
+    public static function getArticlesForLink($sm, $link)
+    {
+        $table = $sm->get('Contents\Model\ArticleTables');
+        $articles = $table->tableGateway->select(function(Select $select) use ($id_formula)
+        {
+            $select->where('a.id = '.strval($id));
+        });
+        if ($articles->count())
+            return ($articles->current()->text); 
+    }
+     
 	public static function getArticles($sm, $id_array, $query = null)
     {
         error_log("getArticles for id_array");
@@ -208,9 +220,9 @@ namespace Contents\Model;
 				$ids = implode(",", $id_arts);//$id_array);
 			else 
 				continue;
-//			error_log($i);
-//			error_log($ids);
-//$ids = '161221';
+			error_log($i);
+			error_log($ids);
+//$ids = '28622';
 	        $articles = $table->tableGateway->select(function(Select $select) use ($ids)
 	        {
 	            $select->join(array('ap' => 'articles_paras'), 'a.id = ap.id', array('id_para'), 'left');
@@ -218,7 +230,8 @@ namespace Contents\Model;
 	            $select->join(array('ao' => 'articles_orthos'), 'a.id = ao.id', array('id_ortho'), 'left'); 
 	//            $select->join(array('af' => 'articles_formulas'), 'a.id = af.id', array('id_formula'), 'left'); 
 	            $select->join(array('ac' => 'articles_comments'), 'a.id = ac.id', array('id_comment'), 'left'); 
-	            $select->join(array('ai' => 'articles_addinfo'), 'a.id = ai.id_article', array('id_addinfo' => 'id', 'id_src' => 'id_src', 'addinfo' => 'text'), 'left'); 
+	            $select->join(array('ai' => 'articles_addinfo'), 'a.key_article = ai.key_article', array('id_addinfo' => 'id', 'id_src' => 'id_src', 'addinfo' => 'text'), 'left'); 
+	            $select->join(array('al' => 'articles_links'), 'a.id = al.id', array('link' => 'link'), 'left'); 
 	            $select->where('a.id IN ('.$ids.')');
 	            $select->order('a.id');
 	        }); 
@@ -228,14 +241,41 @@ namespace Contents\Model;
 	        $firstId = -1;
 	        foreach ($articles as $article)
 	        {
-	            error_log(sprintf("%d, %d", $article->id, $artId));
+	            //error_log(sprintf("%d, %d", $article->id, $artId));
 	            if ($artId != $article->id) {
 					$offset = 0;
 					if ($i == 0)
 						$first = ArticleTables::isFirst($article->title, $query);
 					if ($first === true)
 						$firstId += 1;
+					
+					$marks = array();	
 					foreach ($id_array as $item) {
+						if ($article->id == $item['id']) {
+						    foreach ($item['marks'] as $mark_word) {
+						        $marks[] = $mark_word;
+    					    }
+    					}
+    				}
+                    usort($marks , function ($item1, $item2) {
+                             return $item1['start'] >= $item2['start'];
+                    });
+                    $prev = 0;
+                    $prev_len = 0;
+                    foreach ($marks as $mark_word) {
+                        //error_log(sprintf("SORTED id = %d, start = %d, len = %d, step = %d, space = %d", $item['id'], $mark_word['start'], $mark_word['len'], $mark_word['step'], $mark_word['space']));
+                        if ($mark_word['start'] != 0 && $mark_word['step'] != -1) {
+                            if ($mark_word['start'] + $mark_word['len'] <= $prev + $prev_len)
+										continue;
+                            $prev = $mark_word['start'];
+							$prev_len = $mark_word['len'];
+							$prev_segment = $mark_word['segment'];
+                            $article->text = substr_replace($article->text, $mark_before, $mark_word['start'] + $offset, 0);
+                            $article->text = substr_replace($article->text, $mark_after, $mark_word['start'] + $mark_word['len'] + $offset + strlen($mark_before), 0);
+                            $offset += $mark_len;
+                    }
+                }
+/* 11					foreach ($id_array as $item) {
 						if ($article->id == $item['id']) {
 							$prev = 0;
 							$prev_len = 0;
@@ -253,7 +293,7 @@ namespace Contents\Model;
 										$title_m = false;
 										$offset += $mark_class_len;
 									}
-									else
+	/* 11								else
 										$offset += $mark_len;
 									$pos = strpos($article->text, $mark_before, $pos + $offset);
 									//error_log(sprintf("pos mark-before = %d", $pos));
@@ -261,19 +301,23 @@ namespace Contents\Model;
 							}														
 							//$prev_segment = 0;
 //                            $k=0;
-							foreach ($item['marks'] as $mark_word) {
+                            //usort($item['marks'] , function ($item1, $item2) {
+                             //   error_log(sprintf("333 %d %d",$item1['start'], $item2['start']));
+                             //   return $item1['start'] <= $item2['start'];
+                            //});
+/* 11							foreach ($item['marks'] as $mark_word) {
 /*							    $k++;
 							    error_log($k);
 							    if ($k != 2)
 							        continue; */
-							       error_log(sprintf("marks n = %d, start = %d", $k, $mark_word['start']));
-								if ($mark_word['start'] != 0 && $mark_word['step'] != -1) {
+							    //   error_log(sprintf("marks n = %d, start = %d", $k, $mark_word['start']));
+/* 11								if ($mark_word['start'] != 0 && $mark_word['step'] != -1) {
 						//			error_log($article->text);
 	//								error_log(strpos($article->text, "<span"));
 	//								error_log($item['start']);
 						//			error_log("!!!222");
-						//			error_log(sprintf("id = %d, start = %d, len = %d, step = %d, space = %d", $item['id'], $mark_word['start'], $mark_word['len'], $mark_word['step'], $mark_word['space']));
-									if (/*$prev_segment == $mark_word['segment'] && */$mark_word['start'] + $mark_word['len'] <= $prev + $prev_len)
+									error_log(sprintf("id = %d, start = %d, len = %d, step = %d, space = %d", $item['id'], $mark_word['start'], $mark_word['len'], $mark_word['step'], $mark_word['space']));
+									if (/*$prev_segment == $mark_word['segment'] && *//* 11$mark_word['start'] + $mark_word['len'] <= $prev + $prev_len)
 										continue;
 									$prev = $mark_word['start'];
 									$prev_len = $mark_word['len'];
@@ -288,18 +332,18 @@ namespace Contents\Model;
 								}
 							}
 						}
-					}
+					} */
 					if ($first === true) {
 						if ($firstId == count($result))
-			                $result[] = array('article' => $article->text, 'id' => $article->id, 'dic' => $article->dic, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array(), 'addinfo' => array());
+			                $result[] = array('article' => $article->text, 'id' => $article->id, 'dic' => $article->dic, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array(), 'addinfo' => array(), 'link' => $article->link);
 			            else {
 //							error_log(sprintf("firstId before slice %d", $firstId));
-							array_splice($result, $firstId, 0, array(array('article' => $article->text, 'id' => $article->id, 'dic' => $article->dic, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array(), 'addinfo' => array())));
+							array_splice($result, $firstId, 0, array(array('article' => $article->text, 'id' => $article->id, 'dic' => $article->dic, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array(), 'addinfo' => array(), 'link' => $article->link)));
 			            } 
 					}
 						
 					else {
-		                $result[] = array('article' => $article->text, 'id' => $article->id, 'dic' => $article->dic, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array(), 'addinfo' => array());
+		                $result[] = array('article' => $article->text, 'id' => $article->id, 'dic' => $article->dic, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array(), 'addinfo' => array(), 'link' => $article->link);
 					}
 	                $artId = $article->id;
 	            }
@@ -342,7 +386,24 @@ namespace Contents\Model;
       //  error_log(sprintf("result count = %d", count($result)));
         return $result;
 	}
-     
+    
+    public static function getInterval($sm, $start, $end)
+    {
+        $table = $sm->get('Contents\Model\ArticleTables');
+        $articles = $table->tableGateway->select(function(Select $select) use ($start, $end)
+        {
+            $select->where('a.id >= '.$start.' AND a.id <= '.$end);
+            $select->order('a.id');
+        });
+//        error_log(count($articles));        
+        $ret = array();
+	    foreach ($articles as $article)
+		{
+			$ret[] = array('dic' => $article->dic, 'src' => $article->src);//text;
+		}
+		return $ret;
+    }
+ 
 	public static function putArticlesToRtf($sm, $id_array, $word, $formula, $ortho)
 	{		
         //error_log("getArticles for id_array"); 

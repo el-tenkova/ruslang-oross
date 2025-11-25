@@ -43,12 +43,12 @@ namespace Contents\Model;
         }
         return $result;
     }
-    public static function getAllForArticle($sm, $id_article)
+    public static function getAllForArticle($sm, $key_article)
     {
         $table = $sm->get('Contents\Model\ArticleAddInfoTable');
         $infos = $table->tableGateway->select(function(Select $select) use ($id_article)
         {
-            $select->where('ai.id_article = '.strval($id_article));
+            $select->where('ai.key_article = '.strval($key_article));
         });
         $result = array();
         foreach ($infos as $info)
@@ -57,11 +57,11 @@ namespace Contents\Model;
         }
         return $result;
     }
-    public static function add($sm, $id_article, $text, $id_src)
+    public static function add($sm, $key_article, $id_article, $text, $id_src)
     {
     	error_log("add info");
         $table = $sm->get('Contents\Model\ArticleAddInfoTable');
-	    $result = $table->tableGateway->insert(array('text' => $text, 'id_article' => $id_article, 'id_src' => $id_src));
+	    $result = $table->tableGateway->insert(array('text' => $text, 'id_article' => $id_article,'key_article' => $key_article, 'id_src' => $id_src));
 	    return $table->tableGateway->lastInsertValue;
     }
     public static function update($sm, $id, $text, $id_src)

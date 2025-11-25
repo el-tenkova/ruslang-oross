@@ -20,6 +20,7 @@ namespace Contents\Model;
     {
         $this->id           = (!empty($data['id'])) ? $data['id'] : null;
         $this->id_article   = (!empty($data['id_article'])) ? $data['id_article'] : null;
+        $this->key_article   = (!empty($data['key_article'])) ? $data['key_article'] : null;
         $this->id_src   = (!empty($data['id_src'])) ? $data['id_src'] : null;
         $this->text   = (!empty($data['text'])) ? $data['text'] : null;
      }

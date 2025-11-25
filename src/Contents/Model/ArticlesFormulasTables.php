@@ -55,7 +55,7 @@ namespace Contents\Model;
 	        }
             $select->order('af.id');
         });
-        //error_log(sprintf("count of articles by formula = %d is %d", $id_formulas[0],count($articles)));
+        error_log(sprintf("count of articles by formula = %d is %d", $id_formulas[0],count($articles)));
         if (count($articles) == 0)
         	return array();
         	

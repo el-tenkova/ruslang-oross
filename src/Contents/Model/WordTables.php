@@ -91,9 +91,9 @@ namespace Contents\Model;
 				else
 					$LIKE = str_replace("?", "[[:alpha:]|[:punct:]|[:space:]|-]{0,2}", $LIKE);
 			}
-			if (intval($yo) != 1) {
-				$LIKE = preg_replace("/[её]/u", "[её]{2}", $LIKE);			
-			}
+			//if (intval($yo) != 1) {
+		//		$LIKE = preg_replace("/[её]/u", "[её]{2}", $LIKE);			
+		//	}
 			$LIKE = mb_strtolower($LIKE, 'UTF-8');					
 		}
 		else {
@@ -102,7 +102,8 @@ namespace Contents\Model;
 			else
 				$LIKE = 'w.word LIKE \''.$query.'\'';
 		}
-		$LIKE = preg_replace("/8/", "[[:digit:]]{0,1}", $LIKE);			
+		if ($accented)
+			$LIKE = preg_replace("/8/", "[[:digit:]]{0,1}", $LIKE);			
 		error_log($LIKE);
 //print_r($LIKE);
 		
@@ -318,9 +319,9 @@ namespace Contents\Model;
 	{
 		$word = str_replace("'", "", $word);
 		if ($accent === false)
-			$word = preg_replace("/[\[|\]|\{|\}|\d|\$|\%|\^|\&|\(|\)|\!|\:|\;|\#]/", "", $word);
+			$word = preg_replace("/[\[|\]|\{|\}|\$|\%|\^|\&|\(|\)|\!|\:|\;|\#]/", "", $word);
 		else
-			$word = preg_replace("/[\[|\]|\{|\}|\d|\$|\%|\^|\(|\)|\!|\:|\;]/", "", $word);
+			$word = preg_replace("/[\[|\]|\{|\}|\$|\%|\^|\(|\)|\!|\:|\;]/", "", $word);
 		$word = preg_replace("/[\*]+/", "*", $word);
 		$word = preg_replace("/\s+/", " ", $word);
        	$words = explode(" ", $word);
@@ -331,7 +332,8 @@ namespace Contents\Model;
        				return array();
        			}
        		}
-//       		error_log($item);
+       		//error_log("item = ");
+       		//error_log($item);
        	}
        	if ($accent === false)
        		return $words;
@@ -351,7 +353,6 @@ namespace Contents\Model;
 	       	}
 	       	$accent = true;
        		$word = preg_replace("/[\&]/", "1", $word);
-       		error_log($word);
        		$len = mb_strlen($word);
        		$vowels = array('а', 'о', 'э', 'и', 'у', 'ы', 'е', 'ё', 'ю', 'я');
        		$i = 0;
@@ -394,12 +395,11 @@ namespace Contents\Model;
 		       						$len += 1;
 		       						$i += 1;
 		       					}
-	 //      						error_log($word);
+	       						//error_log($word);
 	       					}
 	       				}
 	       				else {
 			       			$word = $word."8";
-	       					error_log($word);
 	       				}
 	       				break;
 	    			}
@@ -460,13 +460,8 @@ namespace Contents\Model;
 	    if (count($gramms) != 0 && $gr_min < $min)
 	    	return $gramms;
 
-	/*	if ($min > MAX_ARTS)
-	 	{
-	 		error_log($min);
-	 		error_log("return stop = 1");
-	 	//	return array('stop' => 1);
-	 	return array();
-	 	} */
+	 	if ($min > MAX_ARTS)
+	 		return array('stop' => 1);
 	 		
 	    if ($min != -1) {	    
 		    $word = $words[$min_idx];
@@ -498,7 +493,7 @@ namespace Contents\Model;
 		}
      //   error_log(sprintf("getArticles, word = %s, where = %d, search_part = %s", $word, $where, $search_part));
        	$query = $word;
-   //    	$table = $sm->get('Contents\Model\AccentTables'); //WordTables');
+       	$table = $sm->get('Contents\Model\AccentTables'); //WordTables');
        	$word = trim($word, " \t.-");
        	$accented = true;
        	$words = WordTables::checkQuery($word, $accented);
@@ -522,14 +517,14 @@ namespace Contents\Model;
 		//error_log(sprintf("count nwords = %d", $heur_array['nwords']));
 		//error_log(sprintf("len bigramms = %d", strlen($heur_array['bigramms'])));
 		//error_log($heur_array['bigramms']);	
-		if (isset($heur_array['gramms']) && isset($heur_array['nwords']) && count($heur_array['nwords']) == 1) {
+		if (isset($heur_array['gramms']	) && isset($heur_array['nwords']) && count($heur_array['nwords']) == 1) {
 			$find_bgr = true;
 			$id_array = Gramm::getArticlesId($sm, $heur_array['delta'], $heur_array['nwords'][0], $where, $yo);
 		} 
 		elseif (!isset($heur_array['stop'])) {
 			if (isset($heur_array['nwords']))
 				$words = $heur_array['nwords'];
-			error_log(sprintf("new_words count = %d", count($words)));
+			//error_log(sprintf("new_words count = %d", count($words)));
 			foreach ($words as &$item) {
 	//			if ($step != 0 && count($id_arts) == 0)
 	//!!!				break;
@@ -652,9 +647,6 @@ namespace Contents\Model;
 				$step += $delta;
 			}
 		}
-		else {
-			error_log("stop after heuristic");
-		}
 	//	error_log($id_array[0]['id']);
 	    if (count($words) > 1 && $find_bgr == false)
 			$res_id = WordTables::fillResArray($id_array, $step);
@@ -701,7 +693,7 @@ namespace Contents\Model;
 	public static function getTutorial($sm, $word, $check = 1, $yo, $rule_id = 0, $paginated = false, $count_for_page = 0, $page = 0)
 	{
         error_log("WordTables: getTutorial");
-		error_log(sprintf("word = %s check = ", $word, $check));
+		error_log(sprintf("word = %s", $word));
         
         if ($check == 0) {
 			return WordTables::emptyResult($paginated, $count_for_page, $page);
@@ -718,6 +710,7 @@ namespace Contents\Model;
        	}
         
 //        $words = explode(" ", $word);
+		
 		$types = @self::$types;					   					  
 		
 		$id_array = array();
