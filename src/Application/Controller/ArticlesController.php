@@ -16,6 +16,7 @@ namespace Application\Controller;
  use Contents\Model\FormulaTables;
  use Contents\Model\ArticleTables;
  use Contents\Model\ArticleAddInfoTable;
+ use Contents\Model\ArticleLinkTable;
  //use Contents\Model\WordTables;
 
  use Zend\Mvc\Controller\AbstractActionController;
@@ -104,6 +105,39 @@ namespace Application\Controller;
         return new JsonModel(array(
                     'success' => false,
                 ));
+     }
+     
+     public function linkAction()
+     {
+        error_log("Articles linkAction");
+        $view = new ViewModel();     
+        if ($this->params('id') !== null) {
+            $link = $this->params('id');
+            $id_article = ArticleLinkTable::getIdByLink($this->getServiceLocator(), $link);
+            $art_id = array(array('id' => $id_article, 'marks' => array()));
+            error_log($id_article);
+			$paginator = new \Zend\Paginator\Paginator(new \Zend\Paginator\Adapter\ArrayAdapter($art_id));
+			$paginator->setItemCountPerPage(self::FOR_PAGE_COUNT);
+			$paginator->setCurrentPageNumber(1);
+            $show = [];
+			foreach ($paginator->getCurrentItems() as $item) {
+			    $show[] = $item;
+            }
+            $res = ArticleTables::getArticles($this->getServiceLocator(), $show, "");
+            $title = ArticleTables::getTitle($this->getServiceLocator(), $id_article);
+            $articles = new ViewModel(array('articles' => $res, 
+										'paginator' => $paginator, 
+										'route' => 'article', 
+										'action' => 'view', 
+										'pag_part' => 'contents/paginator2.phtml',
+										'title' => $title, 
+										'addinfo' => true,
+										'pageCount' => count($paginator)));
+						
+		    $articles->setTemplate('contents/articles');
+		    $view->addChild($articles, 'articles');
+        }
+        return $view;
      }
      
  }
