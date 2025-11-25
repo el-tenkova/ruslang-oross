@@ -1,0 +1,47 @@
+
+<?php	$getdicform = $this->getdicform; ?>
+<?php	if ($getdicform != null):  ?>
+	<?php $getdicform->setAttribute('action', $this->url('adminos', array('action' => 'getdics'))); ?>
+	<?php $getdicform->prepare(); ?>
+	<?php echo $this->form()->openTag($getdicform); ?>
+		<?php if ($this->dics != null) : ?>
+			<div class="row">
+				<div class="col-md-2">
+						<?php echo $this->formSubmit($getdicform->get('oross')); ?>
+				</div>
+				<div class="col-md-3">
+						<?php echo "<span><b>Последний запрос:</b></span>  ".$this->dics[0]['chd']; ?>
+				</div>
+				<div class="col-md-2">
+						<?php echo "<span><b>Статус:</b></span>  ".$this->dics[0]['status']; ?>
+				</div>
+				<div class="col-md-5">
+						<?php echo "<span><b>Скачать:</b></span>   <a href=\"".$this->dics[0]['path']."\" target=\"_blank\">".basename($this->dics[0]['path'])."</a>"; ?>
+				</div>
+			</div>
+			<div class="row top-buffer">
+			</div>
+			<div class="row top-buffer">
+				<div class="col-md-2">
+						<?php echo $this->formSubmit($getdicform->get('ros')); ?>
+				</div>
+				<div class="col-md-3">
+						<?php echo "<span><b>Последний запрос:</b></span>  ".$this->dics[1]['chd']; ?>
+				</div>
+				<div class="col-md-2">
+						<?php echo "<span><b>Статус:</b></span>  ".$this->dics[1]['status'];; ?>
+				</div>
+				<div class="col-md-5">
+						<?php echo "<span><b>Скачать:</b></span> <a href=\"".$this->dics[1]['path']."\" target=\"_blank\">".basename($this->dics[1]['path'])."</a>"; ?>
+				</div>
+			</div>
+			<div class="row top-buffer">
+			</div>
+			<div class="row top-buffer">
+				<div class="col-md-12">
+					<span><b>Замечание:</b> надстрочные символы в файлах могут быть представлены в виде &lt;sup&gt;1&lt;/sup&gt;.</span>
+				</div>
+			</div>
+		<?php endif; ?>
+	<?php echo $this->form()->closeTag(); ?>
+<?php endif; ?>

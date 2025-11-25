@@ -1,0 +1,142 @@
+
+	<div class="panel panel-default-admin">
+		<div class="panel-body">
+			<?php	if ($this->changes == null): ?>
+					<div class="row top-buffer">
+						<div class="col-md-2 text-right">
+							<?php echo "<span><b>Правок нет</b></span>"; ?>
+						</div>
+					</div>
+			<?php else: ?>
+				<div class="row top-buffer">
+					<div class="col-md-4">
+						<span>Дата последней индексации: </span>
+					</div>
+					<div class="col-md-2">
+					  <?php if (isset($this->state)) echo $this->state['last']; ?>
+					</div>
+				</div>
+				<div class="row top-buffer">
+					<div class="col-md-4">
+						<span>Результат последней индексации: </span>
+					</div>
+					<div class="col-md-2">
+					  <?php if (isset($this->state) && $this->state['state'] == \Contents\Model\StateTable::Ok) echo $this->state['result'] == \Contents\Model\StateTable::Success ? "Успешно" : "С ошибками, словарь не обновлён"; ?>
+					</div>
+				</div>
+				<div class="row top-buffer">
+					<div class="col-md-4">
+						<span>Текущий статус: </span>
+					</div>
+					<div class="col-md-6">
+					  <?php if (isset($this->state)) echo $this->state['state'] == \Contents\Model\StateTable::Ok ? "Готово" : "В процессе"; ?>
+					</div>
+				</div>
+				<div class="row top-buffer">
+					<?php	if ($this->rebuildform != null): ?>
+						<?php	$this->rebuildform->setAttributes(array('action' => $this->url('edit', array('action' => 'edit'))));
+									$this->rebuildform->prepare();
+									echo $this->form()->openTag($rebuildform);
+						?>
+						<div class="col-md-2">
+							<?php echo $this->formSubmit($rebuildform->get('rebuild')); ?>
+						</div>
+						<?php echo $this->form()->closeTag(); ?>
+					<?php endif; ?>								
+				</div>
+				<?php   
+					if ($this->pageCount > 1) {
+						//error_log(sprintf("this->title_check = %d", $this->title_check));
+						echo $this->paginationControl(
+							// the paginator object
+							$this->paginator, //articles,
+							// the scrolling style
+							'sliding',
+							// the partial to use to render the control
+							$this->pag_part,
+							// the route to link to when a user clicks a control link
+							array('route' => $this->route, 'action' => $this->action)
+						);
+					}
+				?>
+				<table class="table-bordered top-buffer">
+					<tr>
+						<td class="col-md-3 col-title text-center">
+							<?php echo "Статья"; ?>
+						</td>
+						<td class="col-md-3 col-title text-center">
+							<?php echo "Изменения"; ?>
+						</td>
+						<td class="col-md-2 col-title text-center">
+							<?php echo "Действие"; ?>
+						</td>
+						<td class="col-md-1 col-title text-center">
+							<?php echo "Статус"; ?>
+						</td>
+						<td class="col-md-1 col-title text-center">
+							<?php echo "Дата"; ?>
+						</td>
+						<td class="col-md-2 col-title text-center">
+							<?php echo "Автор"; ?>
+						</td>
+					</tr>	
+				<?php foreach ($this->changes as $change): ?>
+					<tr>
+						<td class="col-md-3">
+							<?php echo $change['src']; ?>
+						</td>
+						<td class="col-md-3">
+							<?php if ($change['action'] == \Admin\Model\ChangesTable::Edited ||
+							               $change['action'] == \Admin\Model\ChangesTable::NewArt)
+								echo $change['text']; ?>
+						</td>
+						<td class="col-md-2">
+							<?php if ($change['action'] == \Admin\Model\ChangesTable::Edited || $change['action'] == \Admin\Model\ChangesTable::NewArt): ?>
+											<?php if ($change['action'] == \Admin\Model\ChangesTable::Edited): ?>
+												<?php echo "Редактирование"; ?>
+											<?php else: ?>
+												<?php echo "Новая"; ?>
+											<?php endif; ?>
+											<?php if ($change['status'] == \Admin\Model\ChangesTable::Expects): ?>
+												<?php
+													$cf = 'cancelform'.strval($change['id']);
+													$cancelform = $this->$cf; ?>
+													<?php	if ($cancelform != null): ?>
+														<?php	$cancelform->setAttributes(array(
+															'action' => $this->url('edit', array('action' => 'edit'), array('query' => array('id' => strval($change['id'])))),
+															'class' => 'art'));
+															$cancelform->prepare();
+															echo $this->form()->openTag($cancelform);
+														?>
+														<div class="row">
+															<div class="col-md-1">
+																<?php echo $this->formSubmit($cancelform->get('cancel')); ?>
+															</div>
+														</div>
+														<?php echo $this->form()->closeTag(); ?>
+													<?php endif; ?>							
+											<?php endif; ?>							
+										<?php elseif ($change['action'] == \Admin\Model\ChangesTable::Phantom): ?>
+											<?php echo "Фантом"; ?>
+										<?php elseif ($change['action'] == \Admin\Model\ChangesTable::Delete ||
+										           $change['action'] == \Admin\Model\ChangesTable::DeleteWait): ?>
+											<?php echo "Удаление"; ?>
+							<?php endif; ?>
+						</td>
+						<td class="col-md-1">
+							<?php if ($change['status'] == \Admin\Model\ChangesTable::Made)
+											echo "Готово"; 
+										else if ($change['status'] == \Admin\Model\ChangesTable::Expects)
+											echo "Ждёт"; 
+							?>
+						</td>
+						<td class="col-md-1">
+							<?php echo $change['chd']; ?>
+						</td>
+						<td class="col-md-2">
+							<?php echo $change['username']; ?>
+						</td>
+					</td>
+				<?php endforeach;	?>
+			<?php endif; ?>
+		</div>

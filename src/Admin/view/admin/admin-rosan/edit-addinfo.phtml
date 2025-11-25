@@ -1,0 +1,251 @@
+<?php  $this->inlineScript()->appendFile($this->basePath('js/tinyex.js')); ?>
+<?php	$editform = $this->editform; ?>
+<?php $this->formRadio()->setSeparator('</div><div class="radio">'); ?>
+<?php	$addinfoform = $this->addinfoform; ?>
+<?php	if ($addinfoform != null):  ?>
+	<?php $addinfoform->setAttribute('action', $this->url('dict', array('action' => 'word'),
+												    array('query' => array('id' => strval($this->id)))));
+	 ?>
+	<?php $addinfoform->prepare(); ?>
+	<?php echo $this->form()->openTag($addinfoform); ?>
+	 	<div class="row top-buffer">
+			<div class="col-md-12">
+					<?php echo '<p>'.$this->src.'</p>' ?>
+					<?php echo '<h4>Дополнительная информация к статье "'.$this->title.'" из других источников: </h4>	'?>
+			</div>
+		</div>
+		<?php if (count($this->infos) > 0): ?>
+			<?php foreach($this->infos as $info): ?>
+				<div class="row top-buffer">
+					<div class="col-md-6">
+							<?php echo $this->formSelect($addinfoform->get('sources')->setValue($info['id_src'])->setAttribute('data-key', $info['id'])); ?>
+					</div>
+					<div class="col-md-2">
+							<input id="addsrcbutton" type="button" value="Добавить новый источник" name="addsrc" data-key="<?php echo $info['id']; ?>" data-toggle="modal" data-target="#srcModal"  />
+					</div>
+				</div>
+				<div class="row top-buffer">
+					<div class="col-md-12">
+							<?php echo $this->formRow($addinfoform->get('info')->setValue($info['text'])->setAttribute('id', 'info_'.$info['id'])); ?>
+					</div>
+				</div>
+				<div class="row top-buffer">
+					<div class="col-md-6">
+						<?php echo $this->formSubmit($addinfoform->get('addinfo')->setAttribute('data-key', $info['id'])); ?>
+						<?php echo $this->formSubmit($addinfoform->get('delinfo')->setAttribute('data-key', $info['id'])); ?>
+					</div>
+				</div>
+			<?php endforeach; ?>
+		<?php else: ?>
+			<div class="row top-buffer">
+				<div class="col-md-6">
+						<?php echo $this->formSelect($addinfoform->get('sources')->setAttribute('data-key', 'FF')); ?>
+				</div>
+				<div class="col-md-2">
+						<input id="addsrcbutton" type="button" value="Добавить новый источник" name="addsrc" data-key='FF' data-toggle="modal" data-target="#srcModal" />
+				</div>
+			</div>
+			<div class="row top-buffer">
+				<div class="col-md-12">
+						<?php echo $this->formRow($addinfoform->get('info')->setAttribute('id', 'info_FF')); ?>
+				</div>
+			</div>
+			<div class="row top-buffer">
+				<div class="col-md-6">
+					<?php echo $this->formSubmit($addinfoform->get('addinfo')->setAttribute('data-key', 'FF')); ?>
+					<?php echo $this->formSubmit($addinfoform->get('delinfo')->setAttribute('data-key', 'FF')); ?>
+				</div>
+			</div>
+		<?php endif; ?>
+		<div class="row top-buffer" id="last_str">
+			<div class="col-md-6">
+				<input id="add_block" type="button" value="Ещё блок" name="add_block" onclick="doAddBlock()" />
+			</div>
+		</div>
+	<?php echo $this->form()->closeTag(); ?>
+<?php endif; ?>
+
+<!-- Modal -->
+<div class="modal fade" id="srcModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+      </div>
+      <div class="modal-body">
+			<div class="row top-buffer">
+				<div class="col-md-12">
+		          <div class="form-group">
+        		    <label for="src-name" class="col-form-label">Название:</label>
+            		<input type="text" class="form-control" id="src-name">
+          			</div>
+            	</div>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-primary" id="savesrc">Добавить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+	function addSrc() {
+		var url = '<?php echo $this->url('adminos', array('action' => 'addsrc')); ?>';
+		var src=$('#src-name').val();
+		$.ajax({
+			url: url,
+			async: false,
+			type: 'POST',
+			dataType: "json",
+			data: {
+				text : src,
+			}, 
+			success: function(j)
+			{
+				var listitems = '';
+				for (var i = 0; i < j.src.length; i++) {
+             		listitems += "<option value='" + j.src[i].id + "'>" + j.src[i].val + "</option>";
+         		}
+         		$('.info-src')
+    				.find('option')
+    				.remove()
+    				.end()
+    				.append(listitems);
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown)
+			{
+		       //     	alert(textStatus);
+			}
+		});
+	}
+	function addInfo(id) {
+		var url = '<?php echo $this->url('adminos', array('action' => 'addarticleinfo')); ?>';
+//		var info = tinymce().get('info').getContent();
+		var info=tinymce.get('info_' +id).getContent();
+//		alert(info);
+		var src=$(".info-src[data-key='"+id+"']").val();
+		var id_article='<?php echo $this->id; ?>';
+		$.ajax({
+			url: url,
+			async: false,
+			type: 'POST',
+			dataType: "json",
+			data: {
+				text : info,
+				id_article : id_article,
+				id_src : src,
+				id : id
+			}, 
+			success: function(j)
+			{
+				id = j.id;
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown)
+			{
+		       //     	alert(textStatus);
+			}
+		});
+		return id;
+	}	
+	
+	function addNewInfo(e) {
+		var idOld = e.getAttribute("data-key");
+		id = addInfo(idOld);
+//		alert(id);
+		if (idOld =='FF')
+		{
+			$("[data-key='"+idOld+"']").attr("data-key", id);
+			tinymce.get('info_'+idOld).remove();
+			$("#info_"+idOld).attr("id", "info_" + id);
+			tmceRebind(id);
+		}
+	}
+
+	function delInfo(id) {
+		var url = '<?php echo $this->url('adminos', array('action' => 'delarticleinfo')); ?>';
+		$.ajax({
+			url: url,
+			async: false,
+			type: 'POST',
+			dataType: "json",
+			data: {
+				id : id
+			}, 
+			success: function(j)
+			{
+				$("[data-key='"+id+"']").remove();
+				tinymce.get('info_'+id).remove();
+				$("#info_"+id).remove();
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown)
+			{
+		       //     	alert(textStatus);
+			}
+		});
+	}
+	
+	function delNewInfo(e) {
+		var id = e.getAttribute("data-key");
+		id = delInfo(id);
+	}
+	
+	function doAddBlock()
+	{
+		var url = '<?php echo $this->url('adminos', array('action' => 'getinfoblock')); ?>';
+		$.ajax({
+			url: url,
+			async: false,
+			type: 'POST',
+			dataType: "json",
+			data: {
+			}, 
+			success: function(j)
+			{
+				$(j.result).insertBefore('#last_str');
+				tmceRebind('FF');
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown)
+			{
+		       //     	alert(textStatus);
+			}
+		});
+	}
+	
+	function tmceRebind(id)
+	{
+		var sel = '#info_' + id;
+		tinymce.init({
+  			selector: sel,
+			height: 200,
+  			menubar: false,
+  			toolbar: 'undo redo | bold italic underline | accent | orthogr formula',
+  			setup: function (editor) {
+  				editor.addButton('accent', {
+      				text: 'Ударение',
+      				icon: false,
+      				onclick: function () {
+         				var s = editor.selection.getContent({format: 'text'});
+         				s = s + '#'; //'&#x301';
+        				editor.insertContent(s);
+					}
+				});		
+			},
+			content_css: '//www.tinymce.com/css/codepen.min.css'
+		}); 
+	}
+	
+	$(function () {
+    	$("#savesrc").on('click', function() {
+    		addSrc();
+        	$('#srcModal').modal('hide');
+    	});
+    	$(".add-info").on('click', function() {
+    		//alert($(this).attr("data-key"));
+    		addInfo($(this).attr("data-key"));
+    	});
+    	$(".del-info").on('click', function() {
+    		delInfo($(this).attr("data-key"));
+    	});
+	});
+</script>

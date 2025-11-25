@@ -1,0 +1,16 @@
+
+<?php	$logoutform = $this->logoutform; ?>
+<?php	if ($logoutform != null):  ?>
+	<?php $logoutform->setAttribute('action', $this->url('adminos', array('action' => 'logout'))); ?>
+	<?php $logoutform->prepare(); ?>
+	<?php echo $this->form()->openTag($logoutform); ?>
+		<div class="row">
+			<div class="col-md-2">
+					<?php echo $this->formLabel($logoutform->get('username')); ?>
+			</div>
+			<div class="col-md-1">
+					<?php echo $this->formSubmit($logoutform->get('logout')); ?>
+			</div>
+		</div>
+	<?php echo $this->form()->closeTag(); ?>
+<?php endif; ?>

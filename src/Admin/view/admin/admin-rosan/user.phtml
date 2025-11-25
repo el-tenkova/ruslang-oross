@@ -1,0 +1,64 @@
+
+<?php	$adduserform = $this->adduserform; ?>
+<?php	if ($adduserform != null):  ?>
+	<?php $adduserform->setAttribute('action', $this->url('adminos', array('action' => 'user'))); ?>
+	<?php $adduserform->prepare(); ?>
+	<?php echo $this->form()->openTag($adduserform); ?>
+		<div class="row">
+			<?php if ($this->valid == Contents\Model\DicUserTable::Incorrect): ?>
+				<div class="alert alert-danger">
+			 		Заполните все поля.
+				</div>			
+			<?php elseif ($this->valid == Contents\Model\DicUserTable::Added): ?>
+				<div class="alert alert-success">
+			 		Новый пользователь добавлен.
+				</div>			
+			<?php elseif ($this->valid == Contents\Model\DicUserTable::Exists): ?>
+				<div class="alert alert-info">
+			 		Пользователь с таким именем уже есть. Можно удалить и добавить заново.
+				</div>			
+			<?php elseif ($this->valid == Contents\Model\DicUserTable::Deleted): ?>
+				<div class="alert alert-info">
+			 		Пользователь удалён.
+				</div>			
+			<?php endif; ?>			
+			<div class="col-md-12">
+				<div class="row">
+					<div class="col-md-1">
+						<?php echo "<span><b>Логин:</b></span>"; ?>
+					</div>
+					<div class="col-md-2">
+						<?php if ($this->valid == Contents\Model\DicUserTable::Incorrect || $this->valid == Contents\Model\DicUserTable::Exists) $adduserform->get('username')->setAttribute('value', $this->username); ?>
+						<?php echo $this->formRow($adduserform->get('username')); ?>
+					</div>
+				</div>
+				<div class="row top-buffer">
+					<div class="col-md-1">
+						<?php echo "<span><b>Пароль:</b></span>"; ?>
+					</div>
+					<div class="col-md-2">
+						<?php if ($this->valid == Contents\Model\DicUserTable::Incorrect || $this->valid == Contents\Model\DicUserTable::Exists) $adduserform->get('password')->setAttribute('value', $this->password); ?>
+						<?php echo $this->formRow($adduserform->get('password')); ?>
+					</div>
+				</div>
+				<div class="row top-buffer">
+					<div class="col-md-1">
+						<?php echo "<span><b>ФИО:</b></span>"; ?>
+					</div>
+					<div class="col-md-2">
+						<?php if ($this->valid == Contents\Model\DicUserTable::Incorrect || $this->valid == Contents\Model\DicUserTable::Exists) $adduserform->get('fullname')->setAttribute('value', $this->fullname); ?>
+						<?php echo $this->formRow($adduserform->get('fullname')); ?>
+					</div>
+				</div>
+				<div class="row top-buffer">
+					<div class="col-md-3 text-right">
+						<?php echo $this->formSubmit($adduserform->get('submit')); ?>
+						<?php if ($this->valid == Contents\Model\DicUserTable::Exists): ?>
+							<?php echo $this->formSubmit($adduserform->get('delete')); ?>
+						<?php endif; ?>
+					</div>
+				</div>
+			</div>
+		</div>
+	<?php echo $this->form()->closeTag(); ?>
+<?php endif; ?>

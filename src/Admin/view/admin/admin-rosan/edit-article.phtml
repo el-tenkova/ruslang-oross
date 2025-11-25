@@ -1,0 +1,84 @@
+<?php  $this->inlineScript()->appendFile($this->basePath('js/tiny.js')); ?>
+<?php	$editform = $this->editform; ?>
+<?php $this->formRadio()->setSeparator('</div><div class="radio">'); ?>
+<?php	if ($editform != null):  ?>
+	<?php $editform->setAttribute('action', $this->url('dict', array('action' => 'word'),
+												    array('query' => array('id' => strval($this->id)))));
+	 ?>
+	<?php $editform->prepare(); ?>
+	<?php echo $this->form()->openTag($editform); ?>
+		<div class="row">
+			<div class="col-md-12">
+					<?php echo $this->formRow($editform->get('article')); ?>
+			</div>
+		</div>
+    	<div class="row top-buffer">
+			<div class="col-md-6">
+					<input id="previewbutton" type="button" value="Предварительный просмотр" name="preview" onclick="doPreview(tinymce.get('article').getContent())">
+					<?php //echo $this->formSubmit($editform->get('preview')); ?>
+					<?php echo $this->formSubmit($editform->get('editok')); ?>
+			</div>
+		</div>
+	<?php echo $this->form()->closeTag(); ?>
+    <div class="row top-buffer">
+		<div class="col-md-12">
+			<p id="result">Кнопка "Предварительный просмотр" позволяет увидеть размеченную статью. Работает только для статей ОРОСС. Ссылки на другие статьи на этом этапе не обрабатываются. </p>	
+		</div>
+	</div>
+<?php endif; ?>
+<?php	$addinfoform = $this->addinfoform; ?>
+<?php	if ($addinfoform != null):  ?>
+	<?php $addinfoform->setAttribute('action', $this->url('dict', array('action' => 'word'),
+												    array('query' => array('id' => strval($this->id)))));
+	 ?>
+	<?php $addinfoform->prepare(); ?>
+	<?php echo $this->form()->openTag($addinfoform); ?>
+	    <div class="row top-buffer">
+			<div class="col-md-12">
+				<h3>Дополнительная информация к статье из других источников: </h3>	
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+					<?php echo $this->formSelect($addinfoform->get('sources')); ?>
+			</div>
+		</div>
+		<div class="row top-buffer">
+			<div class="col-md-12">
+					<?php echo $this->formRow($addinfoform->get('info')); ?>
+			</div>
+		</div>
+    	<div class="row top-buffer">
+			<div class="col-md-6">
+					<?php echo $this->formSubmit($addinfoform->get('addinfo')); ?>
+			</div>
+		</div>
+	<?php echo $this->form()->closeTag(); ?>
+<?php endif; ?>
+
+<script type="text/javascript">
+
+	function doPreview(art) {
+		var url = '<?php echo $this->url('adminos', array('action' => 'preview')); ?>';
+		$.ajax({
+			url: url,
+			async: false,
+			type: 'POST',
+			dataType: "json",
+			data: {
+				text : art,
+			}, 
+			success: function(j)
+			{
+				$( "#pwtext" ).next().remove();
+				$( "#pwtext" ).remove();
+				$(j.out).insertAfter( "#result" );
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown)
+			{
+		       //     	alert(textStatus);
+			}
+		});
+	}
+
+</script>

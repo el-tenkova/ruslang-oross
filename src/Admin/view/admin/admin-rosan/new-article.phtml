@@ -1,0 +1,59 @@
+<?php  $this->inlineScript()->appendFile($this->basePath('js/tiny.js')); ?>
+<?php	$newform = $this->newform; ?>
+<?php $this->formRadio()->setSeparator('</div><div class="radio">'); ?>
+<?php	if ($newform != null):  ?>
+	<?php $newform->setAttribute('action', $this->url('dict', array('action' => 'word')));
+	 ?>
+	<?php $newform->prepare(); ?>
+	<?php echo $this->form()->openTag($newform); ?>
+		<div class="row">
+			<div class="col-md-12">
+					<?php echo $this->formRow($newform->get('article')); ?>
+			</div>
+		</div>
+    	<div class="row top-buffer">
+				<div class="col-md-12">
+					<div class="radio">				
+						<?php echo $this->formRadio($newform->get('dic')); ?>
+					</div>				
+		    	</div>
+		</div>    	
+    	<div class="row top-buffer">
+			<div class="col-md-6">
+					<input id="previewbutton" type="button" value="Предварительный просмотр" name="preview" onclick="doPreview(tinymce.get('article').getContent())">
+					<?php echo $this->formSubmit($newform->get('newok')); ?>
+			</div>
+		</div>		
+	<?php echo $this->form()->closeTag(); ?>
+    <div class="row top-buffer">
+		<div class="col-md-12">
+			<p id="result">Кнопка "Предварительный просмотр" позволяет увидеть размеченную статью. Работает только для статей ОРОСС. Ссылки на другие статьи на этом этапе не обрабатываются. </p>	
+		</div>
+	</div>
+<?php endif; ?>
+<script type="text/javascript">
+
+	function doPreview(art) {
+		var url = '<?php echo $this->url('adminos', array('action' => 'preview')); ?>';
+		$.ajax({
+			url: url,
+			async: false,
+			type: 'POST',
+			dataType: "json",
+			data: {
+				text : art,
+			}, 
+			success: function(j)
+			{
+				$( "#pwtext" ).nextAll().remove();
+				$( "#pwtext" ).remove();
+				$(j.out).insertAfter( "#result" );
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown)
+			{
+		       //     	alert(textStatus);
+			}
+		});
+	}
+
+</script>

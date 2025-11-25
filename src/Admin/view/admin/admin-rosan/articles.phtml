@@ -1,0 +1,76 @@
+    <?php error_log($this->title); ?>
+    <?php error_log($this->route); ?>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">
+				<div class="row">
+					<div class="col-lg-12" >
+						<?php echo $this->title; ?>
+					</div>
+				</div>
+			</h3>
+		</div>
+		<div class="panel-body">
+<?php   
+	if ($this->pageCount > 1) {
+		//error_log(sprintf("this->title_check = %d", $this->title_check));
+		echo $this->paginationControl(
+			// the paginator object
+			$this->paginator, //articles,
+			// the scrolling style
+			'sliding',
+			// the partial to use to render the control
+			$this->pag_part,
+			// the route to link to when a user clicks a control link
+			array('route' => $this->route, 'action' => $this->action, 'id' => $this->id, 'query' => urlencode($this->query).'&title_check='.$this->title_check.'&text_check='.$this->text_check)
+		);
+	}
+?>
+			<?php $idx = 0; ?>
+				<?php foreach ($this->articles as $art) : ?>
+					<div class="row">
+						<div class="col-md-12">
+							<?php	
+								$nf = 'artform'.strval($art['id']);
+								$artform = $this->$nf; ?>
+							<?php	if ($artform != null): ?>
+							<?php	$artform->setAttributes(array(
+										'action' => $this->url('dict', array('action' => 'word'), array('query' => array('id' => strval($art['id'])))),
+										'class' => 'art'));
+									$artform->prepare();
+									echo $this->form()->openTag($artform);
+							?>
+									<?php echo '<p>'.$art['article']; ?>
+									<div class="row">
+										<div class="col-md-1">
+											<?php echo $this->formLabel($artform->get('id_article')); ?>
+										</div>
+										<div class="col-md-6">
+											<?php echo $this->formSubmit($artform->get('delete')); ?>
+											<?php echo $this->formSubmit($artform->get('edit')); ?>
+											<?php echo $this->formSubmit($artform->get('addinfo')); ?>
+										</div>
+									</div>
+							<?php echo $this->form()->closeTag(); ?>
+					<?php endif; ?>							
+						</div>
+					</div>
+				<?php endforeach; ?>
+    	</div>
+    </div>	
+<?php   
+	if ($this->pageCount > 1) {
+		echo $this->paginationControl(
+			// the paginator object
+			$this->paginator, //articles,
+			// the scrolling style
+			'sliding',
+			// the partial to use to render the control
+			$this->pag_part,
+			// the route to link to when a user clicks a control link
+			array('route' => $this->route, 'action' => $this->action, 'id' => $this->id, 'query' => urlencode($this->query).'&title_check='.$this->title_check.'&text_check='.$this->text_check)
+		);
+	}
+?>
+
+    
