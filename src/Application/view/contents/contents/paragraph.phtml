@@ -1,0 +1,103 @@
+	<?php $this->headMeta()->setName('description', strip_tags($this->title['title'])); ?>
+
+    <?php error_log(sprintf("from view: %s tile = %s", $this->title['title'], $this->title['tile'])); ?>
+    <div class="related">
+		<ul>
+				<li class="prev">
+					<?php if ($this->id > 1) : ?>
+						<a href=<?php echo $this->url('paragraph', array('action' => 'view', 'id' => $this->id - 1)); ?> ><?php echo "§ ".strval($this->id - 1); ?></a>
+					<?php endif; ?>	
+				</li>
+				<li class = "middle">
+				<p><?php echo $this->title['part']; ?></p>
+				<p><?php echo $this->title['tile']; ?></p>
+				</li>
+				<li class="next">
+					<?php if ($this->id != 55) : ?>
+						<a href=<?php echo $this->url('paragraph', array('action' => 'view', 'id' => $this->id + 1)); ?> ><?php echo "§ ".strval($this->id + 1); ?></a>
+					<?php endif; ?>	
+				</li>
+		</ul>
+	</div>
+    
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title"><?php echo $this->title['title'] ?></h3>
+		</div>
+		<div class="panel-body">
+			<?php if (count($this->contents) > 0): ?>
+				<div><p><b>Структура параграфа:</b></p></div>
+				<?php foreach ($this->contents as $item) : ?>
+					<div><p><a href="#rule<?php echo $item[0]; ?>">Правило <?php echo $item[0]; ?>.</a> <?php echo $item[1]; ?></p></div>
+				<?php endforeach; ?>
+				<div><p><b>Правила и формулы:</b></p></div>
+			<?php endif; ?>
+			<?php foreach ($this->rules as $rule) : ?>
+				<div><p id="rule<?php echo $rule['num']; ?>"><?php echo $rule['text']; ?></p></div>
+				<div><p><?php echo $rule['info']; ?></p></div>
+				<?php if (count($rule['orthos']) > 0) : ?>
+					<?php if (count($rule['orthos']['words']) > 0) : ?>
+						<?php if (count($rule['orthos']['prefix']) > 0) : ?>
+							<div><p><b>Формулы для слов:</b></p></div>
+						<?php else: ?>
+							<div><p><b>Формулы:</b></p></div>
+						<?php endif; ?>
+						<div class="panel panel-default">
+							<div class="panel-body">
+								<?php foreach ($rule['orthos']['words'] as $ortho) : ?>
+									<div><p>
+										<?php echo $ortho['ortho'].": "; ?>
+										<?php if ($ortho['formula'] != null) : ?>
+											<?php if (strpos($ortho['formula'], "<sup>") !== false) : ?>
+												<?php echo "<span><a href=\"".$this->url('orthogr', array('action' => 'formula', 'id' => $ortho['id_form'])). "\" >".substr($ortho['formula'], 0, strpos($ortho['formula'], "<sup>"))."</a></span>"; ?>
+												<?php echo substr($ortho['formula'], strpos($ortho['formula'], "<sup>"), strpos($ortho['formula'], "</sup>") - strpos($ortho['formula'], "<sup>") + 5) ; ?>
+												<?php echo " <span><a href=\"".$this->url('orthogr', array('action' => 'formula')).'?id='.$ortho['id_form']. "\" >".substr($ortho['formula'], strpos($ortho['formula'], "</sup>") + 6)."</a></span>"; ?>											
+										s
+											<?php else : ?>
+												<?php echo "<a href=\"".$this->url('orthogr', array('action' => 'formula')).'?id='.$ortho['id_form']. "\" >".$ortho['formula']."</a>"; ?>
+											<?php endif; ?>
+										<?php endif; ?>	
+										<?php if ($ortho['example'] != null) echo $ortho['example']; ?>
+										<?php if ($ortho['rest'] != null) echo $ortho['rest']; ?>
+									</p></div>
+								<?php endforeach; ?>						
+							</div>
+						</div>
+					<?php endif; ?>
+					<?php if (count($rule['orthos']['prefix']) > 0) : ?>
+						<div><p><b>Формулы для первых частей:</b></p></div>
+						<div class="panel panel-default">
+							<div class="panel-body">
+								<?php foreach ($rule['orthos']['prefix'] as $ortho) : ?>
+									<div><p>
+										<?php echo $ortho['ortho'].": "; ?>
+										<?php if ($ortho['formula'] != null) : ?>
+											<?php if (strpos($ortho['formula'], "<sup>") !== false) : ?>
+												<?php echo "<span><a href=\"".$this->url('orthogr', array('action' => 'formula', 'id' => $ortho['id_form'])). "\" >".substr($ortho['formula'], 0, strpos($ortho['formula'], "<sup>"))."</a></span>"; ?>
+												<?php echo substr($ortho['formula'], strpos($ortho['formula'], "<sup>"), strpos($ortho['formula'], "</sup>") - strpos($ortho['formula'], "<sup>") + 5) ; ?>
+												<?php echo " <span><a href=\"".$this->url('orthogr', array('action' => 'formula')).'?id='.$ortho['id_form']. "\" >".substr($ortho['formula'], strpos($ortho['formula'], "</sup>") + 6)."</a></span>"; ?>											
+										s
+											<?php else : ?>
+												<?php echo "<a href=\"".$this->url('orthogr', array('action' => 'formula')).'?id='.$ortho['id_form']. "\" >".$ortho['formula']."</a>"; ?>
+											<?php endif; ?>
+										<?php endif; ?>	
+										<?php if ($ortho['example'] != null) echo $ortho['example']; ?>
+										<?php if ($ortho['rest'] != null) echo $ortho['rest']; ?>
+									</p></div>
+								<?php endforeach; ?>						
+							</div>
+						</div>
+					<?php endif; ?>
+					
+				<?php endif; ?>
+			<?php endforeach; ?>
+			<?php if (count($this->footnotes) > 0) : ?>
+				<hr />
+				<?php foreach ($this->footnotes as $foot) : ?>
+					<div><p>
+						<?php echo $foot['footnote']; ?>
+					</p></div>
+				<?php endforeach; ?>						
+			<?php endif; ?>
+		</div>
+	</div>

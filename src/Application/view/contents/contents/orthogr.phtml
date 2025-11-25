@@ -1,0 +1,56 @@
+
+    <?php error_log($this->title); ?>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title"><?php echo $this->translate('Орфограммы и формулы справочника') ?></h3>
+		</div>
+		<div class="panel-body">
+			<div class="accordion" id="accordion2">
+				<?php foreach ($this->formulas as $formula) : ?>
+					<div id="paragraph" >
+						<p><span><?php echo $formula['title'];?></span></p>
+						<div style="margin-left:15px">
+							<?php foreach ($formula['ortho'] as $ortho) : ?>
+							<div class="accordion-group">
+								<div class="accordion-heading h3" style="margin-left:15px">
+									<div class="row h3">
+										<div class="col-lg-8" >
+											<p><a class="accordion-toggle h5" style="text-transform:none" data-toggle="collapse" data-parent="#accordion2" href=<?php echo ("#ortho".$ortho['id_ortho']); ?> >
+												<?php echo $ortho['ortho_name'];?>
+											</a></p>
+										</div>
+										<div class="col-lg-4" >
+											<span class="ortho_link"> 
+												<?php echo "<a href=\"".$this->url('orthogr', array('action' => 'orthogr')).'?id='.$ortho['id_ortho']."\">статей в справочнике: ";?> 
+												<?php echo $ortho['art_count']; ?>
+												<?php echo "</a>"; ?>
+											</span>
+										</div>
+									</div>
+								</div>
+									<div id=<?php echo ("ortho".$ortho['id_ortho']); ?> class="accordion-body <?php if ($ortho['id_ortho'] == 18) echo ' in'; else echo ' collapse'; ?>" >
+										<div class="accordion-inner" style="margin-left:15px">
+											<div style="margin-left:30px">
+												<?php foreach ($ortho['formulas'] as $formula) : ?>
+													<p><span>
+													<?php echo $formula['name'];?> <?php echo $formula['example'];?> 
+													<?php if ($formula['arts_count'] > 0) {
+														echo "<a href=\"".$this->url('orthogr', array('action' => 'formula')).'?id='.$formula['id_formula']."\">статей в справочнике: "; 
+														echo $formula['arts_count']; 
+														echo "</a>";
+													}; ?>
+													</span></p>
+										    	<?php endforeach; ?>
+										    </div>
+										</div>
+									</div>
+								</div>	
+					    	<?php endforeach; ?>
+				    	</div>
+				    </div>
+		    	<?php endforeach; ?>
+		    </div>
+    	</div>
+    </div>
+    
+
