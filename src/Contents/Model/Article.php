@@ -12,6 +12,7 @@ namespace Contents\Model;
  class Article
  {
     public $id;
+    public $key_article;
     public $id_word;
     public $id_para;
     public $id_ortho;
@@ -36,6 +37,7 @@ namespace Contents\Model;
 //        error_log("Paragraph exchangeArray");
         
         $this->id           = (!empty($data['id'])) ? $data['id'] : null;
+        $this->key_article = (!empty($data['key_article'])) ? $data['key_article'] : null;
         $this->id_word      = (!empty($data['id_word'])) ? $data['id_word'] : null;
         $this->start         = (!empty($data['start'])) ? $data['start'] : null;
         $this->len         = (!empty($data['len'])) ? $data['len'] : null;

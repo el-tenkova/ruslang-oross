@@ -335,15 +335,15 @@ namespace Contents\Model;
 					} */
 					if ($first === true) {
 						if ($firstId == count($result))
-			                $result[] = array('article' => $article->text, 'id' => $article->id, 'dic' => $article->dic, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array(), 'addinfo' => array(), 'link' => $article->link);
+			                $result[] = array('article' => $article->text, 'id' => $article->id, 'key_article' => $article->key_article, 'dic' => $article->dic, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array(), 'addinfo' => array(), 'link' => $article->link);
 			            else {
 //							error_log(sprintf("firstId before slice %d", $firstId));
-							array_splice($result, $firstId, 0, array(array('article' => $article->text, 'id' => $article->id, 'dic' => $article->dic, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array(), 'addinfo' => array(), 'link' => $article->link)));
+							array_splice($result, $firstId, 0, array(array('article' => $article->text, 'id' => $article->id, 'key_article' => $article->key_article, 'dic' => $article->dic, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array(), 'addinfo' => array(), 'link' => $article->link)));
 			            } 
 					}
 						
 					else {
-		                $result[] = array('article' => $article->text, 'id' => $article->id, 'dic' => $article->dic, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array(), 'addinfo' => array(), 'link' => $article->link);
+		                $result[] = array('article' => $article->text, 'id' => $article->id, 'key_article' => $article->key_article, 'dic' => $article->dic, 'paras' => array(), 'rules' => array(), 'orthos' => array(), 'comments' => array(), 'addinfo' => array(), 'link' => $article->link);
 					}
 	                $artId = $article->id;
 	            }
