@@ -224,6 +224,7 @@ class AdminRosanController extends AbstractActionController
             else if (isset($data['addinfo'])) {
                 $id = $this->params()->fromQuery('id', null);
                 if ($id != null) {
+					$key = ArticleTables::getKey($this->sm, $id);
                     $src = ArticleTables::getSrc($this->sm, $id);
                     $src = $this->editPrepare($src);
                     $title = ArticleTables::getTitle($this->sm, $id);
@@ -232,9 +233,10 @@ class AdminRosanController extends AbstractActionController
 		            $srcs = SourcesTable::getAll($this->sm);
 		            $sel = $addinfoform->get('sources');
 		            $sel->setValueOptions($srcs);
-		            $infos = ArticleAddInfoTable::getAllForArticle($this->sm, $id);
+		            $infos = ArticleAddInfoTable::getAllForArticle($this->sm, $key);
                     $article->setVariable('addinfoform', $addinfoform);
                     $article->setVariable('id', $id);
+					$article->setVariable('key_article', $key);
                     $article->setVariable('title', $title);
                     $article->setVariable('src', $src);
                     $article->setVariable('infos', $infos);

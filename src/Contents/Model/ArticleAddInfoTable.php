@@ -46,7 +46,7 @@ namespace Contents\Model;
     public static function getAllForArticle($sm, $key_article)
     {
         $table = $sm->get('Contents\Model\ArticleAddInfoTable');
-        $infos = $table->tableGateway->select(function(Select $select) use ($id_article)
+        $infos = $table->tableGateway->select(function(Select $select) use ($key_article)
         {
             $select->where('ai.key_article = '.strval($key_article));
         });

@@ -36,6 +36,18 @@ namespace Contents\Model;
     {
     }
 
+	public static function getKey($sm, $id)
+	{
+        $table = $sm->get('Contents\Model\ArticleTables');
+        $articles = $table->tableGateway->select(function(Select $select) use ($id)
+        {
+            $select->where('a.id = '.strval($id));
+        });
+        if ($articles->count())
+            return ($articles->current()->key_article); 
+        return false;
+	}
+
 	public static function getSrc($sm, $id)
 	{
         $table = $sm->get('Contents\Model\ArticleTables');
