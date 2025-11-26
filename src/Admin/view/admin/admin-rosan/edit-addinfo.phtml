@@ -126,6 +126,7 @@
 //		alert(info);
 		var src=$(".info-src[data-key='"+id+"']").val();
 		var id_article='<?php echo $this->id; ?>';
+		var key_article='<?php echo $this->key_article; ?>';
 		$.ajax({
 			url: url,
 			async: false,
@@ -134,6 +135,7 @@
 			data: {
 				text : info,
 				id_article : id_article,
+				key_article : key_article,
 				id_src : src,
 				id : id
 			}, 

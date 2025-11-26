@@ -39,7 +39,7 @@ namespace Contents\Model;
         $result = array();
         foreach ($infos as $info)
         {
-        	$result[] = array('id' => $info->id, 'id_article' => $info->id_article);
+        	$result[] = array('id' => $info->id, 'id_article' => $info->id_article, 'key_article' => $info->key_article);
         }
         return $result;
     }

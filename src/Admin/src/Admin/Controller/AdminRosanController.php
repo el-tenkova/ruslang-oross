@@ -224,7 +224,7 @@ class AdminRosanController extends AbstractActionController
             else if (isset($data['addinfo'])) {
                 $id = $this->params()->fromQuery('id', null);
                 if ($id != null) {
-					$key = ArticleTables::getKey($this->sm, $id);
+					$key_article = ArticleTables::getKey($this->sm, $id);
                     $src = ArticleTables::getSrc($this->sm, $id);
                     $src = $this->editPrepare($src);
                     $title = ArticleTables::getTitle($this->sm, $id);
@@ -233,10 +233,10 @@ class AdminRosanController extends AbstractActionController
 		            $srcs = SourcesTable::getAll($this->sm);
 		            $sel = $addinfoform->get('sources');
 		            $sel->setValueOptions($srcs);
-		            $infos = ArticleAddInfoTable::getAllForArticle($this->sm, $key);
+		            $infos = ArticleAddInfoTable::getAllForArticle($this->sm, $key_article);
                     $article->setVariable('addinfoform', $addinfoform);
                     $article->setVariable('id', $id);
-					$article->setVariable('key_article', $key);
+					$article->setVariable('key_article', $key_article);
                     $article->setVariable('title', $title);
                     $article->setVariable('src', $src);
                     $article->setVariable('infos', $infos);
@@ -583,15 +583,16 @@ class AdminRosanController extends AbstractActionController
  	public function addarticleinfoAction()
  	{
         error_log("AdminRosanController : addarticleinfoAction");
-		if (isset($_POST['text']) && isset($_POST['id_article']) && isset($_POST['id_src'])) {
+		if (isset($_POST['text']) && isset($_POST['id_article']) && isset($_POST['key_article']) && isset($_POST['id_src'])) {
 			$text = $_POST['text'];
 			$text = $this->editCorrect($text);
 			$id_article = $_POST['id_article'];
+			$key_article = $_POST['key_article'];
 			$id_src = $_POST['id_src'];
 			$id = $_POST['id'];
 			error_log($id);
 			if ($id == 'FF' && strlen($text) != 0) {
-			    $id = ArticleAddInfoTable::add($this->sm, $id_article, $text, $id_src);
+			    $id = ArticleAddInfoTable::add($this->sm, $key_article, $id_article, $text, $id_src);
 			    return new JsonModel(array(
 			        'id' => $id,
                     'success' => true,
