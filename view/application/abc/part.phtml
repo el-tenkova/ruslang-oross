@@ -53,7 +53,7 @@
 					<div class="row">
 						<div class="col-md-4"></div>
 						<div class="col-md-4">
-							<p><?php if ($art['dic'] == '50') echo "<img src=\"".$this->basePath() . '/img/book-ok.png'."\" style=\"margin: 4px 5px 0px 0px\" align=\"left\" title=\"орфографический комментарий\">"; ?><?php echo $art['src']; ?>
+							<p><!-- <?php if ($art['dic'] == '50') echo "<img src=\"".$this->basePath() . '/img/book-ok.png'."\" style=\"margin: 4px 5px 0px 0px\" align=\"left\" title=\"орфографический комментарий\">"; ?> --><?php echo $art['src']; ?>
 						</div>
 						<div class="col-md-4"></div>
 					</div>
@@ -63,7 +63,7 @@
 					<div class="col-md-1"></div>
 					<div class="col-md-5">
 						<?php foreach ($this->articles as $art) : ?>
-							<p><?php if ($art['dic'] == '50') echo "<img src=\"".$this->basePath() . '/img/book-ok.png'."\" style=\"margin: 4px 5px 0px 0px\" align=\"left\" title=\"орфографический комментарий\">"; ?><?php echo $art['src']; ?>
+							<p><!-- <?php if ($art['dic'] == '50') echo "<img src=\"".$this->basePath() . '/img/book-ok.png'."\" style=\"margin: 4px 5px 0px 0px\" align=\"left\" title=\"орфографический комментарий\">"; ?> --><?php echo $art['src']; ?>
 							<?php if (intval(count($this->articles) / 2) == $idx) : ?>
 								</div>
 								<div class="col-md-6">

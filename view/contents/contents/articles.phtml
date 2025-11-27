@@ -1,5 +1,4 @@
     <?php $this->headMeta()->setName('description', strip_tags($this->word)); ?>
-    <?php //error_log($this->title); ?>
     <?php //error_log($this->route); ?>
 	<div class="panel panel-default">
 		<div class="panel-heading">
@@ -39,7 +38,7 @@
 				<div class="row">
 					<?php if (count($article['orthos']) > 0 || count($article['paras']) > 0 || count($article['comments']) > 0 || count($article['addinfo']) > 0) : ?>
 						<div class="col-lg-4" >
-							<p><?php if ($article['dic'] == '50') echo "<img src=\"".$this->basePath() . '/img/book-ok.png'."\" style=\"margin: 4px 5px 0px 0px\" align=\"left\" title=\"орфографический комментарий\">"; ?><span><?php echo $article['article']; ?></span></p>
+							<p><!-- <?php if ($article['dic'] == '50') echo "<img src=\"".$this->basePath() . '/img/book-ok.png'."\" style=\"margin: 4px 5px 0px 0px\" align=\"left\" title=\"орфографический комментарий\">"; ?> --><span><?php echo $article['article']; ?>&nbsp;&nbsp;</span><?php if (!empty($article['link'])) echo "<a target=\"_blank\" href=\"".'/article/link/'.$article['link']." \"><i class=\"glyphicon glyphicon-share\" style=\"color:#BEBEBE\"></i></a>"; ?></p>
 						</div>
 						<div class="col-lg-8" >
 						<?php if (count($article['addinfo']) != 0): ?>
@@ -122,7 +121,7 @@
 					<?php else: ?>
 						<div class="col-lg-12" >
 							<?php //error_log($article['article']); ?>
-							<p><?php if ($article['dic'] == '50') echo "<img src=\"".$this->basePath() . '/img/book-ok.png'."\" style=\"margin: 4px 5px 0px 0px\" align=\"left\" title=\"орфографический комментарий\">"; ?><span><?php echo $article['article']; ?></span></p>
+							<p><!-- <?php if ($article['dic'] == '50') echo "<img src=\"".$this->basePath() . '/img/book-ok.png'."\" style=\"margin: 4px 5px 0px 0px\" align=\"left\" title=\"орфографический комментарий\">"; ?> --><span><?php echo $article['article']; ?>&nbsp;&nbsp;</span><?php if (!empty($article['link'])) echo "<a target=\"_blank\" href=\"".'/article/link/'.$article['link']." \"><i class=\"glyphicon glyphicon-share\" style=\"color:#BEBEBE\"></i></a>"; ?></p>
 						</div>
 					<?php endif; ?>
 				</div>
