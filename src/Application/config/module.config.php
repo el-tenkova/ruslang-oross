@@ -41,7 +41,8 @@ return array(
 	        array(
     	        'label' => 'Литература',
         	    'route' => 'home',
-        	    'action' => 'literature',
+        	    //'action' => 'literature',
+		    'action' => 'bibliogr',
 			),
 /*	        array(
     	        'label' => 'Научная статья по проекту',

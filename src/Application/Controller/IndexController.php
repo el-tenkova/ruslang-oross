@@ -17,6 +17,7 @@ use Contents\Model\FormulaTables;
 use Contents\Model\WordTables;
 //use Contents\Model\HistoricTables;
 use Contents\Model\PredislTable;
+use Contents\Model\Predisl4Table;
 use Contents\Model\StateTable;
 
 use Zend\Mvc\Controller\AbstractActionController;
@@ -49,7 +50,7 @@ class IndexController extends AbstractActionController
     } */
     public function indexAction()
     {
-        error_log("IndexController : indexAction");
+/*        error_log("IndexController : indexAction");
         $state = StateTable::getState($this->getServiceLocator());
         $s = StateTable::Ok;
         if (count($state) > 0 && $state['state'] == StateTable::UnderReconstruction)
@@ -58,7 +59,16 @@ class IndexController extends AbstractActionController
     	$predisl = PredislTable::getNewPredisl($this->getServiceLocator());
 //    	 $article->setTemplate('admin/admin-rosan/edit-article');
 		return (new ViewModel(array('predisl' => $predisl,
-		                                              'state' => $s)))->setTemplate('application/index/indexnew');    	
+		                                              'state' => $s)))->setTemplate('application/index/indexnew'); */
+        error_log("IndexController : indexAction");
+        $state = StateTable::getState($this->getServiceLocator());
+        $s = StateTable::Ok;
+        if (count($state) > 0 && $state['state'] == StateTable::UnderReconstruction)
+            $s = 2;
+        $view = new ViewModel();
+        $mainpage = Predisl4Table::getMain($this->getServiceLocator());
+		return (new ViewModel(array('main' => $mainpage,
+		                                              'state' => $s)))->setTemplate('application/index/main');    			                                                 	
     }    
     public function literatureAction()
     {
@@ -71,6 +81,29 @@ class IndexController extends AbstractActionController
     	$litra = PredislTable::getLiterature($this->getServiceLocator());
 		return new ViewModel(array('litra' => $litra,
 		                                              'state' => $s));    	
-    }    
-
+    }
+    public function bibliogrAction()
+    {
+        error_log("IndexController : bibliogrAction");
+        $state = StateTable::getState($this->getServiceLocator());
+        $s = StateTable::Ok;
+        if (count($state) > 0 && $state['state'] == StateTable::UnderReconstruction)
+            $s = 2;
+        $view = new ViewModel();
+        $bibliogr = Predisl4Table::getBibliogr($this->getServiceLocator());
+		return new ViewModel(array('bibliogr' => $bibliogr,
+		                                              'state' => $s));    	
+    }        
+    public function mainAction()
+    {
+        error_log("IndexController : mainAction");
+        $state = StateTable::getState($this->getServiceLocator());
+        $s = StateTable::Ok;
+        if (count($state) > 0 && $state['state'] == StateTable::UnderReconstruction)
+            $s = 2;
+        $view = new ViewModel();
+        $mainpage = Predisl4Table::getMain($this->getServiceLocator());
+		return new ViewModel(array('main' => $mainpage,
+		                                              'state' => $s));    	
+    }        
 }

@@ -66,8 +66,14 @@ use Contents\Model\SourcesTable;
 use Contents\Model\ArticleAddInfo;
 use Contents\Model\ArticleAddInfoTable;
 
+use Contents\Model\ArticleLink;
+use Contents\Model\ArticleLinkTable;
+
 use Contents\Model\Abc;
 use Contents\Model\AbcTables;
+
+use Contents\Model\Predisl4;
+use Contents\Model\Predisl4Table;
 
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
@@ -223,6 +229,18 @@ class Module
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new ArticleAddInfo());
                     return new TableGateway(array('ai' => 'articles_addinfo'), $dbAdapter, null, $resultSetPrototype);
+                }, 
+                'Contents\Model\ArticleLinkTable' =>  function($sm) {
+                    error_log("create ArticleLinkTable");
+                    $tableGateway = $sm->get('ArticleLinkTable');
+                    $table = new ArticleLinkTable($tableGateway);
+                    return $table;
+                },
+                'ArticleLinkTable' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new ArticleLink());
+                    return new TableGateway(array('al' => 'articles_links'), $dbAdapter, null, $resultSetPrototype);
                 }, 
                 'Contents\Model\WordTables' =>  function($sm) {
                     error_log("create Word table");
@@ -702,7 +720,19 @@ class Module
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Abc());
                     return new TableGateway(['zhe' => 'abc_zhe'], $dbAdapter, null, $resultSetPrototype);
-                },  
+                }, 
+                'Contents\Model\Predisl4Table' =>  function($sm) {
+                    error_log("create Predisl4 table");
+                    $tableGateway = $sm->get('Predisl4TableGateway');
+                    $table = new Predisl4Table($tableGateway);
+                    return $table;
+                },
+                'Predisl4TableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Predisl4());
+                    return new TableGateway(['p4' => 'predisl4'], $dbAdapter, null, $resultSetPrototype);
+                },   
             ),
         );
     }    

@@ -41,7 +41,8 @@ return array(
 	        array(
     	        'label' => 'Литература',
         	    'route' => 'home',
-        	    'action' => 'literature',
+        	    //'action' => 'literature',
+        	    'action' => 'bibliogr',
 			),
 /*	        array(
     	        'label' => 'Научная статья по проекту',
@@ -85,6 +86,7 @@ return array(
                     'route'       => '/article[/:action][/:id]',
                     'constraints' => array(
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z][a-zA-Z0-9_-]*',
                     ),
                     'defaults' => array(
                         'controller' => 'Application\Controller\Articles',
