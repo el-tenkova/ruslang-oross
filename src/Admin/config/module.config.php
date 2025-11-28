@@ -7,6 +7,7 @@
 
 namespace Admin;
 
+//use Zend\Router\Http\Literal;
 use Zend\Router\Http\Segment;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use Zend\Navigation\Service\NavigationAbstractServiceFactory;
@@ -23,6 +24,10 @@ return [
 				'label' => 'Правки в словаре/Индексация',
 				'route' => 'edit',
 			],
+			[
+				'label' => 'Страницы',
+				'route' => 'admin_pages',
+			],			
 			[
 				'label' => 'Добавить пользователя',
 				'route' => 'user',
@@ -120,12 +125,42 @@ return [
                         'action'     => 'logout',
                     ],
                 ], 
-            ],            
+            ],
+            'admin_pages' => [
+				'type' => 'literal',
+                'options' => [
+                    'route'       => '/admin_pages',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Controller\AdminRosanController',
+                        'action'     => 'adminpages',
+                    ],
+                ],
+               'may_terminate' =>  true,
+                'child_routes' => [
+                    'edit_page' => [
+		        		'type' => 'segment',
+                        'options' => [
+                            'route'       => '/edit_page[/:id]',
+                            'contraints' => [
+                                'id' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ],
+                            'defaults' => [
+                                'controller' => 'Controller\AdminRosanController',
+                                'action'     => 'editpage',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ],
     ],
 
     'service_manager' => [
         'abstract_factories' => [
+            //NavigationAbstractServiceFactory::class,
             'Zend\Navigation\Service\NavigationAbstractServiceFactory',
         ],
     ],

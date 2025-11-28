@@ -42,6 +42,9 @@ use Admin\Form\AdminWordForm;
 use Application\Controller\SearchController;
 
 use Admin\Model\DicsTable;
+use Contents\Model\Predisl4Table;
+use Admin\Form\PageActionsForm;
+use Admin\Form\EditPageForm;
 
 class AdminRosanController extends AbstractActionController
 {
@@ -165,12 +168,14 @@ class AdminRosanController extends AbstractActionController
             else if (isset($data['edit'])) {
                 $id = $this->params()->fromQuery('id', null);
                 if ($id != null) {
+                    $key_article = ArticleTables::getKey($this->sm, $id);
                     $src = ArticleTables::getSrc($this->sm, $id);
                     $src = $this->editPrepare($src);
                     $article = new ViewModel();
 		            $editform = new ArticleEditForm($src);
                     $article->setVariable('editform', $editform);
                     $article->setVariable('id', $id);
+                    $article->setVariable('key_article', $key_article);
     		        $article->setTemplate('admin/admin-rosan/edit-article');
 	    	        $view->addChild($article, 'article');
                 }
@@ -224,7 +229,7 @@ class AdminRosanController extends AbstractActionController
             else if (isset($data['addinfo'])) {
                 $id = $this->params()->fromQuery('id', null);
                 if ($id != null) {
-					$key_article = ArticleTables::getKey($this->sm, $id);
+                    $key_article = ArticleTables::getKey($this->sm, $id);
                     $src = ArticleTables::getSrc($this->sm, $id);
                     $src = $this->editPrepare($src);
                     $title = ArticleTables::getTitle($this->sm, $id);
@@ -236,7 +241,7 @@ class AdminRosanController extends AbstractActionController
 		            $infos = ArticleAddInfoTable::getAllForArticle($this->sm, $key_article);
                     $article->setVariable('addinfoform', $addinfoform);
                     $article->setVariable('id', $id);
-					$article->setVariable('key_article', $key_article);
+                    $article->setVariable('key_article', $key_article);
                     $article->setVariable('title', $title);
                     $article->setVariable('src', $src);
                     $article->setVariable('infos', $infos);
@@ -301,8 +306,8 @@ class AdminRosanController extends AbstractActionController
     //            	error_log(sprintf("start rebuilding"));
                 	$changes = ChangesTable::getForProcessing($this->sm);
                 	//$filename = '/home/test/Data/preview/pre_in.txt';
-                	//$filename = '/ElenaTenkova/ИРЯ/OROSS/oross/changes/in.txt';
-                	$filename = '/www/ruslang/oross.ruslang.ru/Data/changes/in.txt';
+                	$filename = '/Users/el-tenkova/ElenaTenkova/ИРЯ/OROSS/oross/changes/in.txt';
+                	//$filename = '/home/test/Data/changes/in.txt';
 				    $fp = fopen($filename, 'w');
 				    if ($fp) {
 				        foreach ($changes as $ch) {
@@ -310,7 +315,7 @@ class AdminRosanController extends AbstractActionController
     					    fwrite($fp, $str);
 				            $str = "a_act:\t".strval($ch['action']).PHP_EOL;
     					    fwrite($fp, $str);
-				            $str = "a:\t".strval($ch['id_article']).PHP_EOL;
+				            $str = "a_key:\t".strval($ch['key_article']).PHP_EOL;
     					    fwrite($fp, $str);
 				            $str = "a_dic:\t".strval($ch['dic']).PHP_EOL;
     					    fwrite($fp, $str);
@@ -320,19 +325,20 @@ class AdminRosanController extends AbstractActionController
     					}
 					fclose($fp);
 					$infos = ArticleAddInfoTable::getAll($this->sm);
-                	$filename = '/www/ruslang/oross.ruslang.ru/Data/changes/addinfo.txt';
+					$filename = '/Users/el-tenkova/ElenaTenkova/ИРЯ/OROSS/oross/changes/addinfo.txt';
+                	//$filename = '/home/test/Data/changes/addinfo.txt';
 				    $fp = fopen($filename, 'w');
 				    if ($fp) {
 				        foreach ($infos as $info) {
 				            $str = "add_id:\t".strval($info['id']).PHP_EOL;
     					    fwrite($fp, $str);
-				            $str = "a_id:\t".strval($info['id_article']).PHP_EOL;
+				            $str = "a_key:\t".strval($info['key_article']).PHP_EOL;
     					    fwrite($fp, $str);
     					}
     				}
 					fclose($fp);
 					StateTable::setInProcessState($this->sm);
-					$script =  '/www/ruslang/oross.ruslang.ru/Data/rebuild.sh';
+					$script =  '/home/test/Data/rebuild.sh';
 	//				$script =  '/var/www/www-root/data/www/ruslang-oross.ru/getdic/clroutput.sh';
                     shell_exec($script." > /dev/null 2 > /dev/null &");
                     }
@@ -365,7 +371,7 @@ class AdminRosanController extends AbstractActionController
     {
      	$src = str_replace("<u>", "<span style=\"text-decoration: underline;\">", $src);
         $src = str_replace("</u>", "</span>", $src);
-        $src = str_replace("&#x301;", "#", $src);
+        $src = str_replace("&#x301", "#", $src);
         //error_log($src);
     	return $src;
     }
@@ -383,7 +389,7 @@ class AdminRosanController extends AbstractActionController
     	}
     	
         $text = str_replace("#page=", "11page22", $text);
-        $text = str_replace("#", "&#x301;", $text);
+        $text = str_replace("#", "&#x301", $text);
         $text = str_replace("11page22", "#page=", $text);
     	
         //error_log($text);
@@ -479,15 +485,14 @@ class AdminRosanController extends AbstractActionController
 			$text = $_POST['text'];
 			if (strlen($text) != 0) {
             	$text = $this->editCorrect($text);
-            	
-        		$filename = '/www/ruslang/oross.ruslang.ru/Data/preview/pre_in.txt';
+        		$filename = '/home/test/Data/preview/pre_in.txt';
 				$fp = fopen($filename, 'w');
 				if ($fp) {
 					fwrite($fp, $text);
 					fclose($fp);
-					$script =  '/www/ruslang/oross.ruslang.ru/getdic/preview.sh';
+					$script =  '/home/ruslang/ruslang/oross/getdic/preview.sh';
                 	shell_exec($script);
-	        		$filename = '/www/ruslang/oross.ruslang.ru/Data/preview/pre_out.html';
+	        		$filename = '/home/test/Data/preview/pre_out.html';
 					$fp = fopen($filename, 'r');
 					if ($fp) {
 						$text = fread($fp, filesize($filename));
@@ -644,4 +649,48 @@ class AdminRosanController extends AbstractActionController
 		));
  	}
  	
+ 	public function adminpagesAction()
+    {
+            error_log("AdminRosanController - adminpages");
+            if ($this->authService->hasIdentity() === false) {
+                error_log("redirect");
+                $this->redirect()->toRoute('adminos');
+                return;
+            }
+    		$pages = Predisl4Table::getPagesDescr($this->sm);
+    		$view = new ViewModel(array('pages' => $pages));
+            foreach ($pages as $page) {
+		            $actionsform = new PageActionsForm($page['id']);
+                    $view->setVariable('pageform'.strval($page['id']), $actionsform);
+        	}
+            return $view;
+    }
+    public function editpageAction()
+    {
+            error_log("AdminRosanController - editpage");
+            if ($this->authService->hasIdentity() === false) {
+                $this->redirect()->toRoute('adminos');
+                return;
+            }
+        if ($this->request->isPost()) {
+            error_log("AdminRosanController - editpage submit");
+			$data = $this->request->getPost();
+            if (isset($data['pageok'])) {
+            	$text = isset($data['text']) ? $data['text'] : '';
+            	$id = $this->params('id', 0);
+                $res = Predisl4Table::savePageEdited($this->sm, $id, $text);
+                $view = new ViewModel(array('success' => '1')); 
+            }
+            else
+            {
+			    $view = new ViewModel();            
+                $id = $this->params('id', 0);
+    	    	$page = Predisl4Table::getPage($this->sm, $id);
+               	$editpageform = new EditPageForm($page['text']);
+               	$view->setVariable('editpageform', $editpageform); 
+               	$view->setVariable('id', $id);
+            }
+		}
+		return $view;                  
+    }
 }

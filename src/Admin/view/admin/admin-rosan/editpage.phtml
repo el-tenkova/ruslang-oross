@@ -1,0 +1,56 @@
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+    (function (d, w, c) {
+        (w[c] = w[c] || []).push(function() {
+            try {
+                w.yaCounter50874710 = new Ya.Metrika2({
+                    id:50874710,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true,
+                    webvisor:true
+                });
+            } catch(e) { }
+        });
+ 
+        var n = d.getElementsByTagName("script")[0],
+            s = d.createElement("script"),
+            f = function () { n.parentNode.insertBefore(s, n); };
+        s.type = "text/javascript";
+        s.async = true;
+        s.src = "https://mc.yandex.ru/metrika/tag.js";
+ 
+        if (w.opera == "[object Opera]") {
+            d.addEventListener("DOMContentLoaded", f, false);
+        } else { f(); }
+    })(document, window, "yandex_metrika_callbacks2");
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/50874710" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<?php	$editform = $this->editpageform; ?>
+<?php	if ($editform != null):  ?>
+	<?php $editform->setAttribute('action', $this->url('admin_pages/edit_page', array('id'=>$this->id)));
+	 ?>
+	<?php $editform->prepare(); ?>
+	<?php echo $this->form()->openTag($editform); ?>
+		<div class="row top-buffer">
+			<div class="col-md-12">
+			        <p>HTML</p>
+					<?php echo $this->formRow($editform->get('text')); ?>
+			</div>
+		</div>
+		<div class="row top-buffer">
+			<div class="col-md-1">
+					<?php echo $this->formSubmit($editform->get('pageok')); ?>
+			</div>
+		</div>
+	<?php echo $this->form()->closeTag(); ?>
+    <?php endif; ?>
+    <?php	$success = $this->success; ?>
+    <div class="row top-buffer">
+		<div class="col-md-12">
+		<?php	if ($success != null):  ?>
+		    <div align="center"><h4>Изменения внесены в БД</h4></div>
+	   <?php endif; ?>	    
+		</div>
+	</div>	
